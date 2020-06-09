@@ -12,7 +12,7 @@ Minerva makes use of Google Firebase Functions to listen to HTTP requests made b
 
 ### Notify
 
-This is the Waterloo Rocketry Slack `/notify <link-to-message> [alert-single-channel] [#channel1, #channel2, ...]` command. Using this command allows you to copy a message from one channel to selected channels. Additionally, there is the option to alert single-channel guests of this message.
+This is the Waterloo Rocketry Slack `/notify <link-to-message> [alert] [alert-single-channel] [#channel1, #channel2, ...]` command. Using this command allows you to copy a message from one channel to selected channels. Additionally, there is the option to alert single-channel guests of this message.
 
 ### Required parameters
 
