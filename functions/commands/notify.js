@@ -17,37 +17,15 @@ module.exports.send = async function (user_id, textParams, initialChannel) {
 
     try {
         await slack_handler.isAdmin(user_id);
-        if (parameters.alert) {
-            // copy to all channels with an @channel
-            await slack_handler.postMessageToChannels("<!channel> " + parameters.link, parameters.channels);
-        } else if (parameters.alert_single_channel) {
-            // when we alert single channel guests we do not want to copy the message to every channel -- only the ones with single channel guests
 
-            // get all single channel users in the server
-            var singleChannelGuests = await slack_handler.getAllSingleChannelGuests();
-            // check each channel
-            parameters.channels.forEach(async (channel) => {
-                if (channel !== '') {
-                    // get members of the channel
-                    var members = await slack_handler.getChannelMembers(channel);
-                    // if there is no overlap between the arrays, do not send
-                    if (members.members.filter(value => singleChannelGuests.includes(value)).length != 0) {
-                        // if it is, post the message to the channel
-                        var messageResponse = await slack_handler.postMessageToChannel(parameters.link, channel);
-                        // for each member in the channel
-                        members.members.forEach(async (member) => {
-                            // if they are single channel guest
-                            if (singleChannelGuests.includes(member)) {
-                                // mention them in the thread
-                                await slack_handler.postMessageToThread("<@" + member + ">", messageResponse.channel, messageResponse.ts);
-                            }
-                        });
-                    }
-                }
-            });
+        var message = (parameters.alert ? "<!channel>" : "") + parameters.link;
+
+        if (parameters.alert_single_channel) {
+            // when we alert single channel guests we do not want to copy the message to every channel -- only the ones with single channel guests
+            await slack_handler.postMessageToChannelsIfContainsSingle(message, parameters.channels);
         } else {
-            // default is to just copy to all channels.
-            await slack_handler.postMessageToChannels(parameters.link, parameters.channels);
+            // default is to just copy to all channels with message (that can contain alert or not)
+            await slack_handler.postMessageToChannels(message, parameters.channels);
         }
         return Promise.resolve();
     } catch (error) {
@@ -101,7 +79,8 @@ function filterParameters(textParams, initialChannel) {
     }
 
     // get rid of the inital channel, since we don't want to send the message again.
-    channels[channels.indexOf(initialChannel)] = '';
+    channels = channels.filter(value => value != initialChannel);
+    //channels[channels.indexOf(initialChannel)] = '';
 
     return {
         link: params[0],
