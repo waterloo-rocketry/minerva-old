@@ -1,6 +1,84 @@
-// AIzaSyBO2ohvn5GHfOLCMc2OLgV5UR-4W8VFCT0
+const { google } = require('googleapis');
+const calendar = google.calendar('v3');
 
-const { WebClient } = require('@slack/web-api');
-const functions = require('firebase-functions');
+const credentials = require('../credentials.json');
+const auth = new google.auth.OAuth2(
+    credentials.web.client_id,
+    credentials.web.client_secret,
+    credentials.web.redirect_uris[0]
+);
 
-const web = new WebClient(functions.config().calendar.token);
+auth.setCredentials({
+    refresh_token: credentials.refresh_token
+})
+
+// Returns next n events. Commonly used data in result.data.items
+module.exports.getNextEvents = function (number = 1) {
+    return calendar.events.list({
+        auth: auth,
+        calendarId: 'primary',
+        timeMin: (new Date()).toISOString(),
+        maxResults: number,
+        singleEvents: true,
+        orderBy: 'startTime'
+    });
+}
+
+module.exports.getEventById = function (eventId) {
+    return calendar.events.get({
+        auth: auth,
+        calendarId: 'primary',
+        eventId: eventId
+    })
+}
+
+module.exports.updateEventById = function (eventId, description) {
+    return calendar.events.get({
+        auth: auth,
+        calendarId: 'primary',
+        eventId: eventId
+    })
+}
+
+module.exports.getEventByTypeAndChannel = async function (type, channel) {
+    try {
+        var events = await this.getNextEvents(10);
+
+        for (var event of events.data.items) {
+            console.log(event);
+            if (event.description === undefined || event.description === "") continue;
+
+            var lines = event.description.split("\n");
+            console.log(lines);
+
+            if (lines[0] != type) continue;
+
+            if (lines[2] !== "#" + channel) continue;
+            return Promise.resolve(event);
+        }
+        return Promise.reject("Next event not found");
+    } catch (error) {
+        console.log("getEventByTypeAndChannel " + error);
+        return Promise.reject(error);
+    }
+}
+
+module.exports.addMeeting = function (name, description, startTime, duration) {
+    /*calendar.events.insert({
+        auth: auth,
+        calendarId: 'primary',
+        resource: {
+            'summary': data.eventName,
+            'description': data.description,
+            'start': {
+                'dateTime': data.startTime,
+                'timeZone': 'EST'
+            },
+            'end': {
+                'dateTime': data.endTime,
+                'timezone': 'EST'
+            }
+        }
+    });*/
+}
+
