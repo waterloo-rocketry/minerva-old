@@ -1,13 +1,12 @@
 const { google } = require('googleapis');
-const OAuth2 = google.auth.OAuth2;
 const calendar = google.calendar('v3');
 
 const credentials = require('../credentials.json');
-const auth = new OAuth2(
+const auth = new google.auth.OAuth2(
     credentials.web.client_id,
     credentials.web.client_secret,
     credentials.web.redirect_uris[0]
-)
+);
 
 auth.setCredentials({
     refresh_token: credentials.refresh_token
@@ -25,11 +24,43 @@ module.exports.getNextEvents = function (number = 1) {
     });
 }
 
-module.exports.updateNextEventWhoStartsWith = function (channel) {
-    // update the next event whos description starts with #<name> of the 
-    // make sure the add command is not escaped so that regular names can be used here. I do not want to have to make a name conversion command
-    // description of events need to start with the primary channel first, then secondary (copy-to) channels after
-    // i.e. electrical meetings need to start with #electrical in the description, then other channels it wants to alert (i.e. payload, software, etc)
+module.exports.getEventById = function (eventId) {
+    return calendar.events.get({
+        auth: auth,
+        calendarId: 'primary',
+        eventId: eventId
+    })
+}
+
+module.exports.updateEventById = function (eventId, description) {
+    return calendar.events.get({
+        auth: auth,
+        calendarId: 'primary',
+        eventId: eventId
+    })
+}
+
+module.exports.getEventByTypeAndChannel = async function (type, channel) {
+    try {
+        var events = await this.getNextEvents(10);
+
+        for (var event of events.data.items) {
+            console.log(event);
+            if (event.description === undefined || event.description === "") continue;
+
+            var lines = event.description.split("\n");
+            console.log(lines);
+
+            if (lines[0] != type) continue;
+
+            if (lines[2] !== "#" + channel) continue;
+            return Promise.resolve(event);
+        }
+        return Promise.reject("Next event not found");
+    } catch (error) {
+        console.log("getEventByTypeAndChannel " + error);
+        return Promise.reject(error);
+    }
 }
 
 module.exports.addMeeting = function (name, description, startTime, duration) {
