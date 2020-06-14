@@ -10,7 +10,8 @@ module.exports.send = async function (user_id, textParams, originChannel) {
         var event = await meeting_handler.getEventByTypeAndChannel(originChannel === "general" ? "general" : "subteam", originChannel);
 
         if(parameters.modifier === "add") {
-            // update description
+            // from next event, get description line 3, += text.replace("add", "").trim();
+            
             
         } else if(parameters.modifier === "list") {
             var agendaArray = event.description.split("\n")[3].split(",");
