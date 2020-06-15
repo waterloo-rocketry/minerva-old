@@ -45,11 +45,9 @@ module.exports.getEventByTypeAndChannel = async function (type, channel) {
         var events = await this.getNextEvents(10);
 
         for (var event of events.data.items) {
-            console.log(event);
             if (event.description === undefined || event.description === "") continue;
 
             var lines = event.description.split("\n");
-            console.log(lines);
 
             if (lines[0] != type) continue;
 
