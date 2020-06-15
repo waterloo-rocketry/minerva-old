@@ -2,8 +2,9 @@ var calendar = require('../handlers/calendar-handler');
 var slack_handler = require('../handlers/slack-handler');
 
 module.exports.checkForEvents = async function () {
+    var events;
     try {
-        var events = (await calendar.getNextEvents(1)).data.items; // change to 4 (2 at each point)
+        events = (await calendar.getNextEvents(1)).data.items; // change to 4 (2 at each point)
     } catch (error) {
         return Promise.reject(error);
     }
