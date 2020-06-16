@@ -59,9 +59,7 @@ async function parseDescription(event) {
     };
 
     switch (lines[0]) {
-        case "general":
-            break;
-        case "subteam":
+        case "meeting":
             break;
         case "test":
             break;
@@ -137,7 +135,7 @@ function generateMessage(event, parameters, timeDifference, isEventSoon, startTi
         message += "on *" + startTimeDate.toLocaleString("en-US", { timeZone: "America/New_York" }) + "*";
     }
 
-    if (parameters.type === "general" || parameters.type === "subteam") {
+    if (parameters.type === "meeting") {
         message += "\nPlease see the agenda items:" + parameters.agenda;
     } else if (parameters.type === "test") {
         message += "\nToday's test is located at: " + (event.location === undefined ? "<insert funny location here>" : event.location);
@@ -147,7 +145,7 @@ function generateMessage(event, parameters, timeDifference, isEventSoon, startTi
         message += "\nNotes: " + parameters.extra;
     }
 
-    if (isEventSoon && (parameters.type === "general" || parameters.type === "subteam")) {
+    if (isEventSoon && parameters.type === "meeting") {
         message += "\nWays to attend:\n      :office: In person @ " + event.location + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
         message += "\nReact with :watermelon: if you're coming!";

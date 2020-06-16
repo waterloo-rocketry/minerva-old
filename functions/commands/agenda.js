@@ -7,7 +7,7 @@ module.exports.send = async function (user_id, textParams, originChannel) {
         var parameters = await filterParameters(textParams, originChannel);
         console.log(originChannel);
 
-        var event = await meeting_handler.getEventByTypeAndChannel(originChannel === "general" ? "general" : "subteam", originChannel);
+        var event = await meeting_handler.getEventByTypeAndChannel("meeting", originChannel);
 
         if(parameters.modifier === "add") {
             // from next event, get description line 3, += text.replace("add", "").trim();

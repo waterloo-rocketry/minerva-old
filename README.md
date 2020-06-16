@@ -68,7 +68,7 @@ To use, simply create events on the rocketry Google Calendar. In the description
 _<> denotes required item_
 _[] denotes optional item_
 
-- `meeting-type` can be: general (for a general team meeting), subteam (for a sub-team meeting), test (for a cold flow, static fire), or other
+- `meeting-type` can be: meeting (for a general or subteam meeting),, test (for a cold flow, static fire), or other
 - `alert` will @channel all channels listed (main and additional)
 - `alert-single-channel` will @channel the main channel, and direct message single-channel guests in the additional channels
 - `alert-main-channel` will @channel the main channel, and post the message (sans-@channel) to additional channels
@@ -89,7 +89,7 @@ You can manage agenda items using the `/agenda <add/list/remove>` command, avail
 
 ##### Usage
 
-This command looks for the next event of type `general` or `subteam` that contains the same `main_channel` as the channel the command was executed from. If an event is found matching these criteria the command will modify based on the following conditions:
+This command looks for the next event of type `meeting` that contains the same `main_channel` as the channel the command was executed from. If an event is found matching these criteria the command will modify based on the following conditions:
 
 - `/agenda add <item text>` the text after "add" will be added as an agenda item
 - `/agenda list` will display a numerical list of the next events agenda items
