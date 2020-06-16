@@ -4,7 +4,7 @@ var slack_handler = require('../handlers/slack-handler');
 module.exports.checkForEvents = async function () {
     var events;
     try {
-        events = (await calendar.getNextEvents(1)).data.items; // change to 4 (2 at each point)
+        events = (await calendar.getNextEvents(4)).data.items; // change to 4 (2 at each point)
     } catch (error) {
         return Promise.reject(error);
     }
@@ -114,9 +114,13 @@ async function parseDescription(event) {
     // Get rid of the main_channel if it is within additional channels
     parameters.additional_channels = parameters.additional_channels.filter(value => value != parameters.main_channel);
 
-    var agendaArray = lines[4].split(",");
-    for (var i = 0; i < agendaArray.length; i++) {
-        parameters.agenda += "\n    • " + agendaArray[i].trim();
+    if (lines[4] === undefined || lines[4] === "") {
+        parameters.agenda = "";
+    } else {
+        var agendaArray = lines[4].split(",");
+        for (var i = 0; i < agendaArray.length; i++) {
+            parameters.agenda += "\n    • " + agendaArray[i].trim();
+        }
     }
 
     parameters.extra = (lines[5] === undefined ? "" : lines[5]);
