@@ -42,7 +42,7 @@ module.exports.updateEventById = function (eventId, description) {
 
 module.exports.getEventByTypeAndChannel = async function (type, channel) {
     try {
-        var events = await this.getNextEvents(10);
+        var events = await this.getNextEvents(20);
 
         for (var event of events.data.items) {
             if (event.description === undefined || event.description === "") continue;
