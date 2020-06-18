@@ -5,8 +5,6 @@ const events = require('./scheduled/events');
 
 exports.slack_commands = functions.https.onRequest((request, response) => {
     response.status(200).send("Command recieved");
-
-    console.log("test");
     // handle requests that have do not originate from slack? i.e if request has no body
     commands.process(request.body).then((result) => {
         if (result !== undefined && result != "") {
@@ -24,7 +22,7 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 exports.event_check = functions.pubsub.schedule('25,55 * * * *').timeZone('America/New_York').onRun((context) => {
     events.checkForEvents().then(() => {
-
+        // do nothing
     }).catch((error) => {
         console.log(error);
         slack.postMessageToChannel("Error with upcoming meeting:\n" + error, 'admin');
