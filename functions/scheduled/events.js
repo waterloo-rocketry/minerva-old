@@ -45,7 +45,8 @@ async function parseDescription(event) {
     var description = event.description;
     if (description === undefined) return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
 
-    var lines = description.split("\n");
+    //removing whitespace from beginning and ends incase people leave trailing or leading spaces in descriptions
+    var lines = description.split("\n").filter(element => element.trim());
 
     if (lines.length < 3) return Promise.reject("Upcoming *" + event.summary + "* does not contain required parameters");
 
