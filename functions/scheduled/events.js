@@ -1,30 +1,26 @@
-var calendar = require('../handlers/calendar-handler');
-var slack_handler = require('../handlers/slack-handler');
+const calendar = require('../handlers/calendar-handler');
+const slack_handler = require('../handlers/slack-handler');
 
 module.exports.checkForEvents = async function () {
-    var events;
+    let events;
     try {
         events = (await calendar.getNextEvents(4)).data.items; // change to 4 (2 at each point)
     } catch (error) {
         return Promise.reject(error);
     }
-    var results = []
-    for (var index in events) {
+    let results = []
+    for (let event of events) {
         try {
-            var event = events[index];
+            const startTimeDate = new Date(event.start.dateTime);
+            const timeDifference = startTimeDate.getTime() - Date.now();
 
-            var currentTimeMillis = new Date().getTime();
-            var startTimeDate = new Date(event.start.dateTime);
-            var timeDifference = startTimeDate.getTime() - currentTimeMillis;
+            const isSoon = await isEventSoon(timeDifference);
+            const parameters = await parseDescription(event.summary, event.description, this.isTranslationRequired(event.description) ? await slack_handler.generateChannelNameIdMapping() : undefined);
 
-            var isSoon = await isEventSoon(timeDifference);
-            var parameters = await parseDescription(event);
-
-            var message = generateMessage(event, parameters, timeDifference, isSoon, startTimeDate);
+            const message = generateMessage(event, parameters, timeDifference, isSoon, startTimeDate);
 
             await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel);
-
-            console.log(parameters);
+            
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._", parameters.additional_channels);
             } else {
@@ -41,16 +37,15 @@ module.exports.checkForEvents = async function () {
     return Promise.all(results);
 }
 
-async function parseDescription(event) {
-    var description = event.description;
-    if (description === undefined) return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
+module.exports.parseDescription = async function(summary, description, channelIDMap) {
+    if (description === undefined) return Promise.reject("Upcoming *" + summary + "* contains an undefined description");
 
     //removing whitespace from beginning and ends incase people leave trailing or leading spaces in descriptions
-    var lines = description.split("\n").filter(element => element.trim());
+    const lines = description.split("\n");
 
-    if (lines.length < 3) return Promise.reject("Upcoming *" + event.summary + "* does not contain required parameters");
-
-    var parameters = {
+    if (lines.length < 3) return Promise.reject("Upcoming *" + summary + "* does not contain required parameters");
+    
+    const parameters = {
         type: "",
         main_channel: "",
         additional_channels: "",
@@ -59,19 +54,21 @@ async function parseDescription(event) {
         extra: ""
     };
 
-    switch (lines[0]) {
+    switch (lines[0].trim()) {
         case "meeting":
             break;
         case "test":
             break;
         case "other":
             break;
+        case "none":
+            return Promise.reject("no-send");
         default:
-            return Promise.reject("Upcoming *" + event.summary + "* contains a malformed first-line");
+            return Promise.reject("Upcoming *" + summary + "* contains a malformed first-line");
     }
-    parameters.type = lines[0];
+    parameters.type = lines[0].trim();
 
-    switch (lines[1]) {
+    switch (lines[1].trim()) {
         case "alert":
             break;
         case "alert-single-channel":
@@ -80,14 +77,12 @@ async function parseDescription(event) {
             break;
         case "copy":
             break;
-        case "no-reminder":
-            return Promise.reject("no-send");
         default:
-            return Promise.reject("Upcoming *" + event.summary + "* contains a malformed second-line");
+            return Promise.reject("Upcoming *" + summary + "* contains a malformed second-line");
     }
-    parameters.alert_type = lines[1];
+    parameters.alert_type = lines[1].trim();
 
-    parameters.main_channel = lines[2].replace("#", "");
+    parameters.main_channel = lines[2].trim().replace("#", "");
     parameters.additional_channels = [];
 
     if (lines[3] !== '') {
@@ -99,15 +94,15 @@ async function parseDescription(event) {
     }
 
     // We only want to generate the name mapping if we need it
-    // It's only needed if we have alert-single-channel
     if (parameters.alert_type === "alert-single-channel") {
-        var channelIDMap = await slack_handler.generateChannelNameIdMapping();
         parameters.main_channel = channelIDMap.get(parameters.main_channel);
         for (var index in parameters.additional_channels) {
             if (channelIDMap.has(parameters.additional_channels[index])) {
                 parameters.additional_channels[index] = channelIDMap.get(parameters.additional_channels[index]);
             }
         }
+    } else if(lines[3] === "default") {
+        parameters.main_channel = channelIDMap.get(parameters.main_channel);
     }
 
     // Get rid of the main_channel if it is within additional channels
@@ -127,8 +122,8 @@ async function parseDescription(event) {
     return parameters;
 }
 
-function generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate) {
-    var message = "Reminder: *" + event.summary + "* is occuring ";
+module.exports.generateMessage = async function(event, parameters, timeDifference, isEventSoon, startTimeDate) {
+    let message = "Reminder: *" + event.summary + "* is occuring ";
 
     if (isEventSoon) {
         message += "in *" + Math.ceil(timeDifference / 1000 / 60) + " minutes*";
@@ -159,13 +154,23 @@ function generateMessage(event, parameters, timeDifference, isEventSoon, startTi
     return message;
 }
 
-async function isEventSoon(timeDifference) {
+module.exports.isEventSoon = async function(timeDifference) {
     if (timeDifference < 300000 && timeDifference > 0) {// if the time difference is less than 5 minutes, event is soon
         return Promise.resolve(true);
-    } else if (timeDifference > 21600000 - 300000 && timeDifference < 21600000 + 300000) { // if the time difference is somewhere around 6 hours away
+    } else if (timeDifference > 21600000 - 300000 && timeDifference < 21600000 + 300000) { // if the time difference is somewhere around 5:55 and 6:05 hh:mm away
         return Promise.resolve(false);
     } else { // its not in those two times, so skip
+        // but returning reject causes error, so add a flag to know that this is an OK error
         return Promise.reject("no-send");
         //return Promise.resolve(true);
+    }
+}
+
+module.exports.isTranslationRequired = function(description) {
+    const lines = description.split("\n");
+    if(lines[2] === "default" || lines[1] === "alert-single-channel") {
+        return true;
+    } else {
+        return false;
     }
 }
