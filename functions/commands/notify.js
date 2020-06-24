@@ -4,11 +4,11 @@ module.exports.send = async function (user_id, textParams, initialChannel) {
     // check if parameters are valid
     try {
         // will go to error on reject
-        var parameters = await filterParameters(textParams, initialChannel);
+        const parameters = await filterParameters(textParams, initialChannel);
 
         await slack_handler.isAdmin(user_id);
 
-        var message = (parameters.alert_type === "alert" ? "<!channel>\n" : "") + parameters.link;
+        const message = (parameters.alert_type === "alert" ? "<!channel>\n" : "") + parameters.link;
 
         if (parameters.alert_type === "alert-single-channel") {
             // when we alert single channel guests we simply want to PM them the message
@@ -33,18 +33,18 @@ async function filterParameters(textParams, initialChannel) {
         return Promise.reject("Parameter 0 must be a link to a waterloo rocketry message");
     }
 
-    var parameters = {
+    const parameters = {
         link: "",
         alert_type: "",
         channels: []
     };
-    var initialParams = textParams.split(" ");
+    const initialParams = textParams.split(" ");
 
     parameters.link = initialParams[0];
 
     // since the parameters are optional we do not know the order, just loop through them all
     for (var index = 1; index < initialParams.length; index++) {
-        var param = initialParams[index];
+        const param = initialParams[index];
         if (param.startsWith("<#")) {
             parameters.channels.push(param.substring(2, 13));
             continue;

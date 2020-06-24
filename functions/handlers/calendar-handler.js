@@ -40,14 +40,14 @@ module.exports.updateEventById = function (eventId, description) {
     })
 }
 
-module.exports.getEventByTypeAndChannel = async function (type, channel) {
+module.exports.getNextEventByTypeAndChannel = async function (type, channel) {
     try {
-        var events = await this.getNextEvents(20);
+        const events = await this.getNextEvents(20);
 
         for (var event of events.data.items) {
             if (event.description === undefined || event.description === "") continue;
 
-            var lines = event.description.split("\n");
+            const lines = event.description.split("\n");
 
             if (lines[0] != type) continue;
 

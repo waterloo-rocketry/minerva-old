@@ -14,7 +14,7 @@ module.exports.postMessageToChannel = function (message, channel) {
 
 // Given array of channels post the same mes    sage across all channels
 module.exports.postMessageToChannels = function (message, channels) {
-    var promises = [];
+    const promises = [];
     for (var channel of channels) {
         if (channel === '') continue; //this is if we remove the initial channel sometimes it gets left in as '', possible to fix this
         promises.push(this.postMessageToChannel(message, channel));
@@ -52,14 +52,14 @@ module.exports.directMessageUser = function (message, user_id) {
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
         // get all single channel users in the server
-        var singleChannelGuests = await this.getAllSingleChannelGuests();
+        const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
         channels.forEach(async (channel) => {
             // get members of the channel
             try {
-                var channelMembers = (await this.getChannelMembers(channel)).members;
+                const channelMembers = (await this.getChannelMembers(channel)).members;
 
-                var singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
+                const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
                 // if there is any overlap, iterate through and message them
                 singleChannelMembersInChannel.forEach(member => {
                     this.directMessageUser(message, member);
