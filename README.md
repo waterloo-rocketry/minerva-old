@@ -68,12 +68,11 @@ To use, simply create events on the rocketry Google Calendar. In the description
 _<> denotes required item_
 _[] denotes optional item_
 
-- `meeting-type` can be: meeting (for a general or subteam meeting),, test (for a cold flow, static fire), or other
+- `meeting-type` can be: meeting (for a general or subteam meeting), test (for a cold flow, static fire), other, or none (for nothing)
 - `alert` will @channel all channels listed (main and additional)
 - `alert-single-channel` will @channel the main channel, and direct message single-channel guests in the additional channels
 - `alert-main-channel` will @channel the main channel, and post the message (sans-@channel) to additional channels
 - `copy` will post the message to all channels listed.
-- `no-reminder` no reminders or alerts will be posted about this event.
 - `additional notes` are notes appended to the end of the message if they exist
 
 See [here](https://imgur.com/a/eemnfaf) for examples of what the messages look like (as of June 14th 2020)
