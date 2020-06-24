@@ -17,6 +17,8 @@ jobs:
         node-version: 12.x
     - run: npm install
       working-directory: ../minerva/functions/
+    - run: npm test
+      working-directory: ../minerva/functions/
     - run: npm run build --if-present
       working-directory: ../minerva/functions/
     - name: Deploy to Firebase
