@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    name: Deploy to functions
+    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
