@@ -1,4 +1,4 @@
-name: CI
+name: Deploy to Firebase
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   main:
-    name: Deploy to functions
+    name: Deploy to Firebase
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
