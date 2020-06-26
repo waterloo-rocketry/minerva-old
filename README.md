@@ -11,7 +11,7 @@ Minerva makes use of Google Firebase Functions to listen to HTTP requests made b
 ## Features
 
 - [Notify](#Notify)
-- [Event Manager](#Event-Manager)
+- [Event Manager](#Events)
 
 ### Notify
 
