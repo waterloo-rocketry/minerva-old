@@ -4,6 +4,7 @@ const agenda_command = require('../commands/agenda');
 const slack_handler = require('./slack-handler');
 
 module.exports.process = async function (request) {
+    console.log(request.command + " sent by " + request.user_name);
     if (request.command === "/notify") {
         //return meeting_handler.checkForMeetings();
         return notify_command.send(request.user_id, request.text, request.channel_id);
