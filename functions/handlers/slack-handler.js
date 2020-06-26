@@ -56,21 +56,17 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
         // check each channel
         channels.forEach(async (channel) => {
             // get members of the channel
-            try {
-                const channelMembers = (await this.getChannelMembers(channel)).members;
+            const channelMembers = (await this.getChannelMembers(channel)).members;
 
-                const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
-                // if there is any overlap, iterate through and message them
-                singleChannelMembersInChannel.forEach(member => {
-                    this.directMessageUser(message, member);
-                });
-            } catch (error) {
-                console.log(error);
-                this.postMessageToChannel("directMessageSingleChannelGuestsInChannels error:" + error, 'admin');
-            }
+            const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
+            // if there is any overlap, iterate through and message them
+            singleChannelMembersInChannel.forEach(member => {
+                this.directMessageUser(message, member);
+            });
         });
         return Promise.resolve();
-    } catch (error) {
+    } catch (error) {        
+        console.log(JSON.stringify(error));
         return Promise.reject(error);
     }
 }

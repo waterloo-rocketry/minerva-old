@@ -20,7 +20,6 @@ module.exports.send = async function (user_id, textParams, originChannel) {
             } else {
                 updates.description = await this.removeAgendaItemFromDescription(event.description, parseInt(parameters.text));
             }
-            console.log(updates);
             await meeting_handler.updateEventById(event.id, updates);
             return Promise.resolve("Agenda item " + (parameters.modifier === "add" ? "added" : "removed"));
         }

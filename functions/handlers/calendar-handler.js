@@ -57,7 +57,7 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channel) {
         }
         return Promise.reject("Next event not found");
     } catch (error) {
-        console.log("getEventByTypeAndChannel " + error);
+        console.log(JSON.stringify(error));
         return Promise.reject(error);
     }
 }
