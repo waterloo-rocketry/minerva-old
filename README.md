@@ -22,7 +22,7 @@ This is the Slack command `/notify <link-to-message> <copy/alert/alert-single-ch
 - `<link-to-message>`. The link to the message you want to copy. (hover on the message -> hit the dots -> copy link) 
 - `<copy/alert/alert-single-channel>`. One of these three parameters must be selected.
     - `copy` Simply copies the link to each desired channel.
-    - `alert` Append an `@channel` infront of the linked message, then sends this updated message to each channel. **Note**: A 5-channel limit is imposed on this function to restrict channel-bombs.
+    - `alert` Append a `@channel` infront of the linked message, then sends the updated message to each channel. **Note**: A 5-channel limit is imposed on this function to restrict channel-bombs.
     - `alert-single-channel` This parameter will cause the bot to search the selected channels for any single channel guests and direct message them the linked message.
 
 #### Optional parameters
@@ -31,7 +31,7 @@ This is the Slack command `/notify <link-to-message> <copy/alert/alert-single-ch
 #### Examples: 
 
 - Today is the first meeting of project proposals! Shirley wants everyone to alert everyone on the team, so she says: `@everyone project proposals are today at 8pm! Here is the link: https://example.com`. She wants to *alert* everyone of this message, so she uses `/notify <link-to-message> alert-single-channel`
-- It's the time of the project proposals meeting, but Shirley doesn't want to ping the single-channel guests again. Instead she just wants to post the meeting link accross all channels. She uses: `/notify <link-to-message>`
+- It's the time of the project proposals meeting, but Shirley doesn't want to ping the single-channel guests again. Instead she just wants to post the meeting link across all channels. She uses: `/notify <link-to-message>`
 - Roman and zach are running a rec-elec meeting. Roman sends a message in #recovery saying: `@channel rec-elec meeting is right now!`. To copy it and alert #electrical, roman uses `/notify <link-to-message> alert #electrical`
 
 ### Events
