@@ -14,13 +14,13 @@ module.exports.checkForEvents = async function () {
             const startTimeDate = new Date(event.start.dateTime);
             const timeDifference = startTimeDate.getTime() - Date.now();
 
-            const isSoon = await isEventSoon(timeDifference);
-            const parameters = await parseDescription(event.summary, event.description, this.isTranslationRequired(event.description) ? await slack_handler.generateChannelNameIdMapping() : undefined);
+            const isSoon = await this.isEventSoon(timeDifference);
+            const parameters = await this.parseDescription(event.summary, event.description, this.isTranslationRequired(event.description) ? await slack_handler.generateChannelNameIdMapping() : undefined);
 
-            const message = generateMessage(event, parameters, timeDifference, isSoon, startTimeDate);
+            const message = await this.generateMessage(event, parameters, timeDifference, isSoon, startTimeDate);
 
             await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel);
-            
+
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._", parameters.additional_channels);
             } else {
@@ -37,14 +37,14 @@ module.exports.checkForEvents = async function () {
     return Promise.all(results);
 }
 
-module.exports.parseDescription = async function(summary, description, channelIDMap) {
+module.exports.parseDescription = async function (summary, description, channelIDMap) {
     if (description === undefined) return Promise.reject("Upcoming *" + summary + "* contains an undefined description");
 
     //removing whitespace from beginning and ends incase people leave trailing or leading spaces in descriptions
     const lines = description.split("\n");
 
     if (lines.length < 3) return Promise.reject("Upcoming *" + summary + "* does not contain required parameters");
-    
+
     const parameters = {
         type: "",
         main_channel: "",
@@ -101,7 +101,7 @@ module.exports.parseDescription = async function(summary, description, channelID
                 parameters.additional_channels[index] = channelIDMap.get(parameters.additional_channels[index]);
             }
         }
-    } else if(lines[3] === "default") {
+    } else if (lines[3] === "default") {
         parameters.main_channel = channelIDMap.get(parameters.main_channel);
     }
 
@@ -122,7 +122,7 @@ module.exports.parseDescription = async function(summary, description, channelID
     return parameters;
 }
 
-module.exports.generateMessage = async function(event, parameters, timeDifference, isEventSoon, startTimeDate) {
+module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate) {
     let message = "Reminder: *" + event.summary + "* is occuring ";
 
     if (isEventSoon) {
@@ -132,7 +132,11 @@ module.exports.generateMessage = async function(event, parameters, timeDifferenc
     }
 
     if (parameters.type === "meeting") {
-        message += "\nPlease see the agenda items:" + parameters.agenda;
+        if (parameters.agenda.length === 0 || parameters.agenda[0] === "") {
+            message += "\nThere are currently no agenda items listed for this meeting.";
+        } else {
+            message += "\nPlease see the agenda items:" + parameters.agenda;
+        }
     } else if (parameters.type === "test") {
         message += "\nToday's test is located at: " + (event.location === undefined ? "<insert funny location here>" : event.location);
     }
@@ -154,7 +158,7 @@ module.exports.generateMessage = async function(event, parameters, timeDifferenc
     return message;
 }
 
-module.exports.isEventSoon = async function(timeDifference) {
+module.exports.isEventSoon = async function (timeDifference) {
     if (timeDifference < 300000 && timeDifference > 0) {// if the time difference is less than 5 minutes, event is soon
         return Promise.resolve(true);
     } else if (timeDifference > 21600000 - 300000 && timeDifference < 21600000 + 300000) { // if the time difference is somewhere around 5:55 and 6:05 hh:mm away
@@ -166,9 +170,9 @@ module.exports.isEventSoon = async function(timeDifference) {
     }
 }
 
-module.exports.isTranslationRequired = function(description) {
+module.exports.isTranslationRequired = function (description) {
     const lines = description.split("\n");
-    if(lines[2] === "default" || lines[1] === "alert-single-channel") {
+    if (lines[2] === "default" || lines[1] === "alert-single-channel") {
         return true;
     } else {
         return false;
