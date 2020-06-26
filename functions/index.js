@@ -11,7 +11,7 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
             slack.postEphemeralMessage(result, request.body.channel_name, request.body.user_id);
         }
     }).catch((error) => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         //If there's an error sending this message, well, the bot just won't respond, in which case you know theres something wrong.
         slack.postEphemeralMessage("Command failed: " + error, request.body.channel_name, request.body.user_id);
     });
