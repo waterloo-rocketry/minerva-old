@@ -15,16 +15,18 @@ Minerva makes use of Google Firebase Functions to listen to HTTP requests made b
 
 ### Notify
 
-This is the Slack command `/notify <link-to-message> [alert/alert-single-channel] [#channel1, #channel2, ...]`. Using this command allows you to copy a message from one channel to others with a variety of parameters. **This is restricted to admins only**.
+This is the Slack command `/notify <link-to-message> <copy/alert/alert-single-channel> [#channel1, #channel2, ...]`. Using this command allows you to copy a message from one channel to others with a variety of parameters. **This is restricted to admins only**.
 
 #### Required parameters
 
 - `<link-to-message>`. The link to the message you want to copy. (hover on the message -> hit the dots -> copy link) 
+- `<copy/alert/alert-single-channel>`. One of these three parameters must be selected.
+    - `copy` Simply copies the link to each desired channel.
+    - `alert` Append an `@channel` infront of the linked message, then sends this updated message to each channel. **Note**: A 5-channel limit is imposed on this function to restrict channel-bombs.
+    - `alert-single-channel` This parameter will cause the bot to search the selected channels for any single channel guests and direct message them the linked message.
 
 #### Optional parameters
 - `[#channel1, #channel2, ...]`. By specifying channels in a comma separated list you can choose to notify only the selected channels. To select all default channels, do not specify any.
-- `[alert-single-channel]`. This parameter will cause the bot to search the selected channels for any single channel guests and direct message them the linked message.
-- `[alert]`. This parameter will cause the bot to alert (@channel) each listed channel
 
 #### Examples: 
 
