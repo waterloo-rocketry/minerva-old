@@ -32,11 +32,12 @@ module.exports.getEventById = function (eventId) {
     })
 }
 
-module.exports.updateEventById = function (eventId, description) {
-    return calendar.events.get({
+module.exports.updateEventById = function (eventId, updatedFields) {
+    return calendar.events.patch({
         auth: auth,
         calendarId: 'primary',
-        eventId: eventId
+        eventId: eventId,
+        requestBody: updatedFields
     })
 }
 
