@@ -113,6 +113,16 @@ describe('scheduled/event.js tests', function () {
                 extra: "N/A"
             }, 300000 - 1, false, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nPlease see the agenda items:\n    • item\n    • item1\n    • item2\nNotes: N/A\nReact with :watermelon: if you're coming!");
         });
+        it('check no agenda items', async function () {
+            assert.deepEqual(await event.generateMessage(e, {
+                type: "meeting",
+                main_channel: "C014J93U4JZ",
+                additional_channels: ['C0155MHAHB4'],
+                alert_type: "alert",
+                agenda: "",
+                extra: "N/A"
+            }, 300000 - 1, false, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nThere are currently no agenda items listed for this meeting.\nNotes: N/A\nReact with :watermelon: if you're coming!");
+        });
         it('check copy message', async function () {
             assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
