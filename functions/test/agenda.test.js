@@ -51,34 +51,46 @@ describe('commands/agenda.js tests', function () {
             );
         });
         it('remove non-number', async function () {
-            await expect(agenda.filterParameters("remove test")).to.be.rejectedWith("Second parameter of `remove` modifier must be a numeric value");
+            await expect(agenda.filterParameters("remove test")).to.be.rejectedWith("Second parameter of `remove` modifier must be a positive integer");
         });
         it('remove number less than 1', async function () {
-            await expect(agenda.filterParameters("remove 0")).to.be.rejectedWith("Second parameter of `remove` modifier must be a numeric value");
+            await expect(agenda.filterParameters("remove 0")).to.be.rejectedWith("Second parameter of `remove` modifier must be a positive integer");
         });
     });
     describe('generateListMessage', function () {
         it('no agenda items', async function () {
-            assert.deepEqual(await agenda.generateListMessage("meeting\nalert-single-channel\n#general\ndefault\n\nN/A"), "There are currently no agenda items for the next meeting.");
+            const description = "meeting\nalert-single-channel\n#general\ndefault\n\nN/A";
+            const message = "There are currently no agenda items for the next meeting.";
+            assert.deepEqual(await agenda.generateListMessage(description), message);
         });
         it('1 agenda item', async function () {
-            assert.deepEqual(await agenda.generateListMessage("meeting\nalert-single-channel\n#general\ndefault\ntest\nN/A"), "Please see agenda items:\n    1. test");
+            const description = "meeting\nalert-single-channel\n#general\ndefault\ntest\nN/A";
+            const message = "Please see agenda items:\n    1. test";
+            assert.deepEqual(await agenda.generateListMessage(description), message);
         });
         it('2 agenda items', async function () {
-            assert.deepEqual(await agenda.generateListMessage("meeting\nalert-single-channel\n#general\ndefault\ntest, test2\nN/A"), "Please see agenda items:\n    1. test\n    2. test2");
+            const description = "meeting\nalert-single-channel\n#general\ndefault\ntest, test2\nN/A";
+            const message = "Please see agenda items:\n    1. test\n    2. test2";
+            assert.deepEqual(await agenda.generateListMessage(description), message);
         });
     });
     describe('addAgendaItemToDescription', function () {
         it('start no agenda items, add one', async function () {
-            assert.deepEqual(await agenda.addAgendaItemToDescription("meeting\nalert-single-channel\n#general\ndefault\n\nN/A", "item1"), "meeting\nalert-single-channel\n#general\ndefault\nitem1\nN/A");
+            const description = "meeting\nalert-single-channel\n#general\ndefault\n\nN/A";
+            const expectedDescription = "meeting\nalert-single-channel\n#general\ndefault\nitem1\nN/A";
+            assert.deepEqual(await agenda.addAgendaItemToDescription(description, "item1"), expectedDescription);
         });
         it('start one agenda item, add one', async function () {
-            assert.deepEqual(await agenda.addAgendaItemToDescription("meeting\nalert-single-channel\n#general\ndefault\ntest\nN/A", "item1"), "meeting\nalert-single-channel\n#general\ndefault\ntest,item1\nN/A");
+            const description = "meeting\nalert-single-channel\n#general\ndefault\ntest\nN/A";
+            const expectedDescription = "meeting\nalert-single-channel\n#general\ndefault\ntest,item1\nN/A";
+            assert.deepEqual(await agenda.addAgendaItemToDescription(description, "item1"), expectedDescription);
         });
     });
     describe('removeAgendaItemFromDescription', function () {
         it('remove agenda item', async function () {
-            assert.deepEqual(await agenda.removeAgendaItemFromDescription("meeting\nalert-single-channel\n#general\ndefault\nitem1\nN/A", 1), "meeting\nalert-single-channel\n#general\ndefault\n\nN/A");
+            const description = "meeting\nalert-single-channel\n#general\ndefault\nitem1\nN/A";
+            const expectedDescription = "meeting\nalert-single-channel\n#general\ndefault\n\nN/A";
+            assert.deepEqual(await agenda.removeAgendaItemFromDescription(description, 1), expectedDescription);
         });
     });
 }); 
