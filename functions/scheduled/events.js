@@ -7,7 +7,10 @@ const UPPER_BOUND = 21600000; // 6 hours in milliseconds
 module.exports.checkForEvents = async function () {
     let events;
     try {
-        events = (await calendar.getNextEvents(4)).data.items; // select 4 events since we want to account for events starting at the same time
+        // select 4 events since it's realistically the maximum number of events that could happen at the same time (2 at either the close or far time point)
+        // we could increase this, but in order to keep CPU compute & internet transfer down (since this function runs often)
+        // we cap this at 4 events
+        events = (await calendar.getNextEvents(4)).data.items;
     } catch (error) {
         return Promise.reject(error);
     }
