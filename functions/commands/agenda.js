@@ -58,7 +58,7 @@ module.exports.filterParameters = async function (textParams) {
 
     parameters.text = textParams.replace(initialParams[0], "").trim(); // gets rid of the first param (the modifier), then trims leading/trailing whitepsace
 
-    if ((parameters.modifier === "remove" && isNaN(parameters.text)) || parseInt(parameters.text) < 1) {
+    if (parameters.modifier === "remove" && (isNaN(parameters.text) || parseInt(parameters.text) < 1)) {
         return Promise.reject("Second parameter of `remove` modifier must be a positive integer");
     }
 
