@@ -14,7 +14,7 @@ module.exports.send = async function (user_id, textParams, initialChannel) {
             // when we alert single channel guests we simply want to PM them the message
             await slack_handler.directMessageSingleChannelGuestsInChannels(message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._", parameters.channels);
         } else {
-            // otherwise, just copy the message to the channes. It may have an 'alert' appended to it.
+            // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
             await slack_handler.postMessageToChannels(message, parameters.channels);
         }
         return Promise.resolve();
