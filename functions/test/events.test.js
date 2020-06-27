@@ -94,6 +94,9 @@ describe('scheduled/event.js tests', function () {
         }
 
         it('check close message', async function () {
+            const expectedMessage = "<!channel>\nReminder: *Test Event* is occuring in *5 minutes*\nPlease see the agenda items:"
+                + "\n    • item\n    • item1\n    • item2\nNotes: N/A\nWays to attend:\n      :office: In person @ The Bay\n      :globe_with_meridians: "
+                + "Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
             assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
@@ -101,9 +104,11 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert-single-channel",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring in *5 minutes*\nPlease see the agenda items:\n    • item\n    • item1\n    • item2\nNotes: N/A\nWays to attend:\n      :office: In person @ The Bay\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)");
+            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check far message', async function () {
+            const expectedMessage = "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nPlease see the agenda items:"
+                + "\n    • item\n    • item1\n    • item2\nNotes: N/A\nReact with :watermelon: if you're coming!"
             assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
@@ -111,9 +116,11 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, false, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nPlease see the agenda items:\n    • item\n    • item1\n    • item2\nNotes: N/A\nReact with :watermelon: if you're coming!");
+            }, 300000 - 1, false, new Date(1592900639642)), expectedMessage);
         });
         it('check no agenda items', async function () {
+            const expectedMessage = "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nThere are currently no agenda items listed for this meeting."
+                + "\nNotes: N/A\nReact with :watermelon: if you're coming!"
             assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
@@ -121,9 +128,12 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "",
                 extra: "N/A"
-            }, 300000 - 1, false, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nThere are currently no agenda items listed for this meeting.\nNotes: N/A\nReact with :watermelon: if you're coming!");
+            }, 300000 - 1, false, new Date(1592900639642)), expectedMessage);
         });
         it('check copy message', async function () {
+            const expectedMessage = "Reminder: *Test Event* is occuring in *5 minutes*\nPlease see the agenda items:\n    • item\n    • item1\n    • item2\n"
+                + "Notes: N/A\nWays to attend:\n      :office: In person @ The Bay\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area\n      "
+                + ":calling: By phone +1-437-538-3987 (2633 1815 39)";
             assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
@@ -131,9 +141,12 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert-main-channel",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), "Reminder: *Test Event* is occuring in *5 minutes*\nPlease see the agenda items:\n    • item\n    • item1\n    • item2\nNotes: N/A\nWays to attend:\n      :office: In person @ The Bay\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)");
+            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check meeting message', async function () {
+            const expectedMessage = "<!channel>\nReminder: *Test Event* is occuring in *5 minutes*\nPlease see the agenda items:"
+                + "\n    • item\n    • item1\n    • item2\nNotes: N/A\nWays to attend:\n      :office: In person @ The Bay\n      :globe_with_meridians:"
+                + " Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)"
             assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
@@ -141,9 +154,10 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert-single-channel",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring in *5 minutes*\nPlease see the agenda items:\n    • item\n    • item1\n    • item2\nNotes: N/A\nWays to attend:\n      :office: In person @ The Bay\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)");
+            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check test message', async function () {
+            const expectedMessage = "<!channel>\nReminder: *Test Event* is occuring in *5 minutes*\nToday's test is located at: The Bay\nNotes: N/A\nReact with :watermelon: if you're coming!";
             assert.deepEqual(await event.generateMessage(e, {
                 type: "test",
                 main_channel: "C014J93U4JZ",
@@ -151,9 +165,10 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring in *5 minutes*\nToday's test is located at: The Bay\nNotes: N/A\nReact with :watermelon: if you're coming!");
+            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check other message', async function () {
+            const expectedMessage = "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nNotes: N/A\nReact with :watermelon: if you're coming!";
             assert.deepEqual(await event.generateMessage(e, {
                 type: "other",
                 main_channel: "C014J93U4JZ",
@@ -161,7 +176,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, false, new Date(1592900639642)), "<!channel>\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*\nNotes: N/A\nReact with :watermelon: if you're coming!");
+            }, 300000 - 1, false, new Date(1592900639642)), expectedMessage);
         });
     });
 }); 
