@@ -4,7 +4,7 @@ const agenda_command = require('../commands/agenda');
 const slack_handler = require('./slack-handler');
 
 module.exports.process = async function (request) {
-    console.log(request.command + " sent by " + request.user_name);
+    slack_handler.postMessageToChannel(request.user_name + " executed " + request.command + " " + request.text , "minerva-log");
     if (request.command === "/notify") {
         return notify_command.send(request.user_id, request.text, request.channel_id);
     } else if (request.command === "/agenda") {
