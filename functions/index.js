@@ -12,7 +12,7 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
         }
     }).catch((error) => {
         console.log(JSON.stringify(error));
-        slack_handler.postMessageToChannel(JSON.stringify(error), "minerva-log");
+        slack.postMessageToChannel(JSON.stringify(error), "minerva-log");
         //If there's an error sending this message, well, the bot just won't respond, in which case you know theres something wrong.
         slack.postEphemeralMessage("Command failed: " + error, request.body.channel_name, request.body.user_id);
     });
@@ -26,8 +26,7 @@ exports.event_check = functions.pubsub.schedule('25,55 * * * *').timeZone('Ameri
         // do nothing
     }).catch((error) => {
         console.log(JSON.stringify(error));
-        slack_handler.postMessageToChannel(JSON.stringify(error), "minerva-log");
-        slack.postMessageToChannel("Error with upcoming meeting:\n" + error, 'admin');
+        slack.postMessageToChannel("Error with upcoming meeting:\n" + error, 'minerva-log');
     });
     return "Ran meeting check";
 });
