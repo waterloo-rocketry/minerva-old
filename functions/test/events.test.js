@@ -17,6 +17,8 @@ test.mockConfig({
 });
 
 const event = require('../scheduled/events');
+const LOWER_BOUND = 300000; // 5 minutes in milliseconds
+const UPPER_BOUND = 21600000; // 6 hours in milliseconds
 
 describe('scheduled/event.js tests', function () {
     describe('isEventSoon', function () {
@@ -24,20 +26,20 @@ describe('scheduled/event.js tests', function () {
             await expect(event.isEventSoon(-1)).to.be.rejectedWith("no-send");
         });
         it('check event within lower bounds', async function () {
-            assert.equal(await event.isEventSoon(300000 - 1), true);
+            assert.equal(await event.isEventSoon(LOWER_BOUND - 1), true);
             assert.equal(await event.isEventSoon(1), true);
         });
         it('check event between bounds', async function () {
-            await expect(event.isEventSoon(300000 + 1)).to.be.rejectedWith("no-send");
-            await expect(event.isEventSoon(21600000 - 300000 - 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(LOWER_BOUND + 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(UPPER_BOUND - LOWER_BOUND - 1)).to.be.rejectedWith("no-send");
         });
         it('check event within upper bounds', async function () {
-            assert.equal(await event.isEventSoon(21600000), false);
-            assert.equal(await event.isEventSoon(21600000 + 300000 - 1), false);
-            assert.equal(await event.isEventSoon(21600000 - 300000 + 1), false);
+            assert.equal(await event.isEventSoon(UPPER_BOUND), false);
+            assert.equal(await event.isEventSoon(UPPER_BOUND + LOWER_BOUND - 1), false);
+            assert.equal(await event.isEventSoon(UPPER_BOUND - LOWER_BOUND + 1), false);
         });
         it('check event above upper bounds', async function () {
-            await expect(event.isEventSoon(21600000 + 300000 + 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(UPPER_BOUND + LOWER_BOUND + 1)).to.be.rejectedWith("no-send");
         });
     });
 
@@ -87,7 +89,7 @@ describe('scheduled/event.js tests', function () {
                 + "\n#test #rest #lest"
                 + "\nitem,item1,item2"
                 + "\nN/A";
-            
+
             assert.deepEqual(await event.parseDescription("Meeting", description, channelIDMapping), {
                 type: "test",
                 main_channel: "general",
@@ -144,7 +146,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert-single-channel",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check far message', async function () {
             const expectedMessage =
@@ -156,18 +158,18 @@ describe('scheduled/event.js tests', function () {
                 + "\n    • item2"
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
-                
-            assert.deepEqual(await event.generateMessage(e, {   
+
+            assert.deepEqual(await event.generateMessage(e, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
                 alert_type: "alert",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, false, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, false, new Date(1592900639642)), expectedMessage);
         });
         it('check no agenda items', async function () {
-            const expectedMessage = 
+            const expectedMessage =
                 "<!channel>"
                 + "\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*"
                 + "\nThere are currently no agenda items listed for this meeting."
@@ -181,7 +183,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "",
                 extra: "N/A"
-            }, 300000 - 1, false, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, false, new Date(1592900639642)), expectedMessage);
         });
         it('check copy message', async function () {
             const expectedMessage =
@@ -203,7 +205,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert-main-channel",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check meeting message', async function () {
             const expectedMessage =
@@ -226,7 +228,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert-single-channel",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check test message', async function () {
             const expectedMessage =
@@ -243,7 +245,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, true, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, true, new Date(1592900639642)), expectedMessage);
         });
         it('check other message', async function () {
             const expectedMessage =
@@ -259,7 +261,7 @@ describe('scheduled/event.js tests', function () {
                 alert_type: "alert",
                 agenda: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A"
-            }, 300000 - 1, false, new Date(1592900639642)), expectedMessage);
+            }, LOWER_BOUND - 1, false, new Date(1592900639642)), expectedMessage);
         });
     });
 }); 
