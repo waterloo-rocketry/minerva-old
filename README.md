@@ -22,13 +22,13 @@ This is the Slack command `/notify <link-to-message> <copy/alert/alert-single-ch
 - `<link-to-message>`. The link to the message you want to copy. (hover on the message -> hit the dots -> copy link) 
 - `<copy/alert/alert-single-channel>`. One of these three parameters must be selected.
     - `copy` Simply copies the link to each desired channel.
-    - `alert` Append an `@channel` infront of the linked message, then sends this updated message to each channel. **Note**: A 5-channel limit is imposed on this function to restrict channel-bombs.
+    - `alert` Append an `@channel` in front of the linked message, then sends this updated message to each channel. **Note**: A 5-channel limit is imposed on this function to restrict channel-bombs.
     - `alert-single-channel` This parameter will cause the bot to search the selected channels for any single channel guests and direct message them the linked message.
 
 #### Optional parameters
 - `[#channel1, #channel2, ...]`. By specifying channels in a comma separated list you can choose to notify only the selected channels. To select all default channels, do not specify any.
 
-#### Examples: 
+#### Examples
 
 - Today is the first meeting of project proposals! Shirley wants everyone to alert everyone on the team, so she says: `@everyone project proposals are today at 8pm! Here is the link: https://example.com`. She wants to *alert* everyone of this message, so she uses `/notify <link-to-message> alert-single-channel`
 - It's the time of the project proposals meeting, but Shirley doesn't want to ping the single-channel guests again. Instead she just wants to post the meeting link accross all channels. She uses: `/notify <link-to-message>`
@@ -94,4 +94,4 @@ This command looks for the next event of type `meeting` that contains the same `
 
 - `/agenda add <item text>` the text after "add" will be added as an agenda item
 - `/agenda list` will display a numerical list of the next events agenda items
-- `/agenda remove <item number>` removes the n-th element from the agenda item list of the next event
+- `/agenda remove <item number>` removes the n-th element from the agenda item list of the next event (see `/agenda list` for the element index)
