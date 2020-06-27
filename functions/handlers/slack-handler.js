@@ -66,7 +66,6 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
         });
         return Promise.resolve();
     } catch (error) {        
-        console.log(JSON.stringify(error));
         return Promise.reject(error);
     }
 }
