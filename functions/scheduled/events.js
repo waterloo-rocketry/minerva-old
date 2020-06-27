@@ -1,10 +1,13 @@
 const calendar = require('../handlers/calendar-handler');
 const slack_handler = require('../handlers/slack-handler');
 
+const LOWER_BOUND = 300000; // 5 minutes in milliseconds
+const UPPER_BOUND = 21600000; // 6 hours in milliseconds
+
 module.exports.checkForEvents = async function () {
     let events;
     try {
-        events = (await calendar.getNextEvents(4)).data.items; // change to 4 (2 at each point)
+        events = (await calendar.getNextEvents(4)).data.items; // select 4 events since we want to account for events starting at the same time
     } catch (error) {
         return Promise.reject(error);
     }
@@ -159,22 +162,17 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
 }
 
 module.exports.isEventSoon = async function (timeDifference) {
-    if (timeDifference < 300000 && timeDifference > 0) {// if the time difference is less than 5 minutes, event is soon
+    if (timeDifference < LOWER_BOUND && timeDifference > 0) {// if the time difference is less than 5 minutes, event is soon
         return Promise.resolve(true);
-    } else if (timeDifference > 21600000 - 300000 && timeDifference < 21600000 + 300000) { // if the time difference is somewhere around 5:55 and 6:05 hh:mm away
+    } else if (timeDifference > UPPER_BOUND - LOWER_BOUND && timeDifference < UPPER_BOUND + LOWER_BOUND) { // if the time difference is somewhere around 5:55 and 6:05 hh:mm away
         return Promise.resolve(false);
-    } else { // its not in those two times, so skip
+    } else { // it's not in those two times, so skip
         // but returning reject causes error, so add a flag to know that this is an OK error
         return Promise.reject("no-send");
-        //return Promise.resolve(true);
     }
 }
 
 module.exports.isTranslationRequired = function (description) {
     const lines = description.split("\n");
-    if (lines[2] === "default" || lines[1] === "alert-single-channel") {
-        return true;
-    } else {
-        return false;
-    }
+    return lines[2] === "default" || lines[1] === "alert-single-channel";
 }
