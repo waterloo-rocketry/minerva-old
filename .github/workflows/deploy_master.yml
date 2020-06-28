@@ -2,7 +2,7 @@ name: Deploy to Firebase
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, deployment-test ]
 
 jobs:
   main:
@@ -22,6 +22,7 @@ jobs:
     - run: npm run build --if-present
       working-directory: ../minerva/functions/
     - name: Deploy to Firebase
-      uses: BIGG-Kaymo/deploy-firebase-functions@v1.0.1
+      uses: chrissank/deploy-firebase-functions@1.0.0
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        TARGET: development
