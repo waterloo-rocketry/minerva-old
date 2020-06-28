@@ -74,7 +74,7 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
     }
 
     // get rid of the inital channel, since we don't want to double-message the initial channel (if it happens to be in the selection)
-    parameters.channels = parameters.channels.filter(value => value != initialChannel.substring(2, 13));
+    parameters.channels = parameters.channels.filter(value => value != initialChannel);
 
     return parameters;
 }

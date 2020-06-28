@@ -30,7 +30,7 @@ describe('commands/notify.js tests', function () {
             await expect(notify.filterParameters("<https://waterloorocketry.slack.com/ none", "<#general>")).to.be.rejectedWith("Parameter 2 must be either `copy/alert/alert-single-channel`");
         });
         it('alert-single-channel default channels', async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "<#C014J93U4JZ|general>"),
+            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "C014J93U4JZ"),
                 {
                     link: "https://waterloorocketry.slack.com/test",
                     alert_type: "alert-single-channel",
@@ -39,10 +39,10 @@ describe('commands/notify.js tests', function () {
             );
         });
         it('alerting too many channels', async function () {
-            await expect(notify.filterParameters("<https://waterloorocketry.slack.com/test> alert", "<#C014J93U4JZ|general>")).to.be.rejectedWith("Sorry, you cannot use `alert` when selecting more than 5 channels.");
+            await expect(notify.filterParameters("<https://waterloorocketry.slack.com/test> alert", "C014J93U4JZ")).to.be.rejectedWith("Sorry, you cannot use `alert` when selecting more than 5 channels.");
         });
         it('copy default channels', async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "<#C014J93U4JZ|general>"),
+            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "C014J93U4JZ"),
                 {
                     link: "https://waterloorocketry.slack.com/test",
                     alert_type: "alert-single-channel",
@@ -51,7 +51,7 @@ describe('commands/notify.js tests', function () {
             );
         });
         it('alert default channels', async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "<#C014J93U4JZ|general>"),
+            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "C014J93U4JZ"),
                 {
                     link: "https://waterloorocketry.slack.com/test",
                     alert_type: "alert-single-channel",
