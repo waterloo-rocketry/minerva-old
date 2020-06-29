@@ -2,10 +2,10 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "serve": "firebase emulators:start --only functions",
+    "serve": "firebase emulators:start --only functions -P development",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase deploy --only functions -P development",
     "logs": "firebase functions:log",
     "test": "mocha --reporter spec"
   },
