@@ -21,7 +21,8 @@ jobs:
       working-directory: ../minerva/functions/
     - run: npm run build --if-present
       working-directory: ../minerva/functions/
-    - run: firebase use --token ${{ secrets.FIREBASE_TOKEN }} development
-      working-directory: ../minerva/
-    - run: firebase deploy --only functions
-      working-directory: ../minerva/
+    - name: Deploy to Firebase
+      uses: chrissank/deploy-firebase-functions@1.0.2
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        TARGET: development
