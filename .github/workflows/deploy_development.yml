@@ -2,7 +2,9 @@ name: Deploy to Firebase
 
 on:
   push:
-    branches: [master]
+    branches:
+      - '**'
+      - '!master'
 
 jobs:
   main:
@@ -23,4 +25,4 @@ jobs:
       uses: chrissank/deploy-firebase-functions@1.1.0
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        TARGET: production
+        TARGET: default
