@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "rocketry-minerva",
-    "development": "rocketry-minerva-dev"
+    "default": "rocketry-minerva-dev",
+    "production": "rocketry-minerva"
   }
 }
