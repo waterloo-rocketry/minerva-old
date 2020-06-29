@@ -120,10 +120,15 @@ describe('scheduled/event.js tests', function () {
     });
 
     describe('generateMessage', function () {
-        const e = {
+        const testEvent = {
             summary: "Test Event",
             location: "The Bay"
         }
+
+        // replace getRandomEmoji with function with repeatable outcome
+        require('../handlers/slack-handler').getRandomEmoji = function () {
+            return ":watermelon:";
+        }        
 
         it('check close message', async function () {
             const expectedMessage =
@@ -139,7 +144,7 @@ describe('scheduled/event.js tests', function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
@@ -159,7 +164,7 @@ describe('scheduled/event.js tests', function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
@@ -176,7 +181,7 @@ describe('scheduled/event.js tests', function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!"
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
@@ -198,7 +203,7 @@ describe('scheduled/event.js tests', function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
@@ -221,7 +226,7 @@ describe('scheduled/event.js tests', function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
@@ -238,7 +243,7 @@ describe('scheduled/event.js tests', function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "test",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],
@@ -254,7 +259,7 @@ describe('scheduled/event.js tests', function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
 
-            assert.deepEqual(await event.generateMessage(e, {
+            assert.deepEqual(await event.generateMessage(testEvent, {
                 type: "other",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ['C0155MHAHB4'],

@@ -130,3 +130,12 @@ module.exports.getChannels = function (types, exclude_archived) {
 }
 
 module.exports.defaultChannels = ['C0155MGT7NW', 'C015BSR32E8', 'C014J93U4JZ', 'C0155TL4KKM', 'C0155MHAHB4', 'C014QV0F9AB', 'C014YVDDLTG'];
+
+module.exports.getRandomEmoji = async function() {
+    const emojiArray = [];
+    for(const emoji in (await web.emoji.list()).emoji){
+        emojiArray.push(emoji);
+    }
+
+    return ":" + emojiArray[Math.floor(Math.random() * emojiArray.length)] +":";
+}

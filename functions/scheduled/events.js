@@ -154,7 +154,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon && parameters.type === "meeting") {
         message += "\nWays to attend:\n      :office: In person @ " + event.location + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        message += "\nReact with :watermelon: if you're coming!";
+        message += "\nReact with " + (await slack_handler.getRandomEmoji()) + " if you're coming!";
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
