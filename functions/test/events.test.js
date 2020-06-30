@@ -133,7 +133,7 @@ describe('scheduled/event.js tests', function () {
         it('check close message', async function () {
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occuring in *5 minutes*"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
                 + "\nPlease see the agenda items:"
                 + "\n    • item"
                 + "\n    • item1"
@@ -156,7 +156,7 @@ describe('scheduled/event.js tests', function () {
         it('check far message', async function () {
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*"
+                + "\nReminder: *Test Event* is occurring on *6/23/2020 at 4:23:59 AM*"
                 + "\nPlease see the agenda items:"
                 + "\n    • item"
                 + "\n    • item1"
@@ -176,7 +176,7 @@ describe('scheduled/event.js tests', function () {
         it('check no agenda items', async function () {
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*"
+                + "\nReminder: *Test Event* is occurring on *6/23/2020 at 4:23:59 AM*"
                 + "\nThere are currently no agenda items listed for this meeting."
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!"
@@ -192,7 +192,7 @@ describe('scheduled/event.js tests', function () {
         });
         it('check copy message', async function () {
             const expectedMessage =
-                "Reminder: *Test Event* is occuring in *5 minutes*"
+                "Reminder: *Test Event* is occurring in *5 minutes*"
                 + "\nPlease see the agenda items:"
                 + "\n    • item"
                 + "\n    • item1"
@@ -215,7 +215,7 @@ describe('scheduled/event.js tests', function () {
         it('check meeting message', async function () {
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occuring in *5 minutes*"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
                 + "\nPlease see the agenda items:"
                 + "\n    • item"
                 + "\n    • item1"
@@ -238,7 +238,7 @@ describe('scheduled/event.js tests', function () {
         it('check test message', async function () {
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occuring in *5 minutes*"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
                 + "\nToday's test is located at: The Bay"
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
@@ -255,7 +255,7 @@ describe('scheduled/event.js tests', function () {
         it('check other message', async function () {
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occuring on *6/23/2020, 4:23:59 AM*"
+                + "\nReminder: *Test Event* is occurring on *6/23/2020 at 4:23:59 AM*"
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
 

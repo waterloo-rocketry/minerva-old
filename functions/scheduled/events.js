@@ -129,12 +129,13 @@ module.exports.parseDescription = async function (summary, description, channelI
 }
 
 module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate) {
-    let message = "Reminder: *" + event.summary + "* is occuring ";
+    let message = "Reminder: *" + event.summary + "* is occurring ";
 
     if (isEventSoon) {
         message += "in *" + Math.ceil(timeDifference / 1000 / 60) + " minutes*";
     } else {
-        message += "on *" + startTimeDate.toLocaleString("en-US", { timeZone: "America/New_York" }) + "*";
+        const dateStringArray = startTimeDate.toLocaleString("en-US", { timeZone: "America/New_York" }).split(",");
+        message += "on *" + dateStringArray[0] + " at" + dateStringArray[1] + "*";
     }
 
     if (parameters.type === "meeting") {
