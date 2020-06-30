@@ -109,6 +109,7 @@ module.exports.getAllSingleChannelGuests = async function () {
     return Promise.resolve(singleChannel);
 }
 
+// Map channel names to ID's for functions that require IDs, not names
 module.exports.generateChannelNameIdMapping = async function () {
     if (channelNameIdMapping.length > 0) {
         return channelNameIdMapping;
@@ -129,13 +130,19 @@ module.exports.getChannels = function (types, exclude_archived) {
     });
 }
 
+// A hardcoded list of default channel ID's. 
+// This will differ from the development & actual slack
 module.exports.defaultChannels = ['C0155MGT7NW', 'C015BSR32E8', 'C014J93U4JZ', 'C0155TL4KKM', 'C0155MHAHB4', 'C014QV0F9AB', 'C014YVDDLTG'];
 
+// https://api.slack.com/methods/emoji.list
 module.exports.getRandomEmoji = async function() {
     const emojiArray = [];
+    // Unfortunately the result is a JSON object, convert it to an array for convienience
     for(const emoji in (await web.emoji.list()).emoji){
         emojiArray.push(emoji);
     }
 
+    // This will never return the final object in the list since the domain of Math.random is [0, 1)
+    // There is likely a better sol'n. But this works
     return ":" + emojiArray[Math.floor(Math.random() * emojiArray.length)] +":";
 }
