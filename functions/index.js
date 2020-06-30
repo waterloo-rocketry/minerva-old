@@ -14,7 +14,7 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
         console.log(JSON.stringify(error));
         slack.postMessageToChannel(JSON.stringify(error), "minerva-log");
         //If there's an error sending this message, well, the bot just won't respond, in which case you know theres something wrong.
-        slack.postEphemeralMessage("Command failed: " + error, request.body.channel_name, request.body.user_id);
+        slack.postEphemeralMessage("Command failed: " + error + "\nSee: https://github.com/waterloo-rocketry/minerva for help with commands.", request.body.channel_name, request.body.user_id);
     });
 });
 
