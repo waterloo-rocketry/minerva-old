@@ -1,28 +1,28 @@
 name: Deploy to Firebase
 
 on:
-  push:
-    branches:
-      - '**'
-      - '!master'
+    push:
+        branches:
+            - "**"
+            - "!master"
 
 jobs:
-  main:
-    name: Deploy to Firebase
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Use Node.js 12.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
-    - run: npm install
-      working-directory: ../minerva/functions/
-    - run: npm run build --if-present
-      working-directory: ../minerva/functions/
-    - name: Deploy to Firebase
-      uses: chrissank/deploy-firebase-functions@1.1.0
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        TARGET: default
+    main:
+        name: Deploy to Firebase
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v2
+            - name: Use Node.js 12.x
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12.x
+            - run: npm install
+              working-directory: ../minerva/functions/
+            - run: npm run build --if-present
+              working-directory: ../minerva/functions/
+            - name: Deploy to Firebase
+              uses: chrissank/deploy-firebase-functions@1.1.0
+              env:
+                  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+                  TARGET: default
