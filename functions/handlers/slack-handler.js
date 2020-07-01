@@ -101,8 +101,9 @@ module.exports.getAllSingleChannelGuests = async function () {
     const users = await web.users.list();
     var singleChannel = [];
     users.members.forEach(user => {
-        if (user.is_admin) {
-            // CHANGE TO IS_ULTRA_RESTRICICTED ON ACTUAL RELEASE
+        // is_admin is used in development since is_ultra_restricted does not work without a paid plan
+        //if (user.is_admin) {
+        if (user.is_ultra_restricted) {
             singleChannel.push(user.id);
         }
     });
@@ -132,7 +133,9 @@ module.exports.getChannels = function (types, exclude_archived) {
 
 // A hardcoded list of default channel ID's.
 // This will differ from the development & actual slack
-module.exports.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"];
+// software, recovery, propulsion, payload, general, electrical, airframe
+module.exports.defaultChannels = ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD"]; // actual workspace
+//module.exports.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 
 // https://api.slack.com/methods/emoji.list
 module.exports.getRandomEmoji = async function () {
