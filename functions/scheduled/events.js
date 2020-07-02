@@ -41,7 +41,7 @@ module.exports.checkForEvents = async function () {
             }
         } catch (error) {
             if (error === "no-send") {
-                results.push(Promise.resolve("no-send")); // change to resolve
+                results.push(Promise.resolve("no-send"));
             } else {
                 results.push(Promise.reject(error));
             }
@@ -97,7 +97,7 @@ module.exports.parseDescription = async function (summary, description, channelI
     parameters.main_channel = lines[2].trim().replace("#", "");
     parameters.additional_channels = [];
 
-    if (lines[3] !== "") {
+    if (lines[3] !== undefined && lines[3] !== "") {
         if (lines[3] === "default") {
             parameters.additional_channels = slack_handler.defaultChannels;
         } else {
@@ -131,7 +131,10 @@ module.exports.parseDescription = async function (summary, description, channelI
         }
     }
 
-    parameters.extra = lines[5] === undefined ? "" : lines[5];
+    if (lines[5] !== undefined || lines[5] !== "") {
+    } else {
+        parameters.extra = lines[5];
+    }
 
     return parameters;
 };
