@@ -34,6 +34,8 @@ module.exports.filterParameters = async function (textParams) {
         return Promise.reject("Missing required parameter: `add/remove/list`");
     }
 
+    textParams = textParams.replace(/\s/g, " ");
+    textParams = textParams.replace(/xA0/g, " ");
     const initialParams = textParams.split(" ");
 
     if (initialParams.length < 1) {

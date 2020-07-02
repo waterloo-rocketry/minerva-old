@@ -2,10 +2,10 @@
     "name": "functions",
     "description": "Cloud Functions for Firebase",
     "scripts": {
-        "serve": "firebase emulators:start --only functions",
+        "serve": "firebase emulators:start --only functions -P default",
         "shell": "firebase functions:shell",
         "start": "npm run shell",
-        "deploy": "firebase deploy --only functions",
+        "deploy": "firebase deploy --only functions -P default",
         "logs": "firebase functions:log",
         "test": "mocha --reporter spec"
     },
@@ -17,7 +17,7 @@
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
         "firebase-admin": "^8.10.0",
-        "firebase-functions": "^3.6.1",
+        "firebase-functions": "^3.7.0",
         "googleapis": "^39.2.0"
     },
     "devDependencies": {

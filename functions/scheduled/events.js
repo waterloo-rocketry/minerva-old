@@ -101,6 +101,8 @@ module.exports.parseDescription = async function (summary, description, channelI
         if (lines[3] === "default") {
             parameters.additional_channels = slack_handler.defaultChannels;
         } else {
+            lines[3] = lines[3].replace(/\s/g, " ");
+            lines[3] = lines[3].replace(/xA0/g, " ");
             parameters.additional_channels = lines[3].replace(/#/g, "").split(" ");
         }
     }
