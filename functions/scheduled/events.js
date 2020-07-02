@@ -132,7 +132,6 @@ module.exports.parseDescription = async function (summary, description, channelI
     }
 
     if (lines[5] !== undefined || lines[5] !== "") {
-    } else {
         parameters.extra = lines[5];
     }
 
