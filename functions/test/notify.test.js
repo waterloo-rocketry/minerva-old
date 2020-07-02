@@ -22,7 +22,7 @@ require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR3
 describe("commands/notify.js tests", function () {
     describe("filterParameters", async function () {
         it("missing link to text", async function () {
-            await expect(notify.filterParameters("", "<#C014J93U4JZ>")).to.be.rejectedWith(
+            await expect(notify.filterParameters("", "C014J93U4JZ")).to.be.rejectedWith(
                 "Incorrect usage: /notify <link-to-message> <copy/alert/alert-single-channel> [#channel1, #channel2, ...]"
             );
         });
@@ -48,15 +48,15 @@ describe("commands/notify.js tests", function () {
                 "Sorry, you cannot use `alert` when selecting more than 5 channels."
             );
         });
-        it("copy default channels", async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> copy <#C014J93U4JZ", "C014YVDDLTG"), {
+        it("copy two channels", async function () {
+            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> copy <#C014J93U4JZ| <#C0155TL4KKM|", "C014YVDDLTG"), {
                 link: "https://waterloorocketry.slack.com/test",
                 alert_type: "copy",
-                channels: ["C014J93U4JZ"],
+                channels: ["C014J93U4JZ", "C0155TL4KKM"],
             });
         });
         it("alert one channel", async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert <#C014J93U4JZ", "C014YVDDLTG"), {
+            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert <#C014J93U4JZ|", "C014YVDDLTG"), {
                 link: "https://waterloorocketry.slack.com/test",
                 alert_type: "alert",
                 channels: ["C014J93U4JZ"],
