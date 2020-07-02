@@ -11,8 +11,9 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
             slack.postEphemeralMessage(result, request.body.channel_name, request.body.user_id);
         }
     }).catch(error => {
+        console.log(error);
         console.log(JSON.stringify(error));
-        slack.postMessageToChannel(JSON.stringify(error), "minerva-log");
+        slack.postMessageToChannel(JSON.stringify(error), "minerva-log", false);
         //If there's an error sending this message, well, the bot just won't respond, in which case you know theres something wrong.
         slack.postEphemeralMessage(
             "Command failed: " + error + "\nSee: https://github.com/waterloo-rocketry/minerva for help with commands.",
@@ -34,7 +35,7 @@ exports.event_check = functions.pubsub.schedule("25,55 * * * *").timeZone("Ameri
     .catch(error => {
         console.log(error);
         console.log(JSON.stringify(error));
-        slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log");
+        slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
     });
     return "Ran meeting check";
 });

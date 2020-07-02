@@ -17,7 +17,7 @@ module.exports.send = async function (user_id, textParams, initialChannel) {
             );
         } else {
             // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
-            await slack_handler.postMessageToChannels(message, parameters.channels);
+            await slack_handler.postMessageToChannels(message, parameters.channels, true);
         }
         return Promise.resolve();
     } catch (error) {

@@ -5,19 +5,20 @@ const web = new WebClient(functions.config().slack.token);
 const channelNameIdMapping = new Map();
 
 // https://api.slack.com/methods/chat.postMessage
-module.exports.postMessageToChannel = function (message, channel) {
+module.exports.postMessageToChannel = function (message, channel, unfurl = true) {
     return web.chat.postMessage({
         text: message,
         channel: channel,
+        unfurl_links: unfurl,
     });
 };
 
 // Given array of channels post the same mes    sage across all channels
-module.exports.postMessageToChannels = function (message, channels) {
+module.exports.postMessageToChannels = function (message, channels, unfurl = true) {
     const promises = [];
     for (var channel of channels) {
         if (channel === "") continue; //this is if we remove the initial channel sometimes it gets left in as '', possible to fix this
-        promises.push(this.postMessageToChannel(message, channel));
+        promises.push(this.postMessageToChannel(message, channel, unfurl));
     }
     return Promise.all(promises);
 };
@@ -44,8 +45,8 @@ module.exports.postEphemeralMessage = function (message, channel, user_id) {
 
 // basically just an alias
 // https://api.slack.com/methods/chat.postMessage
-module.exports.directMessageUser = function (message, user_id) {
-    this.postMessageToChannel(message, user_id);
+module.exports.directMessageUser = function (message, user_id, unfurl) {
+    this.postMessageToChannel(message, user_id, unfurl);
 };
 
 // Someone think of a better name that follows previous convention
@@ -61,7 +62,7 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
             const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
             singleChannelMembersInChannel.forEach(member => {
-                this.directMessageUser(message, member);
+                this.directMessageUser(message, member, true);
             });
         });
         return Promise.resolve();
