@@ -17,6 +17,7 @@ test.mockConfig({
 });
 
 const notify = require("../commands/notify");
+require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 
 describe("commands/notify.js tests", function () {
     describe("filterParameters", async function () {

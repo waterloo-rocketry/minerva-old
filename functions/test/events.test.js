@@ -16,6 +16,7 @@ test.mockConfig({
     },
 });
 
+require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 const event = require("../scheduled/events");
 const LOWER_BOUND = 300000; // 5 minutes in milliseconds
 const UPPER_BOUND = 21600000; // 6 hours in milliseconds
