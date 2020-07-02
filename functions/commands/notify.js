@@ -3,7 +3,6 @@ const slack_handler = require("../handlers/slack-handler");
 module.exports.send = async function (user_id, textParams, initialChannel) {
     // check if parameters are valid
     try {
-        // will go to error on reject
         const parameters = await this.filterParameters(textParams, initialChannel);
 
         await slack_handler.isAdmin(user_id);
@@ -41,6 +40,9 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
         alert_type: "",
         channels: [],
     };
+
+    textParams = textParams.replace(/\s/g, " ");
+    textParams = textParams.replace(/xA0/g, " ");
     const unfilteredParams = textParams.split(" ");
 
     parameters.link = unfilteredParams[0].replace("<", "").replace(">", "");
@@ -62,7 +64,6 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
         const channel = unfilteredParams[index];
         if (channel.startsWith("<#")) {
             parameters.channels.push(channel.substring(2, 13));
-            continue;
         }
     }
 
