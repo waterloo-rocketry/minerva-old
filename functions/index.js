@@ -32,6 +32,7 @@ exports.event_check = functions.pubsub.schedule("25,55 * * * *").timeZone("Ameri
         // do nothing
     })
     .catch(error => {
+        console.log(error);
         console.log(JSON.stringify(error));
         slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log");
     });
