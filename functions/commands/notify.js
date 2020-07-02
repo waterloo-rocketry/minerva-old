@@ -63,7 +63,7 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
     for (var index = 2; index < unfilteredParams.length; index++) {
         const channel = unfilteredParams[index];
         if (channel.startsWith("<#")) {
-            parameters.channels.push(channel.substring(2, 13));
+            parameters.channels.push(channel.substring(channel.indexOf("#") + 1, channel.indexOf("|")));
         }
     }
 
