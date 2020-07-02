@@ -1,63 +1,68 @@
-const slack_handler = require('../handlers/slack-handler');
+const slack_handler = require("../handlers/slack-handler");
 
 module.exports.send = async function (user_id, textParams, initialChannel) {
     // check if parameters are valid
     try {
         // will go to error on reject
-        var parameters = await filterParameters(textParams, initialChannel);
+        const parameters = await this.filterParameters(textParams, initialChannel);
 
         await slack_handler.isAdmin(user_id);
 
-        var message = (parameters.alert_type === "alert" ? "<!channel>\n" : "") + parameters.link;
+        const message = (parameters.alert_type === "alert" ? "<!channel>\n" : "") + parameters.link;
 
         if (parameters.alert_type === "alert-single-channel") {
             // when we alert single channel guests we simply want to PM them the message
-            await slack_handler.directMessageSingleChannelGuestsInChannels(message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._", parameters.channels);
+            await slack_handler.directMessageSingleChannelGuestsInChannels(
+                message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+                parameters.channels
+            );
         } else {
-            // default is to just copy to all channels with message (that can contain alert or not)
+            // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
             await slack_handler.postMessageToChannels(message, parameters.channels);
         }
         return Promise.resolve();
     } catch (error) {
         return Promise.reject(error);
     }
-}
+};
 
-async function filterParameters(textParams, initialChannel) {
-    if (textParams === '') {
-        return Promise.reject("Missing required parameter: Link to text");
+module.exports.filterParameters = async function (textParams, initialChannel) {
+    if (textParams === "") {
+        return Promise.reject("Incorrect usage: /notify <link-to-message> <copy/alert/alert-single-channel> [#channel1, #channel2, ...]");
     }
 
     // check if first param is a link to a message
     if (!textParams.startsWith("<https://waterloorocketry.slack.com/")) {
-        return Promise.reject("Parameter 0 must be a link to a waterloo rocketry message");
+        return Promise.reject("Parameter 1 must be a link to a waterloo rocketry message");
     }
 
-    var parameters = {
+    const parameters = {
         link: "",
         alert_type: "",
-        channels: []
+        channels: [],
     };
-    var initialParams = textParams.split(" ");
+    const unfilteredParams = textParams.split(" ");
 
-    parameters.link = initialParams[0];
+    parameters.link = unfilteredParams[0].replace("<", "").replace(">", "");
 
-    // since the parameters are optional we do not know the order, just loop through them all
-    for (var index = 1; index < initialParams.length; index++) {
-        var param = initialParams[index];
-        if (param.startsWith("<#")) {
-            parameters.channels.push(param.substring(2, 13));
+    switch (unfilteredParams[1]) {
+        case "copy":
+            break;
+        case "alert":
+            break;
+        case "alert-single-channel":
+            break;
+        default:
+            return Promise.reject("Parameter 2 must be either `copy/alert/alert-single-channel`");
+    }
+    parameters.alert_type = unfilteredParams[1];
+
+    // loop through remaining parameters, which must be channels
+    for (var index = 2; index < unfilteredParams.length; index++) {
+        const channel = unfilteredParams[index];
+        if (channel.startsWith("<#")) {
+            parameters.channels.push(channel.substring(2, 13));
             continue;
-        } else {
-            switch (param) {
-                case "alert":
-                    break;
-                case "alert-single-channel":
-                    break;
-                default:
-                    return Promise.reject("Unknown parameter: " + param);
-            }
-            parameters.alert_type = param;
         }
     }
 
@@ -66,13 +71,13 @@ async function filterParameters(textParams, initialChannel) {
         parameters.channels = slack_handler.defaultChannels;
     }
 
-     // just so we stop people from accidentally @channel'ing every channel
-     if (parameters.alert_type === "alert" && parameters.channels.length > 6) {
+    // just so we stop people from accidentally @channel'ing every channel
+    if (parameters.alert_type === "alert" && parameters.channels.length > 5) {
         return Promise.reject("Sorry, you cannot use `alert` when selecting more than 5 channels.");
     }
 
-    // get rid of the inital channel, since we don't want to send the message again.
+    // get rid of the inital channel, since we don't want to double-message the initial channel (if it happens to be in the selection)
     parameters.channels = parameters.channels.filter(value => value != initialChannel);
 
     return parameters;
-}
+};
