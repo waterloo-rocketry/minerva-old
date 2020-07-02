@@ -1,5 +1,6 @@
 const calendar = require("../handlers/calendar-handler");
 const slack_handler = require("../handlers/slack-handler");
+const intl = require("intl");
 
 const LOWER_BOUND = 300000; // 5 minutes in milliseconds
 const UPPER_BOUND = 21600000; // 6 hours in milliseconds
@@ -144,12 +145,14 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon) {
         message += "in *" + Math.ceil(timeDifference / 1000 / 60) + " minutes*";
     } else {
-        const dateStringArray = startTimeDate
-            .toLocaleString("en-US", {
-                timeZone: "America/New_York",
-            })
-            .split(",");
-        message += "on *" + dateStringArray[0] + " at" + dateStringArray[1] + "*";
+        const dateOptions = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+        };
+        message += "on *" + intl.DateTimeFormat("en-CA", dateOptions).format(startTimeDate) + "*";
     }
 
     if (parameters.type === "meeting") {
