@@ -29,7 +29,7 @@ module.exports.checkForEvents = async function () {
 
             const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
 
-            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel);
+            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, true);
 
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(
@@ -37,11 +37,11 @@ module.exports.checkForEvents = async function () {
                     parameters.additional_channels
                 );
             } else {
-                await slack_handler.postMessageToChannels(message, parameters.additional_channels);
+                await slack_handler.postMessageToChannels(message, parameters.additional_channels, true);
             }
         } catch (error) {
             if (error === "no-send") {
-                results.push(Promise.resolve("no-send")); // change to resolve
+                results.push(Promise.resolve("no-send"));
             } else {
                 results.push(Promise.reject(error));
             }
@@ -97,7 +97,7 @@ module.exports.parseDescription = async function (summary, description, channelI
     parameters.main_channel = lines[2].trim().replace("#", "");
     parameters.additional_channels = [];
 
-    if (lines[3] !== "") {
+    if (lines[3] !== undefined && lines[3] !== "") {
         if (lines[3] === "default") {
             parameters.additional_channels = slack_handler.defaultChannels;
         } else {
@@ -131,7 +131,9 @@ module.exports.parseDescription = async function (summary, description, channelI
         }
     }
 
-    parameters.extra = lines[5] === undefined ? "" : lines[5];
+    if (lines[5] !== undefined) {
+        parameters.extra = lines[5];
+    }
 
     return parameters;
 };

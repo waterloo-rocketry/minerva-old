@@ -17,7 +17,7 @@ module.exports.send = async function (user_id, textParams, initialChannel) {
             );
         } else {
             // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
-            await slack_handler.postMessageToChannels(message, parameters.channels);
+            await slack_handler.postMessageToChannels(message, parameters.channels, true);
         }
         return Promise.resolve();
     } catch (error) {
@@ -63,7 +63,7 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
     for (var index = 2; index < unfilteredParams.length; index++) {
         const channel = unfilteredParams[index];
         if (channel.startsWith("<#")) {
-            parameters.channels.push(channel.substring(2, 13));
+            parameters.channels.push(channel.substring(channel.indexOf("#") + 1, channel.indexOf("|")));
         }
     }
 

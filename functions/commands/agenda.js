@@ -69,10 +69,14 @@ module.exports.filterParameters = async function (textParams) {
 };
 
 module.exports.generateListMessage = async function (description) {
-    const agendaArray = description.split("\n")[4].split(",");
+    const lines = description.split("\n");
+    if (lines[4] === undefined || lines[4] === "") {
+        return "There are currently no agenda items for the next meeting.";
+    }
+    const agendaArray = lines[4].split(",");
     let message = "Please see agenda items:";
     if (agendaArray.length === 1 && agendaArray[0] === "") {
-        message = "There are currently no agenda items for the next meeting.";
+        return "There are currently no agenda items for the next meeting.";
     } else {
         for (var i = 0; i < agendaArray.length; i++) {
             message += "\n    " + (i + 1) + ". " + agendaArray[i].trim();
