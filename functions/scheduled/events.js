@@ -30,7 +30,7 @@ module.exports.checkForEvents = async function () {
 
             const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
 
-            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, true);
+            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
 
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(
@@ -38,7 +38,7 @@ module.exports.checkForEvents = async function () {
                     parameters.additional_channels
                 );
             } else {
-                await slack_handler.postMessageToChannels(message, parameters.additional_channels, true);
+                await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
             }
         } catch (error) {
             if (error === "no-send") {
