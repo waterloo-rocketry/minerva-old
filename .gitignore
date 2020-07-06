@@ -66,3 +66,6 @@ node_modules/
 
 # client secrets (maintained on Chris' PC)
 clientsecrets.txt
+
+# Jetbrains IDE stuff
+.idea/
