@@ -9,7 +9,7 @@ test.mockConfig({
     slack: {
         token: "",
     },
-    calendar: {
+    googleaccount: {
         client: "",
         secret: "",
         redirect: "",
