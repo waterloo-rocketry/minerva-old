@@ -25,7 +25,7 @@ module.exports.checkForEvents = async function () {
 
             // We only want to generate the mapping if we need to translate from channel names --> channel IDs to reduce API calls
             // So, if translation is required, generate, if not, return undefined
-            const channelIDMap = this.isTranslationRequired(event.description) ? await slack_handler.generateChannelNameIdMapping() : undefined;
+            const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
             const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
@@ -52,8 +52,6 @@ module.exports.checkForEvents = async function () {
 };
 
 module.exports.parseDescription = async function (summary, description, channelIDMap) {
-    if (description === undefined) return Promise.reject("Upcoming *" + summary + "* contains an undefined description");
-
     const lines = description.split("\n");
 
     if (lines.length < 3) return Promise.reject("Upcoming *" + summary + "* does not contain required parameters");
@@ -194,7 +192,8 @@ module.exports.isEventSoon = async function (timeDifference) {
     }
 };
 
-module.exports.isTranslationRequired = function (description) {
+module.exports.isTranslationRequired = async function (summary, description) {
+    if (description === undefined || description === "") return Promise.reject("Upcoming *" + summary + "* contains an undefined description");
     const lines = description.split("\n");
     return lines[2] === "default" || lines[1] === "alert-single-channel";
 };
