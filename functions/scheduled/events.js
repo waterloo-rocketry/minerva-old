@@ -168,7 +168,15 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
 			"\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
 			"\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        message += "\nReact with " + (await slack_handler.getRandomEmoji()) + " if you're coming!";
+        let comingEmoji = await slack_handler.getRandomEmoji();
+        let notComingEmoji;
+
+        // make sure that the two reactions are not the same
+        do {
+            notComingEmoji = await slack_handler.getRandomEmoji();
+        } while (comingEmoji === notComingEmoji)
+
+        message += "\nReact with " + comingEmoji + " if you're coming, or " + notComingEmoji + " if you're not!"
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
