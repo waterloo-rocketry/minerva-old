@@ -196,7 +196,8 @@ describe("scheduled/event.js tests", function () {
                     },
                     LOWER_BOUND - 1,
                     false,
-                    new Date(1592900639642)
+                    new Date(1592900639642),
+                    await event.generateEmojiPair()
                 ),
                 expectedMessage
             );
@@ -223,7 +224,8 @@ describe("scheduled/event.js tests", function () {
                     },
                     LOWER_BOUND - 1,
                     false,
-                    new Date(1592900639642)
+                    new Date(1592900639642),
+                    await event.generateEmojiPair()
                 ),
                 expectedMessage
             );
@@ -315,7 +317,8 @@ describe("scheduled/event.js tests", function () {
                     },
                     LOWER_BOUND - 1,
                     true,
-                    new Date(1592900639642)
+                    new Date(1592900639642),
+                    await event.generateEmojiPair()
                 ),
                 expectedMessage
             );
@@ -341,130 +344,78 @@ describe("scheduled/event.js tests", function () {
                     },
                     LOWER_BOUND - 1,
                     false,
-                    new Date(1592900639642)
+                    new Date(1592900639642),
+                    await event.generateEmojiPair()
                 ),
                 expectedMessage
             );
         });
-        describe("reactions", function() {
-            it("pass duplicate emojis", async function() {
+        it ("check no emojis required but passed", async function() {
+            // prettier-ignore
+            const expectedMessage =
+                "<!channel>"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
+                + "\nPlease see the agenda items:"
+                + "\n    • item"
+                + "\n    • item1"
+                + "\n    • item2"
+                + "\nNotes: N/A"
+                + "\nWays to attend:"
+                + "\n      :office: In person @ The Bay"
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-                // Override to pass only one emoji
-                require("../handlers/slack-handler").getRandomEmoji = function () {
-                    return ":watermelon:";
-                }
-
-                await expect(event.generateMessage(
+            assert.deepEqual(
+                await event.generateMessage(
                     testEvent,
                     {
-                        type: "test",
+                        type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert",
+                        alert_type: "alert-single-channel",
                         agenda: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
                     true,
-                    new Date(1592900639642)
-                )).to.be.rejectedWith(
-                    "Could not find unique emojis for reactions"
-                );
-            });
-            it("pass duplicate emojis then unique emojis", async function() {
-                let callCount = 0
-                require("../handlers/slack-handler").getRandomEmoji = function () {
-                    callCount++;
-                    return (callCount <= 5 ? ":watermelon:" : ":melon:"); // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
-                }
-
-                const expectedMessage =
-                    "<!channel>"
-                    + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                    + "\nToday's test is located at: The Bay"
-                    + "\nNotes: N/A"
-                    + "\nReact with :watermelon: if you're coming, or :melon: if you're not!"
-
-                assert.deepEqual(
-                    await event.generateMessage(
-                        testEvent,
-                        {
-                            type: "test",
-                            main_channel: "C014J93U4JZ",
-                            additional_channels: ["C0155MHAHB4"],
-                            alert_type: "alert",
-                            agenda: "\n    • item\n    • item1\n    • item2",
-                            extra: "N/A",
-                        },
-                        LOWER_BOUND - 1,
-                        true,
-                        new Date(1592900639642)
-                    ),
-                    expectedMessage
-                );
-            });
-            it("pass unique emojis", async function () {
-                let alternateEmoji = false;
-                require("../handlers/slack-handler").getRandomEmoji = function () {
-                    alternateEmoji = !alternateEmoji;
-                    return (alternateEmoji ? ":watermelon:" : ":melon:"); // Alternates between returning two emojis
-                }
-
-                const expectedMessage =
-                    "<!channel>"
-                    + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                    + "\nToday's test is located at: The Bay"
-                    + "\nNotes: N/A"
-                    + "\nReact with :watermelon: if you're coming, or :melon: if you're not!"
-
-                assert.deepEqual(
-                    await event.generateMessage(
-                        testEvent,
-                        {
-                            type: "test",
-                            main_channel: "C014J93U4JZ",
-                            additional_channels: ["C0155MHAHB4"],
-                            alert_type: "alert",
-                            agenda: "\n    • item\n    • item1\n    • item2",
-                            extra: "N/A",
-                        },
-                        LOWER_BOUND - 1,
-                        true,
-                        new Date(1592900639642)
-                    ),
-                    expectedMessage
-                );
-
-                require("../handlers/slack-handler").getRandomEmoji = function () {
-                    return "lmao";
-                }
-            });
-        })
-        it("check other message", async function () {
-            // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
-                + "\nNotes: N/A"
-                + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
-
-            assert.deepEqual(
-                await event.generateMessage(
-                    testEvent,
-                    {
-                        type: "other",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert",
-                        agenda: "\n    • item\n    • item1\n    • item2",
-                        extra: "N/A",
-                    },
-                    LOWER_BOUND - 1,
-                    false,
-                    new Date(1592900639642)
+                    new Date(1592900639642),
+                    event.generateEmojiPair()
                 ),
                 expectedMessage
             );
-        });
+        })
     });
+    describe("generateEmojiPair", function() {
+        it("pass duplicate emojis", async function() {
+
+            // Override to pass only one emoji
+            require("../handlers/slack-handler").getRandomEmoji = function () {
+                return ":watermelon:";
+            }
+
+
+
+            await expect(event.generateEmojiPair()).to.be.rejectedWith(
+                "Could not find unique emojis for reactions"
+            );
+        });
+        it("pass duplicate emojis then unique emojis", async function() {
+            let callCount = 0
+            require("../handlers/slack-handler").getRandomEmoji = function () {
+                callCount++;
+                return (callCount <= 5 ? ":watermelon:" : ":melon:"); // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
+            }
+
+            assert.deepEqual(await event.generateEmojiPair(), [":watermelon:", ":melon:"]);
+        });
+        it("pass unique emojis", async function () {
+            let alternateEmoji = false;
+            require("../handlers/slack-handler").getRandomEmoji = function () {
+                alternateEmoji = !alternateEmoji;
+                return (alternateEmoji ? ":watermelon:" : ":melon:"); // Alternates between returning two emojis
+            }
+
+            assert.deepEqual(await event.generateEmojiPair(), [":watermelon:", ":melon:"]);
+        });
+    })
 });
