@@ -163,10 +163,10 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon && parameters.type === "meeting") {
         // prettier-ignore
         message +=
-			"\nWays to attend:" +
-			"\n      :office: In person @ " + event.location +
-			"\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
-			"\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+		    "\nWays to attend:" +
+		    "\n      :office: In person @ " + event.location +
+		    "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
+		    "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
         message += "\nReact with " + (await slack_handler.getRandomEmoji()) + " if you're coming!";
     }
