@@ -28,9 +28,9 @@ module.exports.checkForEvents = async function () {
             const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
-            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
+            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined);
 
-            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
+            const messageResult = await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
 
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(
@@ -137,7 +137,7 @@ module.exports.parseDescription = async function (summary, description, channelI
     return parameters;
 };
 
-module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate) {
+module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate, emojis) {
     let message = "Reminder: *" + event.summary + "* is occurring ";
 
     if (isEventSoon) {
@@ -168,25 +168,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
 			"\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
 			"\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        let comingEmoji = await slack_handler.getRandomEmoji();
-        let notComingEmoji;
-
-        // make sure that the two reactions are not the same
-        let duplicate = false;
-        for (let i = 0; i < 5; i++) {
-            notComingEmoji = await slack_handler.getRandomEmoji();
-            if (notComingEmoji !== comingEmoji) {
-                duplicate = false;
-                break
-            }
-            duplicate = true;
-        }
-
-        if (duplicate) {
-            return Promise.reject("Could not find unique emojis for reactions")
-        }
-
-        message += "\nReact with " + comingEmoji + " if you're coming, or " + notComingEmoji + " if you're not!"
+        message += "\nReact with " + emojis[0] + " if you're coming, or " + emojis[1] + " if you're not!"
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
@@ -215,3 +197,26 @@ module.exports.isTranslationRequired = async function (summary, description) {
     const lines = description.split("\n");
     return lines[2] === "default" || lines[1] === "alert-single-channel";
 };
+
+module.exports.generateEmojiPair = async function() {
+
+    let emoji1 = await slack_handler.getRandomEmoji();
+    let emoji2;
+
+    // make sure that the two reactions are not the same
+    let duplicate = false;
+    for (let i = 0; i < 5; i++) {
+        emoji2 = await slack_handler.getRandomEmoji();
+        if (emoji2 !== emoji1) {
+            duplicate = false;
+            break
+        }
+        duplicate = true;
+    }
+
+    if (duplicate) {
+        return Promise.reject("Could not find unique emojis for reactions")
+    }
+
+    return [emoji1, emoji2]
+}
