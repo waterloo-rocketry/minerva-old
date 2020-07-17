@@ -172,9 +172,19 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         let notComingEmoji;
 
         // make sure that the two reactions are not the same
-        do {
+        let duplicate = false;
+        for (let i = 0; i < 5; i++) {
             notComingEmoji = await slack_handler.getRandomEmoji();
-        } while (comingEmoji === notComingEmoji)
+            if (notComingEmoji !== comingEmoji) {
+                duplicate = false;
+                break
+            }
+            duplicate = true;
+        }
+
+        if (duplicate) {
+            return Promise.reject("Could not find unique emojis for reactions")
+        }
 
         message += "\nReact with " + comingEmoji + " if you're coming, or " + notComingEmoji + " if you're not!"
     }
