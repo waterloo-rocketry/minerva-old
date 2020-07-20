@@ -72,9 +72,9 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
 };
 
 // https://api.slack.com/methods/reactions.add
-module.exports.addReactionToMessage =  function(channel, emoji, timestamp) {
+module.exports.addReactionToMessage = function (channel, emoji, timestamp) {
 
-    return web.reactions.add( {
+    return web.reactions.add({
         channel: channel,
         name: emoji,
         timestamp: timestamp

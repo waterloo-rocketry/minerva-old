@@ -35,7 +35,7 @@ module.exports.checkForEvents = async function () {
             const messageResponse = await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
 
             if (emojiPair) {
-                 await this.seedMessageReactions(messageResponse.channel, emojiPair, messageResponse.ts)
+                await this.seedMessageReactions(messageResponse.channel, emojiPair, messageResponse.ts)
             }
 
             if (parameters.alert_type === "alert-single-channel") {
@@ -173,10 +173,10 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon && parameters.type === "meeting") {
         // prettier-ignore
         message +=
-			"\nWays to attend:" +
-			"\n      :office: In person @ " + event.location +
-			"\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
-			"\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+            "\nWays to attend:" +
+            "\n      :office: In person @ " + event.location +
+            "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
+            "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
         let comingEmoji = ":" + emojis[0] + ":"
         let notComingEmoji = ":" + emojis[1] + ":"
@@ -210,7 +210,7 @@ module.exports.isTranslationRequired = async function (summary, description) {
     return lines[2] === "default" || lines[1] === "alert-single-channel";
 };
 
-module.exports.generateEmojiPair = async function() {
+module.exports.generateEmojiPair = async function () {
 
     let emoji1 = await slack_handler.getRandomEmoji();
     let emoji2;
@@ -235,6 +235,6 @@ module.exports.generateEmojiPair = async function() {
 
 
 module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
-    const response1 = await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
-    const response2 = await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
+    await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
+    await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
 }
