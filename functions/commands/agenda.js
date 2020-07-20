@@ -88,7 +88,7 @@ module.exports.generateListMessage = async function (description) {
 module.exports.addAgendaItemToDescription = async function (description, text) {
     let lines = description.split("\n");
 
-    if (lines[4] === "") {
+    if (lines[4] === "" || lines[4] === undefined) {
         lines[4] = text;
     } else {
         lines[4] += "," + text;

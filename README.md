@@ -48,10 +48,10 @@ Two reminders are sent about each event:
 
 Located in firebase environment variables are several fields that are required for proper usage:
 
--   calendar.secret = Google Cloud Client Secret Key
--   calendar.client = Google Cloud Client ID
--   calendar.redirect = Google Cloud Redirect URL
--   calendar.token = Refresh Token of the rocketry gmail account
+-   googleaccount.secret = Google Cloud Client Secret Key
+-   googleaccount.client = Google Cloud Client ID
+-   googleaccount.redirect = Google Cloud Redirect URL
+-   googleaccount.token = Refresh Token of the rocketry gmail account
 
 Due to security, these variables are not distributed in the code. See these links for information on the credentials required: [1](https://developers.google.com/calendar/quickstart/nodejs) [2](https://medium.com/@vishnuit18/google-calendar-sync-with-nodejs-91a88e1f1f47) [3](https://stackoverflow.com/questions/58460476/where-to-find-credentials-json-for-google-api-client)
 
@@ -72,6 +72,8 @@ _<> denotes required item_
 _[] denotes optional item_
 
 -   `meeting-type` can be: meeting (for a general or subteam meeting), test (for a cold flow, static fire), other, or none (for nothing)
+-   `additional channels` can be a space separated list of channels (prepended with a `#`) or 'default' for the default set of channels
+    -   `default` is currently set as: software, recovery, propulsion, payload, general, electrical, airframe, liquid_engine, business and mechanical
 -   `alert` will @channel all channels listed (main and additional)
 -   `alert-single-channel` will @channel the main channel, and direct message single-channel guests in the additional channels
 -   `alert-main-channel` will @channel the main channel, and post the message (sans-@channel) to additional channels

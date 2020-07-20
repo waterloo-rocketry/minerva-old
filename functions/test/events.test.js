@@ -9,7 +9,7 @@ test.mockConfig({
     slack: {
         token: "",
     },
-    calendar: {
+    googleaccount: {
         client: "",
         secret: "",
         redirect: "",
@@ -172,7 +172,7 @@ describe("scheduled/event.js tests", function () {
             // prettier-ignore
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *6/23/2020 at 4:23:59 AM*"
+                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nPlease see the agenda items:"
                 + "\n    • item"
                 + "\n    • item1"
@@ -202,7 +202,7 @@ describe("scheduled/event.js tests", function () {
             // prettier-ignore
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *6/23/2020 at 4:23:59 AM*"
+                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nThere are currently no agenda items listed for this meeting."
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!"
@@ -321,7 +321,7 @@ describe("scheduled/event.js tests", function () {
             // prettier-ignore
             const expectedMessage =
                 "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *6/23/2020 at 4:23:59 AM*"
+                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming!";
 

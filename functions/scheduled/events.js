@@ -1,5 +1,6 @@
 const calendar = require("../handlers/calendar-handler");
 const slack_handler = require("../handlers/slack-handler");
+const moment = require("moment-timezone");
 
 const LOWER_BOUND = 300000; // 5 minutes in milliseconds
 const UPPER_BOUND = 21600000; // 6 hours in milliseconds
@@ -24,12 +25,12 @@ module.exports.checkForEvents = async function () {
 
             // We only want to generate the mapping if we need to translate from channel names --> channel IDs to reduce API calls
             // So, if translation is required, generate, if not, return undefined
-            const channelIDMap = this.isTranslationRequired(event.description) ? await slack_handler.generateChannelNameIdMapping() : undefined;
+            const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
             const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
 
-            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, true);
+            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
 
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(
@@ -37,7 +38,7 @@ module.exports.checkForEvents = async function () {
                     parameters.additional_channels
                 );
             } else {
-                await slack_handler.postMessageToChannels(message, parameters.additional_channels, true);
+                await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
             }
         } catch (error) {
             if (error === "no-send") {
@@ -51,8 +52,6 @@ module.exports.checkForEvents = async function () {
 };
 
 module.exports.parseDescription = async function (summary, description, channelIDMap) {
-    if (description === undefined) return Promise.reject("Upcoming *" + summary + "* contains an undefined description");
-
     const lines = description.split("\n");
 
     if (lines.length < 3) return Promise.reject("Upcoming *" + summary + "* does not contain required parameters");
@@ -144,12 +143,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon) {
         message += "in *" + Math.ceil(timeDifference / 1000 / 60) + " minutes*";
     } else {
-        const dateStringArray = startTimeDate
-            .toLocaleString("en-US", {
-                timeZone: "America/New_York",
-            })
-            .split(",");
-        message += "on *" + dateStringArray[0] + " at" + dateStringArray[1] + "*";
+        message += "on *" + moment(startTimeDate).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
     }
 
     if (parameters.type === "meeting") {
@@ -169,10 +163,10 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon && parameters.type === "meeting") {
         // prettier-ignore
         message +=
-			"\nWays to attend:" +
-			"\n      :office: In person @ " + event.location +
-			"\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
-			"\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+		    "\nWays to attend:" +
+		    "\n      :office: In person @ " + event.location +
+		    "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
+		    "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
         message += "\nReact with " + (await slack_handler.getRandomEmoji()) + " if you're coming!";
     }
@@ -198,7 +192,8 @@ module.exports.isEventSoon = async function (timeDifference) {
     }
 };
 
-module.exports.isTranslationRequired = function (description) {
+module.exports.isTranslationRequired = async function (summary, description) {
+    if (description === undefined || description === "") return Promise.reject("Upcoming *" + summary + "* contains an undefined description");
     const lines = description.split("\n");
     return lines[2] === "default" || lines[1] === "alert-single-channel";
 };
