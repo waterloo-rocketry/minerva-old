@@ -125,17 +125,19 @@ module.exports.generateChannelNameIdMapping = async function () {
 };
 
 // https://api.slack.com/methods/conversations.list
+// Limit set to 900 because SlackAPI default is 100, and I never want to deal with this issue again
 module.exports.getChannels = function (types, exclude_archived) {
     return web.conversations.list({
         types: types,
         exclude_archived: exclude_archived,
+        limit: 900,
     });
 };
 
 // A hardcoded list of default channel ID's.
-// This will differ from the development & actual slack
+// This will differ from the development & production slack
 // software, recovery, propulsion, payload, general, electrical, airframe, liquid_engine, business, mechanical
-module.exports.defaultChannels = ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MXA613", "C07MX5JDB"]; // actual workspace
+module.exports.defaultChannels = ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MXA613", "C07MX5JDB"]; // production workspace
 //module.exports.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 
 // https://api.slack.com/methods/emoji.list
