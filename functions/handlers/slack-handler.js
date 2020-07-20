@@ -13,7 +13,7 @@ module.exports.postMessageToChannel = function (message, channel, unfurl = true)
     });
 };
 
-// Given array of channels post the same mes    sage across all channels
+// Given array of channels post the same message across all channels
 module.exports.postMessageToChannels = function (message, channels, unfurl = true) {
     const promises = [];
     for (var channel of channels) {
@@ -70,6 +70,16 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
         return Promise.reject(error);
     }
 };
+
+// https://api.slack.com/methods/reactions.add
+module.exports.addReactionToMessage =  function(channel, emoji, timestamp) {
+
+    return web.reactions.add( {
+        channel: channel,
+        name: emoji,
+        timestamp: timestamp
+    });
+}
 
 // Reminder: user info is returned in the data.user object, not just data
 // https://api.slack.com/methods/users.info
@@ -148,5 +158,5 @@ module.exports.getRandomEmoji = async function () {
 
     // This will never return the final object in the list since the domain of Math.random is [0, 1)
     // There is likely a better sol'n. But this works
-    return ":" + emojiArray[Math.floor(Math.random() * emojiArray.length)] + ":";
+    return emojiArray[Math.floor(Math.random() * emojiArray.length)];
 };

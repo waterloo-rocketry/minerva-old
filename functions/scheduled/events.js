@@ -28,9 +28,15 @@ module.exports.checkForEvents = async function () {
             const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
-            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined);
+            const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined
 
-            const messageResult = await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
+            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
+
+            const messageResponse = await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
+
+            if (emojiPair) {
+                 await this.seedMessageReactions(messageResponse.channel, emojiPair, messageResponse.ts)
+            }
 
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(
@@ -38,7 +44,11 @@ module.exports.checkForEvents = async function () {
                     parameters.additional_channels
                 );
             } else {
-                await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
+                const messagesResponse = await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
+
+                for (let response of messagesResponse) {
+                    await this.seedMessageReactions(response.channel, emojiPair, response.ts);
+                }
             }
         } catch (error) {
             if (error === "no-send") {
@@ -168,7 +178,9 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
 			"\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
 			"\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        message += "\nReact with " + emojis[0] + " if you're coming, or " + emojis[1] + " if you're not!"
+        let comingEmoji = ":" + emojis[0] + ":"
+        let notComingEmoji = ":" + emojis[1] + ":"
+        message += "\nReact with " + comingEmoji + " if you're coming, or " + notComingEmoji + " if you're not!"
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
@@ -219,4 +231,10 @@ module.exports.generateEmojiPair = async function() {
     }
 
     return [emoji1, emoji2]
+}
+
+
+module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
+    const response1 = await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
+    const response2 = await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
 }

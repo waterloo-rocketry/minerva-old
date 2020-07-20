@@ -135,7 +135,7 @@ describe("scheduled/event.js tests", function () {
         require("../handlers/slack-handler").getRandomEmoji = function () {
 
             alternateEmoji = !alternateEmoji;
-            return (alternateEmoji ? ":watermelon:" : ":melon:");
+            return (alternateEmoji ? "watermelon" : "melon");
         };
 
         it("check close message", async function () {
@@ -390,10 +390,8 @@ describe("scheduled/event.js tests", function () {
 
             // Override to pass only one emoji
             require("../handlers/slack-handler").getRandomEmoji = function () {
-                return ":watermelon:";
+                return "watermelon";
             }
-
-
 
             await expect(event.generateEmojiPair()).to.be.rejectedWith(
                 "Could not find unique emojis for reactions"
@@ -403,19 +401,19 @@ describe("scheduled/event.js tests", function () {
             let callCount = 0
             require("../handlers/slack-handler").getRandomEmoji = function () {
                 callCount++;
-                return (callCount <= 5 ? ":watermelon:" : ":melon:"); // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
+                return (callCount <= 5 ? "watermelon" : "melon"); // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
             }
 
-            assert.deepEqual(await event.generateEmojiPair(), [":watermelon:", ":melon:"]);
+            assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
         });
         it("pass unique emojis", async function () {
             let alternateEmoji = false;
             require("../handlers/slack-handler").getRandomEmoji = function () {
                 alternateEmoji = !alternateEmoji;
-                return (alternateEmoji ? ":watermelon:" : ":melon:"); // Alternates between returning two emojis
+                return (alternateEmoji ? "watermelon" : "melon"); // Alternates between returning two emojis
             }
 
-            assert.deepEqual(await event.generateEmojiPair(), [":watermelon:", ":melon:"]);
+            assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
         });
     })
 });
