@@ -46,26 +46,29 @@ module.exports.postEphemeralMessage = function (message, channel, user_id) {
 // basically just an alias
 // https://api.slack.com/methods/chat.postMessage
 module.exports.directMessageUser = function (message, user_id, unfurl) {
-    this.postMessageToChannel(message, user_id, unfurl);
+    return this.postMessageToChannel(message, user_id, unfurl);
 };
 
 // Someone think of a better name that follows previous convention
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
+        const promises = [];
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
-        channels.forEach(async channel => {
+        for (const channel of channels) {
             // get members of the channel
             const channelMembers = (await this.getChannelMembers(channel)).members;
 
             const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
-            singleChannelMembersInChannel.forEach(member => {
-                this.directMessageUser(message, member, true);
-            });
-        });
-        return Promise.resolve();
+            for (const member of singleChannelMembersInChannel) {
+
+                promises.push(await this.directMessageUser(message, member, true));
+            }
+        }
+
+        return Promise.resolve(promises);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -113,7 +116,7 @@ module.exports.getAllSingleChannelGuests = async function () {
     var singleChannel = [];
     users.members.forEach(user => {
         // is_admin is used in development since is_ultra_restricted does not work without a paid plan
-        //if (user.is_admin) {
+        // if (user.is_admin) {
         if (user.is_ultra_restricted) {
             singleChannel.push(user.id);
         }

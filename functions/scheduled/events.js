@@ -39,10 +39,15 @@ module.exports.checkForEvents = async function () {
             }
 
             if (parameters.alert_type === "alert-single-channel") {
-                await slack_handler.directMessageSingleChannelGuestsInChannels(
+                const dmMessagesResponse = await slack_handler.directMessageSingleChannelGuestsInChannels(
                     message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
                     parameters.additional_channels
                 );
+
+                for (let response of dmMessagesResponse) {
+                    await this.seedMessageReactions(response.channel, emojiPair, response.ts);
+                }
+
             } else {
                 const messagesResponse = await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
 
