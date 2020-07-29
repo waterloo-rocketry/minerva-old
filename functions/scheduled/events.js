@@ -30,7 +30,7 @@ module.exports.checkForEvents = async function () {
 
             const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined);
 
-            const messageResult = await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
+            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
 
             if (parameters.alert_type === "alert-single-channel") {
                 await slack_handler.directMessageSingleChannelGuestsInChannels(
