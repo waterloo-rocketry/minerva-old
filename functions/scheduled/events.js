@@ -28,7 +28,7 @@ module.exports.checkForEvents = async function () {
             const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
-            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
+            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined);
 
             await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
 
@@ -137,7 +137,7 @@ module.exports.parseDescription = async function (summary, description, channelI
     return parameters;
 };
 
-module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate) {
+module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate, emojis) {
     let message = "Reminder: *" + event.summary + "* is occurring ";
 
     if (isEventSoon) {
@@ -163,12 +163,12 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     if (isEventSoon && parameters.type === "meeting") {
         // prettier-ignore
         message +=
-		    "\nWays to attend:" +
-		    "\n      :office: In person @ " + event.location +
-		    "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
-		    "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+            "\nWays to attend:" +
+            "\n      :office: In person @ " + event.location +
+            "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
+            "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        message += "\nReact with " + (await slack_handler.getRandomEmoji()) + " if you're coming!";
+        message += "\nReact with " + emojis[0] + " if you're coming, or " + emojis[1] + " if you're not!"
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
@@ -197,3 +197,19 @@ module.exports.isTranslationRequired = async function (summary, description) {
     const lines = description.split("\n");
     return lines[2] === "default" || lines[1] === "alert-single-channel";
 };
+
+module.exports.generateEmojiPair = async function () {
+
+    let emoji1 = await slack_handler.getRandomEmoji();
+    let emoji2;
+
+    // if duplicates, attempt to retrieve a non-duplicate emoji five times before failing
+    for (let i = 0; i < 5; i++) {
+        emoji2 = await slack_handler.getRandomEmoji();
+        if (emoji2 !== emoji1) {
+            return [emoji1, emoji2];
+        }
+    }
+
+    return [":white_check_mark:", ":x:"];
+}
