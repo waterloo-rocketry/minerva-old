@@ -203,21 +203,13 @@ module.exports.generateEmojiPair = async function () {
     let emoji1 = await slack_handler.getRandomEmoji();
     let emoji2;
 
-    // make sure that the two reactions are not the same
-    let duplicate = false;
     // if duplicates, attempt to retrieve a non-duplicate emoji five times before failing
     for (let i = 0; i < 5; i++) {
         emoji2 = await slack_handler.getRandomEmoji();
         if (emoji2 !== emoji1) {
-            duplicate = false;
-            break;
+            return [emoji1, emoji2];
         }
-        duplicate = true;
     }
 
-    if (duplicate) {
-        return [":white_check_mark:", ":x:"];
-    }
-
-    return [emoji1, emoji2]
+    return [":white_check_mark:", ":x:"];
 }
