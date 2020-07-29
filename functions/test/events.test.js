@@ -393,11 +393,8 @@ describe("scheduled/event.js tests", function () {
                 return ":watermelon:";
             }
 
+            assert.deepEqual(await event.generateEmojiPair(), [":white_check_mark:", ":x:"]);
 
-
-            await expect(event.generateEmojiPair()).to.be.rejectedWith(
-                "Could not find unique emojis for reactions"
-            );
         });
         it("pass duplicate emojis then unique emojis", async function() {
             let callCount = 0
