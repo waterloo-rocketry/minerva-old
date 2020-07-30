@@ -135,6 +135,7 @@ describe("scheduled/event.js tests", function () {
         require("../handlers/slack-handler").getRandomEmoji = function () {
 
             alternateEmoji = !alternateEmoji;
+
             return (alternateEmoji ? "watermelon" : "melon");
         };
 
@@ -393,9 +394,7 @@ describe("scheduled/event.js tests", function () {
                 return "watermelon";
             }
 
-            await expect(event.generateEmojiPair()).to.be.rejectedWith(
-                "Could not find unique emojis for reactions"
-            );
+            assert.deepEqual(await event.generateEmojiPair(), ["white_check_mark", "x"]);
         });
         it("pass duplicate emojis then unique emojis", async function () {
             let callCount = 0

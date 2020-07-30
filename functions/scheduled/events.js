@@ -221,23 +221,15 @@ module.exports.generateEmojiPair = async function () {
     let emoji2;
 
     // make sure that the two reactions are not the same
-    let duplicate = false;
     for (let i = 0; i < 5; i++) {
         emoji2 = await slack_handler.getRandomEmoji();
         if (emoji2 !== emoji1) {
-            duplicate = false;
-            break
+            return [emoji1, emoji2];
         }
-        duplicate = true;
     }
 
-    if (duplicate) {
-        return Promise.reject("Could not find unique emojis for reactions")
-    }
-
-    return [emoji1, emoji2]
+    return ["white_check_mark", "x"];
 }
-
 
 module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
     await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
