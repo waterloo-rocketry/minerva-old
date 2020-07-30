@@ -4,7 +4,7 @@ const slack = require("./handlers/slack-handler");
 const events = require("./scheduled/events");
 // prettier-ignore
 exports.slack_commands = functions.https.onRequest((request, response) => {
-    response.status(200).send("Command recieved");
+    response.status(200).send("Command received");
     // handle requests that have do not originate from slack? i.e if request has no body
     commands.process(request.body).then(result => {
         if (result !== undefined && result != "") {
@@ -21,6 +21,12 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
             request.body.user_id
         );
     });
+});
+
+exports.slack_events = functions.https.onRequest((request, response) => {
+    response.status(200).send("Responded.");
+
+    console.log("Request received: ", request.body.event.type);
 });
 
 // The format of the schedule string corresponds to: https://man7.org/linux/man-pages/man5/crontab.5.html
