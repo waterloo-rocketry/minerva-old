@@ -23,12 +23,6 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
     });
 });
 
-exports.slack_events = functions.https.onRequest((request, response) => {
-    response.status(200).send("Responded.");
-
-    console.log("Request received: ", request.body.event.type);
-});
-
 // The format of the schedule string corresponds to: https://man7.org/linux/man-pages/man5/crontab.5.html
 // Run on the 25th and 55th minute of every hour since events start on X:30 or X:00 and we want to alert 5 mins or so ahead
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
