@@ -350,7 +350,7 @@ describe("scheduled/event.js tests", function () {
                 expectedMessage
             );
         });
-        it ("check no emojis required but passed", async function() {
+        it("check no emojis required but passed", async function () {
             // prettier-ignore
             const expectedMessage =
                 "<!channel>"
@@ -385,8 +385,8 @@ describe("scheduled/event.js tests", function () {
             );
         })
     });
-    describe("generateEmojiPair", function() {
-        it("pass duplicate emojis", async function() {
+    describe("generateEmojiPair", function () {
+        it("pass duplicate emojis", async function () {
 
             // Override to pass only one emoji
             require("../handlers/slack-handler").getRandomEmoji = function () {
@@ -397,7 +397,7 @@ describe("scheduled/event.js tests", function () {
                 "Could not find unique emojis for reactions"
             );
         });
-        it("pass duplicate emojis then unique emojis", async function() {
+        it("pass duplicate emojis then unique emojis", async function () {
             let callCount = 0
             require("../handlers/slack-handler").getRandomEmoji = function () {
                 callCount++;
