@@ -13,7 +13,7 @@ module.exports.postMessageToChannel = function (message, channel, unfurl = true)
     });
 };
 
-// Given array of channels post the same mes    sage across all channels
+// Given array of channels post the same message across all channels
 module.exports.postMessageToChannels = function (message, channels, unfurl = true) {
     const promises = [];
     for (var channel of channels) {
@@ -46,30 +46,42 @@ module.exports.postEphemeralMessage = function (message, channel, user_id) {
 // basically just an alias
 // https://api.slack.com/methods/chat.postMessage
 module.exports.directMessageUser = function (message, user_id, unfurl) {
-    this.postMessageToChannel(message, user_id, unfurl);
+    return this.postMessageToChannel(message, user_id, unfurl);
 };
 
 // Someone think of a better name that follows previous convention
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
+        const promises = []
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
-        channels.forEach(async channel => {
+        for (const channel of channels) {
             // get members of the channel
             const channelMembers = (await this.getChannelMembers(channel)).members;
 
             const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
-            singleChannelMembersInChannel.forEach(member => {
-                this.directMessageUser(message, member, true);
-            });
-        });
-        return Promise.resolve();
+            for (const member of singleChannelMembersInChannel) {
+                promises.push(this.directMessageUser(message, member, true));
+            }
+        }
+
+        return Promise.resolve(promises);
     } catch (error) {
         return Promise.reject(error);
     }
 };
+
+// https://api.slack.com/methods/reactions.add
+module.exports.addReactionToMessage = function (channel, emoji, timestamp) {
+
+    return web.reactions.add({
+        channel: channel,
+        name: emoji,
+        timestamp: timestamp
+    });
+}
 
 // Reminder: user info is returned in the data.user object, not just data
 // https://api.slack.com/methods/users.info
@@ -103,7 +115,7 @@ module.exports.getAllSingleChannelGuests = async function () {
     var singleChannel = [];
     users.members.forEach(user => {
         // is_admin is used in development since is_ultra_restricted does not work without a paid plan
-        //if (user.is_admin) {
+        // if (user.is_admin) {
         if (user.is_ultra_restricted) {
             singleChannel.push(user.id);
         }
@@ -143,12 +155,12 @@ module.exports.defaultChannels = ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4
 // https://api.slack.com/methods/emoji.list
 module.exports.getRandomEmoji = async function () {
     const emojiArray = [];
-    // Unfortunately the result is a JSON object, convert it to an array for convienience
+    // Unfortunately the result is a JSON object, convert it to an array for convenience
     for (const emoji in (await web.emoji.list()).emoji) {
         emojiArray.push(emoji);
     }
 
     // This will never return the final object in the list since the domain of Math.random is [0, 1)
     // There is likely a better sol'n. But this works
-    return ":" + emojiArray[Math.floor(Math.random() * emojiArray.length)] + ":";
+    return emojiArray[Math.floor(Math.random() * emojiArray.length)];
 };
