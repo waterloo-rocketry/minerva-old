@@ -4,7 +4,7 @@ const slack = require("./handlers/slack-handler");
 const events = require("./scheduled/events");
 // prettier-ignore
 exports.slack_commands = functions.https.onRequest((request, response) => {
-    response.status(200).send("Command recieved");
+    response.status(200).send("Command received");
     // handle requests that have do not originate from slack? i.e if request has no body
     commands.process(request.body).then(result => {
         if (result !== undefined && result != "") {

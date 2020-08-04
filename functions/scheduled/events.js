@@ -28,18 +28,39 @@ module.exports.checkForEvents = async function () {
             const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
-            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined);
+            const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined;
 
-            await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
+            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
+
+            const messageResponses = [];
+
+            messageResponses.push(await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false));
 
             if (parameters.alert_type === "alert-single-channel") {
-                await slack_handler.directMessageSingleChannelGuestsInChannels(
+                const dmMessageResponses = await slack_handler.directMessageSingleChannelGuestsInChannels(
                     message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
                     parameters.additional_channels
                 );
+
+                for (let response of dmMessageResponses) {
+                    messageResponses.push(response);
+                }
+
             } else {
-                await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
+                const additionalChannnelmessageResponses = await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
+
+                for (let response of additionalChannnelmessageResponses) {
+                    messageResponses.push(response);
+                }
             }
+
+            if (emojiPair.length) {
+                for (let response of messageResponses) {
+                    await this.seedMessageReactions(response.channel, emojiPair, response.ts);
+                }
+            }
+
+
         } catch (error) {
             if (error === "no-send") {
                 results.push(Promise.resolve("no-send"));
@@ -168,7 +189,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
             "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
             "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        message += "\nReact with " + emojis[0] + " if you're coming, or " + emojis[1] + " if you're not!"
+        message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
@@ -203,7 +224,7 @@ module.exports.generateEmojiPair = async function () {
     let emoji1 = await slack_handler.getRandomEmoji();
     let emoji2;
 
-    // if duplicates, attempt to retrieve a non-duplicate emoji five times before failing
+    // make sure that the two reactions are not the same
     for (let i = 0; i < 5; i++) {
         emoji2 = await slack_handler.getRandomEmoji();
         if (emoji2 !== emoji1) {
@@ -211,5 +232,10 @@ module.exports.generateEmojiPair = async function () {
         }
     }
 
-    return [":white_check_mark:", ":x:"];
-}
+    return ["white_check_mark", "x"];
+};
+
+module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
+    await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
+    await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
+};
