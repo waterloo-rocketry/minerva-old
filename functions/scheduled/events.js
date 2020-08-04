@@ -189,9 +189,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
             "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
             "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
-        let comingEmoji = ":" + emojis[0] + ":"
-        let notComingEmoji = ":" + emojis[1] + ":"
-        message += "\nReact with " + comingEmoji + " if you're coming, or " + notComingEmoji + " if you're not!"
+        message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
     }
 
     if (parameters.alert_type === "alert" || parameters.alert_type === "alert-single-channel") {
