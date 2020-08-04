@@ -52,7 +52,7 @@ module.exports.directMessageUser = function (message, user_id, unfurl) {
 // Someone think of a better name that follows previous convention
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
-        const promises = []
+        const promises = [];
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
@@ -81,7 +81,7 @@ module.exports.addReactionToMessage = function (channel, emoji, timestamp) {
         name: emoji,
         timestamp: timestamp
     });
-}
+};
 
 // Reminder: user info is returned in the data.user object, not just data
 // https://api.slack.com/methods/users.info
