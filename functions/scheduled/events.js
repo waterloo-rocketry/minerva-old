@@ -28,33 +28,39 @@ module.exports.checkForEvents = async function () {
             const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
             const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
 
-            const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined
+            const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined;
 
             const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
 
-            const messageResponse = await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false);
+            const messageResponses = [];
 
-            if (emojiPair) {
-                await this.seedMessageReactions(messageResponse.channel, emojiPair, messageResponse.ts)
-            }
+            messageResponses.push(await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false));
 
             if (parameters.alert_type === "alert-single-channel") {
-                const dmMessagesResponse = await slack_handler.directMessageSingleChannelGuestsInChannels(
+                const dmMessageResponses = await slack_handler.directMessageSingleChannelGuestsInChannels(
                     message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
                     parameters.additional_channels
                 );
 
-                for (let response of dmMessagesResponse) {
-                    await this.seedMessageReactions(response.channel, emojiPair, response.ts);
+                for (let response of dmMessageResponses) {
+                    messageResponses.push(response);
                 }
 
             } else {
-                const messagesResponse = await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
+                const additionalChannnelmessageResponses = await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
 
-                for (let response of messagesResponse) {
+                for (let response of additionalChannnelmessageResponses) {
+                    messageResponses.push(response);
+                }
+            }
+
+            if (emojiPair.length) {
+                for (let response of messageResponses) {
                     await this.seedMessageReactions(response.channel, emojiPair, response.ts);
                 }
             }
+
+
         } catch (error) {
             if (error === "no-send") {
                 results.push(Promise.resolve("no-send"));
@@ -229,9 +235,9 @@ module.exports.generateEmojiPair = async function () {
     }
 
     return ["white_check_mark", "x"];
-}
+};
 
 module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
     await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
     await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
-}
+};

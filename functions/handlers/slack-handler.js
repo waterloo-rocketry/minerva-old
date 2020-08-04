@@ -63,7 +63,7 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
             const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
-                promises.push(this.directMessageUser(message, member, true));
+                promises.push(await this.directMessageUser(message, member, true));
             }
         }
 
