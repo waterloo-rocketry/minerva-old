@@ -54,7 +54,7 @@ module.exports.checkForEvents = async function () {
                 }
             }
 
-            if (emojiPair.length) {
+            if (emojiPair !== undefined) {
                 for (let response of messageResponses) {
                     await this.seedMessageReactions(response.channel, emojiPair, response.ts);
                 }
