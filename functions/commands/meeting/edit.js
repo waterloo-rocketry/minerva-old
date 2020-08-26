@@ -1,35 +1,46 @@
-const slack_handler = require("../handlers/slack-handler");
-const meeting_handler = require("../handlers/calendar-handler");
+const slack_handler = require("../../handlers/slack-handler");
+const calendar_handler = require("../../handlers/calendar-handler");
+const moment = require("moment-timezone");
 
-module.exports.send = async function (user_id, textParams, originChannel) {
+module.exports.send = async function (userId, textParams, originChannelId, originChannelName, trigger) {
     try {
         // get parameters
-        const parameters = await this.filterParameters(textParams, originChannel);
+        //const parameters = await this.filterParameters(textParams, originChannelId);
 
-        const event = await meeting_handler.getNextEventByTypeAndChannel("meeting", originChannel);
+        //const meetingBlock = JSON.parse(filestream.readFileSync("meeting.json"));
 
-        if (parameters.modifier === "list") {
-            const message = await this.generateListMessage(event.description);
-            await slack_handler.postEphemeralMessage(message, originChannel, user_id);
-        } else {
-            // remove and add can be handled together
-            const updates = {
-                description: "",
-            };
-            if (parameters.modifier === "add") {
-                updates.description = await this.addAgendaItemToDescription(event.description, parameters.text);
-            } else {
-                updates.description = await this.removeAgendaItemFromDescription(event.description, parseInt(parameters.text));
-            }
-            await meeting_handler.updateEventById(event.id, updates);
-            return Promise.resolve("Agenda item " + (parameters.modifier === "add" ? "added" : "removed"));
-        }
+        const view = await slack_handler.openView(trigger, require("../../blocks/loading.json"));
+
+        const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelName);
+
+        // Copy the block so that any changes we make do not get copied to the next time the command is used.
+        const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
+
+        console.log(view);
+
+        await slack_handler.updateView(view.view.id, meetingBlock);
     } catch (error) {
+        if (error.data.error === "not_found") {
+            // Do nothing, since this happens when cancel is selected
+            return Promise.resolve();
+        } else if (JSON.stringify(error).includes("trigger_id")) {
+            return Promise.reject("`trigger_id` expired. Sometimes this can happen when this command hasn't been used for a while. Try again.");
+        }
         return Promise.reject(error);
     }
 };
 
-module.exports.filterParameters = async function (textParams) {
+module.exports.parseMeetingBlock = async function (event) {
+    // Doing this copies the block to a new object so that any inputs or changes do not get applied to the next time this block is used.
+    const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
+
+    meetingBlock.blocks[0].text.text =
+        "Editing meeting: *" + event.summary + "* occuring on *" + moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
+
+    meetingBlock.blocks[2].element.initial_value = event.location;
+};
+
+/*module.exports.filterParameters = async function (textParams) {
     if (textParams === "") {
         return Promise.reject("Missing required parameter: `add/remove/list`");
     }
@@ -54,6 +65,8 @@ module.exports.filterParameters = async function (textParams) {
             break;
         case "list":
             break;
+        case "send":
+            break;
         default:
             return Promise.reject("Missing required parameter: `add/remove/list`");
     }
@@ -68,7 +81,7 @@ module.exports.filterParameters = async function (textParams) {
     return parameters;
 };
 
-module.exports.generateListMessage = async function (description) {
+module.exports.generateAgendaListMessage = async function (description) {
     const lines = description.split("\n");
     if (lines[4] === undefined || lines[4] === "") {
         return "There are currently no agenda items for the next meeting.";
@@ -96,10 +109,10 @@ module.exports.addAgendaItemToDescription = async function (description, text) {
     return lines.join("\n");
 };
 
-module.exports.removeAgendaItemFromDescription = async function (description, indexToRemove) {
+module.exports.removeAgendaItemFromDescription = async function (description, index_to_remove) {
     let lines = description.split("\n");
     let items = lines[4].split(",");
-    items.splice(indexToRemove - 1, 1);
+    items.splice(index_to_remove - 1, 1);
     lines[4] = items.join(",");
     return lines.join("\n");
-};
+};*/
