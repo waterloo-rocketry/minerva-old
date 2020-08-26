@@ -37,7 +37,7 @@ module.exports.updateEventById = function (eventId, updatedFields) {
     });
 };
 
-module.exports.getNextEventByTypeAndChannel = async function (type, channel) {
+module.exports.getNextEventByTypeAndChannel = async function (type, channelName) {
     try {
         const events = await this.getNextEvents(20);
 
@@ -48,7 +48,7 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channel) {
 
             if (lines[0] != type) continue;
 
-            if (lines[2] !== "#" + channel) continue;
+            if (lines[2] !== "#" + channelName) continue;
             return Promise.resolve(event);
         }
         return Promise.reject("Next event not found");

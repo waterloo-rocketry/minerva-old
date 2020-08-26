@@ -1,11 +1,11 @@
 const slack_handler = require("../handlers/slack-handler");
 
-module.exports.send = async function (user_id, textParams, initialChannel) {
+module.exports.send = async function (userId, textParams, initialChannel) {
     // check if parameters are valid
     try {
         const parameters = await this.filterParameters(textParams, initialChannel);
 
-        await slack_handler.isAdmin(user_id);
+        await slack_handler.isAdmin(userId);
 
         const message = (parameters.alert_type === "alert" ? "<!channel>\n" : "") + parameters.link;
 
