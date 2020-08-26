@@ -34,7 +34,9 @@ module.exports.checkForEvents = async function () {
 
             const messageResponses = [];
 
-            messageResponses.push(await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false));
+            messageResponses.push(
+                await slack_handler.postMessageToChannel((parameters.alert_type === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.main_channel, false)
+            );
 
             if (parameters.alert_type === "alert-single-channel") {
                 const dmMessageResponses = await slack_handler.directMessageSingleChannelGuestsInChannels(
@@ -45,7 +47,6 @@ module.exports.checkForEvents = async function () {
                 for (let response of dmMessageResponses) {
                     messageResponses.push(response);
                 }
-
             } else {
                 const additionalChannnelmessageResponses = await slack_handler.postMessageToChannels(message, parameters.additional_channels, false);
 
@@ -59,8 +60,6 @@ module.exports.checkForEvents = async function () {
                     await this.seedMessageReactions(response.channel, emojiPair, response.ts);
                 }
             }
-
-
         } catch (error) {
             if (error === "no-send") {
                 results.push(Promise.resolve("no-send"));
@@ -73,20 +72,15 @@ module.exports.checkForEvents = async function () {
 };
 
 module.exports.parseDescription = async function (summary, description, channelIDMap) {
-    const lines = description.split("\n");
+    var parameters;
 
-    if (lines.length < 3) return Promise.reject("Upcoming *" + summary + "* does not contain required parameters");
+    try {
+        parameters = JSON.parse(description);
+    } catch (exception) {
+        return Promise.reject("Upcoming *" + meeting + "* contains malformed JSON");
+    }
 
-    const parameters = {
-        type: "",
-        main_channel: "",
-        additional_channels: "",
-        alert_type: "",
-        agenda: "",
-        extra: "",
-    };
-
-    switch (lines[0].trim()) {
+    switch (parameters.event_type) {
         case "meeting":
             break;
         case "test":
@@ -96,11 +90,10 @@ module.exports.parseDescription = async function (summary, description, channelI
         case "none":
             return Promise.reject("no-send");
         default:
-            return Promise.reject("Upcoming *" + summary + "* contains a malformed first-line");
+            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `event_type`");
     }
-    parameters.type = lines[0].trim();
 
-    switch (lines[1].trim()) {
+    switch (parameters.alert_type) {
         case "alert":
             break;
         case "alert-single-channel":
@@ -110,50 +103,36 @@ module.exports.parseDescription = async function (summary, description, channelI
         case "copy":
             break;
         default:
-            return Promise.reject("Upcoming *" + summary + "* contains a malformed second-line");
-    }
-    parameters.alert_type = lines[1].trim();
-
-    parameters.main_channel = lines[2].trim().replace("#", "");
-    parameters.additional_channels = [];
-
-    if (lines[3] !== undefined && lines[3] !== "") {
-        if (lines[3] === "default") {
-            parameters.additional_channels = slack_handler.defaultChannels;
-        } else {
-            lines[3] = lines[3].replace(/\s/g, " ");
-            lines[3] = lines[3].replace(/xA0/g, " ");
-            parameters.additional_channels = lines[3].replace(/#/g, "").split(" ");
-        }
+            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `alert_type`");
     }
 
-    // We only want to generate the name mapping if we need it
-    if (parameters.alert_type === "alert-single-channel") {
-        parameters.main_channel = channelIDMap.get(parameters.main_channel);
-        for (var index in parameters.additional_channels) {
-            if (channelIDMap.has(parameters.additional_channels[index])) {
-                parameters.additional_channels[index] = channelIDMap.get(parameters.additional_channels[index]);
-            }
-        }
-    } else if (lines[3] === "default") {
-        parameters.main_channel = channelIDMap.get(parameters.main_channel);
+    if (parameters.main_channel === undefined || parameters.main_channel === "") {
+        return Promise.reject("Upcoming meeting *" + summary + "* is missing a `main_channel` element");
     }
 
-    // Get rid of the main_channel if it is within additional channels
+    if (parameters.additional_channels === "default") {
+        parameters.additional_channels = slack_handler.defaultChannels;
+    }
+
+    if (!Array.isArray(parameters.additional_channels)) {
+        return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed or missing `additional_channel` element");
+    }
+
     parameters.additional_channels = parameters.additional_channels.filter(value => value != parameters.main_channel);
 
-    if (lines[4] === undefined || lines[4] === "") {
-        parameters.agenda = "";
-    } else {
-        var agendaArray = lines[4].split(",");
-        for (var i = 0; i < agendaArray.length; i++) {
-            parameters.agenda += "\n    • " + agendaArray[i].trim();
-        }
+    if (parameters.agenda !== "" && !Array.isArray(parameters.agenda)) {
+        return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
     }
 
-    if (lines[5] !== undefined) {
-        parameters.extra = lines[5];
+    parameters.agenda_string = "";
+
+    for (var i = 0; i < parameters.agenda.length; i++) {
+        parameters.agenda_string += "\n    • " + parameters.agenda[i].trim();
     }
+
+    delete parameters.agenda;
+
+    // Get rid of the main_channel if it is within additional channels
 
     return parameters;
 };
@@ -167,27 +146,27 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         message += "on *" + moment(startTimeDate).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
     }
 
-    if (parameters.type === "meeting") {
-        if (parameters.agenda.length === 0 || parameters.agenda[0] === "") {
+    if (parameters.event_type === "meeting") {
+        if (parameters.agenda_string.length === 0) {
             message += "\nThere are currently no agenda items listed for this meeting.";
         } else {
-            message += "\nPlease see the agenda items:" + parameters.agenda;
+            message += "\nPlease see the agenda items:" + parameters.agenda_string;
         }
-    } else if (parameters.type === "test") {
-        message += "\nToday's test is located at: " + (event.location === undefined ? "<insert funny location here>" : event.location);
+    } else if (parameters.event_type === "test") {
+        message += "\nToday's test is located at: " + (event.location === undefined ? "Texas" : event.location);
     }
 
     if (parameters.extra != "") {
         message += "\nNotes: " + parameters.extra;
     }
 
-    if (isEventSoon && parameters.type === "meeting") {
+    if (isEventSoon && parameters.event_type === "meeting") {
         // prettier-ignore
         message +=
-            "\nWays to attend:" +
-            "\n      :office: In person @ " + event.location +
-            "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area" +
-            "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+		    "\nWays to attend:" +
+		    "\n      :office: In person @ " + event.location +
+		    "\n      :globe_with_meridians: Online @ " + (parameters.link === undefined ? "https://meet.jit.si/bay_area" : parameters.link)+
+		    "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
         message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
     }
@@ -220,7 +199,6 @@ module.exports.isTranslationRequired = async function (summary, description) {
 };
 
 module.exports.generateEmojiPair = async function () {
-
     let emoji1 = await slack_handler.getRandomEmoji();
     let emoji2;
 
