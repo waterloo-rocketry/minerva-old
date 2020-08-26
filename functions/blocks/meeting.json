@@ -1,0 +1,146 @@
+{
+    "title": {
+        "type": "plain_text",
+        "text": "Meeting Editor",
+        "emoji": true
+    },
+    "submit": {
+        "type": "plain_text",
+        "text": "Submit",
+        "emoji": true
+    },
+    "type": "modal",
+    "close": {
+        "type": "plain_text",
+        "text": "Cancel",
+        "emoji": true
+    },
+    "blocks": [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": ""
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "E5 2001"
+                },
+                "initial_value": ""
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Meeting Location"
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "https://meet.jit.si/bay_area"
+                },
+                "initial_value": ""
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Meeting URL"
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Channels to alert"
+            },
+            "accessory": {
+                "type": "multi_channels_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Select channels",
+                    "emoji": true
+                }
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Item 1\nItem 2"
+                },
+                "multiline": true,
+                "initial_value": ""
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Agenda Items"
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Alert Type"
+            },
+            "accessory": {
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Select an item",
+                    "emoji": true
+                },
+                "options": [
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Alert single channel"
+                        },
+                        "value": "value-0"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Alert",
+                            "emoji": true
+                        },
+                        "value": "value-1"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Copy",
+                            "emoji": true
+                        },
+                        "value": "value-2"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "divider"
+        }
+    ]
+}
