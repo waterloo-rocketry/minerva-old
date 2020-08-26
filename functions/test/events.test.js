@@ -143,10 +143,9 @@ describe("scheduled/event.js tests", function () {
         // replace getRandomEmoji with function with repeatable outcome
         let alternateEmoji = false;
         require("../handlers/slack-handler").getRandomEmoji = function () {
-
             alternateEmoji = !alternateEmoji;
 
-            return (alternateEmoji ? "watermelon" : "melon");
+            return alternateEmoji ? "watermelon" : "melon";
         };
 
         it("check close message", async function () {
@@ -380,11 +379,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "meeting",
+                        event_type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert-single-channel",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -398,7 +397,6 @@ describe("scheduled/event.js tests", function () {
     });
     describe("generateEmojiPair", function () {
         it("pass duplicate emojis", async function () {
-
             // Override to pass only one emoji
             require("../handlers/slack-handler").getRandomEmoji = function () {
                 return "watermelon";
@@ -410,7 +408,7 @@ describe("scheduled/event.js tests", function () {
             let callCount = 0;
             require("../handlers/slack-handler").getRandomEmoji = function () {
                 callCount++;
-                return (callCount <= 5 ? "watermelon" : "melon"); // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
+                return callCount <= 5 ? "watermelon" : "melon"; // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
             };
 
             assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
@@ -419,7 +417,7 @@ describe("scheduled/event.js tests", function () {
             let alternateEmoji = false;
             require("../handlers/slack-handler").getRandomEmoji = function () {
                 alternateEmoji = !alternateEmoji;
-                return (alternateEmoji ? "watermelon" : "melon"); // Alternates between returning two emojis
+                return alternateEmoji ? "watermelon" : "melon"; // Alternates between returning two emojis
             };
 
             assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
