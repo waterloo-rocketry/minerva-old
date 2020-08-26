@@ -1,6 +1,3 @@
-const notify_command = require("../commands/notify");
-const meeting_handler = require("../scheduled/events");
-const agenda_command = require("../commands/agenda");
 const slack_handler = require("./slack-handler");
 
 module.exports.process = async function (request) {
@@ -23,9 +20,11 @@ module.exports.process = async function (request) {
         return Promise.resolve("For help, see: https://github.com/waterloo-rocketry/minerva");
     }
     if (request.command === "/notify") {
-        return notify_command.send(request.user_id, request.text, request.channel_id);
+        return require("../commands/notify").send(request.user_id, request.text, request.channel_id);
     } else if (request.command === "/agenda") {
-        return agenda_command.send(request.user_id, request.text, request.channel_name);
+        slack_handler.postEphemeralMessage("This command has been removed. Please see: /meeting");
+    } else if (request.command === "/meeting") {
+        return require("../commands/meeting").send(request.user_id, request.text, request.channel_id, request.channel_name, request.trigger_id);
     } else {
         return Promise.reject("Command not recognized.");
     }

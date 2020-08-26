@@ -25,31 +25,32 @@ module.exports.postMessageToChannels = function (message, channels, unfurl = tru
 
 // https://api.slack.com/methods/chat.postMessage
 // same as above, just with a thread_ts option
-module.exports.postMessageToThread = function (message, channel, thread_ts) {
+module.exports.postMessageToThread = function (message, channel, threadTs) {
     return web.chat.postMessage({
         text: message,
         channel: channel,
-        thread_ts: thread_ts,
+        thread_ts: threadTs,
     });
 };
 
 // These are messages that only appear for one person
 // https://api.slack.com/methods/chat.postEphemeral
-module.exports.postEphemeralMessage = function (message, channel, user_id) {
+module.exports.postEphemeralMessage = function (message, channel, userId) {
     return web.chat.postEphemeral({
         channel: channel,
         text: message,
-        user: user_id,
+        user: userId,
     });
 };
 
 // basically just an alias
 // https://api.slack.com/methods/chat.postMessage
-module.exports.directMessageUser = function (message, user_id, unfurl) {
-    this.postMessageToChannel(message, user_id, unfurl);
+module.exports.directMessageUser = function (message, userId, unfurl) {
+    this.postMessageToChannel(message, userId, unfurl);
 };
 
 // Someone think of a better name that follows previous convention
+// Todo: Add promises to array,
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
         // get all single channel users in the server
@@ -73,9 +74,9 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
 
 // Reminder: user info is returned in the data.user object, not just data
 // https://api.slack.com/methods/users.info
-module.exports.getUserInfo = function (user_id) {
+module.exports.getUserInfo = function (userId) {
     return web.users.info({
-        user: user_id,
+        user: userId,
     });
 };
 
@@ -125,10 +126,10 @@ module.exports.generateChannelNameIdMapping = async function () {
 };
 
 // https://api.slack.com/methods/conversations.list
-module.exports.getChannels = function (types, exclude_archived) {
+module.exports.getChannels = function (types, excludeArchived) {
     return web.conversations.list({
         types: types,
-        exclude_archived: exclude_archived,
+        exclude_archived: excludeArchived,
     });
 };
 
@@ -149,4 +150,20 @@ module.exports.getRandomEmoji = async function () {
     // This will never return the final object in the list since the domain of Math.random is [0, 1)
     // There is likely a better sol'n. But this works
     return ":" + emojiArray[Math.floor(Math.random() * emojiArray.length)] + ":";
+};
+
+// https://api.slack.com/methods/view.open
+module.exports.openView = async function (triggerId, view) {
+    return web.views.open({
+        trigger_id: triggerId,
+        view: view,
+    });
+};
+
+// https://api.slack.com/methods/view.update
+module.exports.updateView = async function (viewId, view) {
+    return web.views.update({
+        view_id: viewId,
+        view: view,
+    });
 };
