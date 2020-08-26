@@ -49,76 +49,86 @@ describe("scheduled/event.js tests", function () {
         channelIDMapping.set("general", "C014J93U4JZ");
         channelIDMapping.set("propulsion", "C0155MHAHB4");
         it("parse description, no agenda items", async function () {
-            // prettier-ignore
-            const description = "meeting"
-                + "\nalert-single-channel"
-                + "\n#general"
-                + "\ndefault"
-                + "\n"
-                + "\nN/A";
+            const description = `{
+                    "event_type": "meeting",
+                    "alert_type": "alert-single-channel",
+                    "main_channel": "C014J93U4JZ",
+                    "additional_channels": "default",
+                    "agenda": "",
+                    "extra": "N/A"
+                }`;
 
             assert.deepEqual(await event.parseDescription("Meeting", description, channelIDMapping), {
-                type: "meeting",
+                event_type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
                 alert_type: "alert-single-channel",
-                agenda: "",
+                agenda_string: "",
                 extra: "N/A",
             });
         });
         it("parse description, agenda items", async function () {
-            // prettier-ignore
-            const description =
-                "meeting"
-                + "\nalert-single-channel"
-                + "\n#general"
-                + "\ndefault"
-                + "\nitem,item1,item2"
-                + "\nN/A";
+            const description = `{
+                "event_type": "meeting",
+                "alert_type": "alert-single-channel",
+                "main_channel": "C014J93U4JZ",
+                "additional_channels": "default",
+                "agenda": [
+                    "item", "item1", "item2"
+                ],
+                "extra": "N/A"
+            }`;
             assert.deepEqual(await event.parseDescription("Meeting", description, channelIDMapping), {
-                type: "meeting",
+                event_type: "meeting",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
                 alert_type: "alert-single-channel",
-                agenda: "\n    • item\n    • item1\n    • item2",
+                agenda_string: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A",
             });
         });
         it("parse description, agenda items, non default channels no translation", async function () {
-            // prettier-ignore
-            const description =
-                "test"
-                + "\nalert-main-channel"
-                + "\n#general"
-                + "\n#test #rest #lest"
-                + "\nitem,item1,item2"
-                + "\nN/A";
+            const description = `{
+                    "event_type": "test",
+                    "alert_type": "alert-main-channel",
+                    "main_channel": "C014J93U4JZ",
+                    "additional_channels": [
+                        "C014J93U4JA", "C0155MHAHB4"
+                    ],
+                    "agenda": [
+                        "item", "item1", "item2"
+                    ],
+                    "extra": "N/A"
+                }`;
 
             assert.deepEqual(await event.parseDescription("Meeting", description, channelIDMapping), {
-                type: "test",
-                main_channel: "general",
-                additional_channels: ["test", "rest", "lest"],
+                event_type: "test",
+                main_channel: "C014J93U4JZ",
+                additional_channels: ["C014J93U4JA", "C0155MHAHB4"],
                 alert_type: "alert-main-channel",
-                agenda: "\n    • item\n    • item1\n    • item2",
+                agenda_string: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A",
             });
         });
         it("parse description, agenda items, non default channels translation", async function () {
-            // prettier-ignore
-            const description =
-                "test"
-                + "\nalert-single-channel"
-                + "\n#general"
-                + "\n#general #propulsion"
-                + "\nitem,item1,item2"
-                + "\nN/A";
-
+            const description = `{
+                "event_type": "test",
+                "alert_type": "alert-single-channel",
+                "main_channel": "C014J93U4JZ",
+                "additional_channels": [
+                    "C014J93U4JZ", "C0155MHAHB4"
+                ],
+                "agenda": [
+                    "item", "item1", "item2"
+                ],
+                "extra": "N/A"
+            }`;
             assert.deepEqual(await event.parseDescription("Meeting", description, channelIDMapping), {
-                type: "test",
+                event_type: "test",
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C0155MHAHB4"],
                 alert_type: "alert-single-channel",
-                agenda: "\n    • item\n    • item1\n    • item2",
+                agenda_string: "\n    • item\n    • item1\n    • item2",
                 extra: "N/A",
             });
         });
@@ -154,11 +164,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "meeting",
+                        event_type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert-single-channel",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -184,11 +194,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "meeting",
+                        event_type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -211,11 +221,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "meeting",
+                        event_type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert",
-                        agenda: "",
+                        agenda_string: "",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -243,11 +253,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "meeting",
+                        event_type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert-main-channel",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -276,11 +286,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "meeting",
+                        event_type: "meeting",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert-single-channel",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -303,11 +313,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "test",
+                        event_type: "test",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
@@ -329,11 +339,11 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        type: "other",
+                        event_type: "other",
                         main_channel: "C014J93U4JZ",
                         additional_channels: ["C0155MHAHB4"],
                         alert_type: "alert",
-                        agenda: "\n    • item\n    • item1\n    • item2",
+                        agenda_string: "\n    • item\n    • item1\n    • item2",
                         extra: "N/A",
                     },
                     LOWER_BOUND - 1,
