@@ -99,7 +99,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         message +=
 		    "\nWays to attend:" +
 		    "\n      :office: In person @ " + event.location +
-		    "\n      :globe_with_meridians: Online @ " + (parameters.link === undefined ? "https://meet.jit.si/bay_area" : parameters.link)+
+		    "\n      :globe_with_meridians: Online @ " + parameters.link +
 		    "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
     } else {
         message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";

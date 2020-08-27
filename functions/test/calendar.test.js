@@ -44,6 +44,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 alert_type: "alert-single-channel",
                 agenda: "",
                 extra: "N/A",
+                link: "https://meet.jit.si/bay_area",
             });
         });
         it("parse description, agenda items", async function () {
@@ -64,6 +65,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 alert_type: "alert-single-channel",
                 agenda: ["item", "item1", "item2"],
                 extra: "N/A",
+                link: "https://meet.jit.si/bay_area",
             });
         });
         it("parse description, agenda items, non default channels no translation", async function () {
@@ -87,6 +89,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 alert_type: "alert-main-channel",
                 agenda: ["item", "item1", "item2"],
                 extra: "N/A",
+                link: "https://meet.jit.si/bay_area",
             });
         });
         it("parse description, agenda items, non default channels translation", async function () {
@@ -109,6 +112,31 @@ describe("handlers/calenda-handler.js tests", function () {
                 alert_type: "alert-single-channel",
                 agenda: ["item", "item1", "item2"],
                 extra: "N/A",
+                link: "https://meet.jit.si/bay_area",
+            });
+        });
+        it("parse description, agenda items, custom link", async function () {
+            const description = `{
+                "event_type": "test",
+                "alert_type": "alert-single-channel",
+                "main_channel": "C014J93U4JZ",
+                "additional_channels": [
+                    "C014J93U4JZ", "C0155MHAHB4"
+                ],
+                "agenda": [
+                    "item", "item1", "item2"
+                ],
+                "extra": "N/A",
+                "link": "https://meet.jit.si/not_bay_area"
+            }`;
+            assert.deepEqual(await calendar_handler.getParametersFromDescription("Meeting", description, slack_handler.defaultChannels), {
+                event_type: "test",
+                main_channel: "C014J93U4JZ",
+                additional_channels: ["C0155MHAHB4"],
+                alert_type: "alert-single-channel",
+                agenda: ["item", "item1", "item2"],
+                extra: "N/A",
+                link: "https://meet.jit.si/not_bay_area",
             });
         });
     });

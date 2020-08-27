@@ -112,14 +112,9 @@ module.exports.getParametersFromDescription = async function (summary, descripti
         return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
     }
 
-    // parameters.agenda_string = "";
-
-    // for (var i = 0; i < parameters.agenda.length; i++) {
-    //     parameters.agenda_string += "\n    • " + parameters.agenda[i].trim();
-    // }
-
-    // // delete parameters.agenda since its no longer needed
-    // delete parameters.agenda;
+    if (parameters.link === undefined || parameters.link === "") {
+        parameters.link = "https://meet.jit.si/bay_area";
+    }
 
     return parameters;
 };

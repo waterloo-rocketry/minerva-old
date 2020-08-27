@@ -83,6 +83,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     true,
@@ -113,6 +114,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     false,
@@ -141,6 +143,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert",
                         agenda: "",
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     false,
@@ -174,6 +177,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert-main-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     true,
@@ -207,6 +211,41 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                    },
+                    LOWER_BOUND - 1,
+                    true,
+                    new Date(1592900639642)
+                ),
+                expectedMessage
+            );
+        });
+        it("check meeting message with custom link", async function () {
+            // prettier-ignore
+            const expectedMessage =
+                "<!channel>"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
+                + "\nPlease see the agenda items:"
+                + "\n    • item"
+                + "\n    • item1"
+                + "\n    • item2"
+                + "\nNotes: N/A"
+                + "\nWays to attend:"
+                + "\n      :office: In person @ The Bay"
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/not_bay_area"
+                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+
+            assert.deepEqual(
+                await event.generateMessage(
+                    testEvent,
+                    {
+                        event_type: "meeting",
+                        main_channel: "C014J93U4JZ",
+                        additional_channels: ["C0155MHAHB4"],
+                        alert_type: "alert-single-channel",
+                        agenda: ["item", "item1", "item2"],
+                        extra: "N/A",
+                        link: "https://meet.jit.si/not_bay_area",
                     },
                     LOWER_BOUND - 1,
                     true,
@@ -234,6 +273,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     true,
@@ -261,6 +301,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     false,
@@ -295,6 +336,7 @@ describe("scheduled/event.js tests", function () {
                         alert_type: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
+                        link: "https://meet.jit.si/bay_area",
                     },
                     LOWER_BOUND - 1,
                     true,

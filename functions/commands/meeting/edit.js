@@ -16,9 +16,7 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
         const parameters = calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
 
         // Copy the block so that any changes we make do not get copied to the next time the command is used.
-        const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
-
-        console.log(view);
+        const meetingBlock = this.parseMeetingBlock(event, parameters);
 
         await slack_handler.updateView(view.view.id, meetingBlock);
     } catch (error) {
@@ -39,7 +37,9 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
     meetingBlock.blocks[0].text.text =
         "Editing meeting: *" + event.summary + "* occuring on *" + moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
 
+    //
     meetingBlock.blocks[2].element.initial_value = event.location;
+    meetingBlock.blocks[4].element.initial_value = parameters.link;
 };
 
 /*module.exports.filterParameters = async function (textParams) {
