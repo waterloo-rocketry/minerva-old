@@ -13,6 +13,7 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
 
         const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelName);
 
+        const parameters = JSON.parse(event.description);
         // Copy the block so that any changes we make do not get copied to the next time the command is used.
         const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
 

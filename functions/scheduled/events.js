@@ -1,4 +1,4 @@
-const calendar = require("../handlers/calendar-handler");
+const calendar_handler = require("../handlers/calendar-handler");
 const slack_handler = require("../handlers/slack-handler");
 const moment = require("moment-timezone");
 
@@ -11,7 +11,7 @@ module.exports.checkForEvents = async function () {
         // select 4 events since it's realistically the maximum number of events that could happen at the same time (2 at either the close or far time point)
         // we could increase this, but in order to keep CPU compute & internet transfer down (since this function runs often)
         // we cap this at 4 events
-        events = (await calendar.getNextEvents(4)).data.items;
+        events = (await calendar_handler.getNextEvents(4)).data.items;
     } catch (error) {
         return Promise.reject(error);
     }
@@ -26,7 +26,7 @@ module.exports.checkForEvents = async function () {
             // We only want to generate the mapping if we need to translate from channel names --> channel IDs to reduce API calls
             // So, if translation is required, generate, if not, return undefined
             const channelIDMap = (await this.isTranslationRequired(event.summary, event.description)) ? await slack_handler.generateChannelNameIdMapping() : undefined;
-            const parameters = await this.parseDescription(event.summary, event.description, channelIDMap);
+            const parameters = await calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
 
             const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined;
 
@@ -69,72 +69,6 @@ module.exports.checkForEvents = async function () {
         }
     }
     return Promise.all(results);
-};
-
-module.exports.parseDescription = async function (summary, description, channelIDMap) {
-    var parameters;
-
-    try {
-        parameters = JSON.parse(description);
-    } catch (exception) {
-        return Promise.reject("Upcoming *" + meeting + "* contains malformed JSON");
-    }
-
-    switch (parameters.event_type) {
-        case "meeting":
-            break;
-        case "test":
-            break;
-        case "other":
-            break;
-        case "none":
-            return Promise.reject("no-send");
-        default:
-            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `event_type`");
-    }
-
-    switch (parameters.alert_type) {
-        case "alert":
-            break;
-        case "alert-single-channel":
-            break;
-        case "alert-main-channel":
-            break;
-        case "copy":
-            break;
-        default:
-            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `alert_type`");
-    }
-
-    if (parameters.main_channel === undefined || parameters.main_channel === "") {
-        return Promise.reject("Upcoming meeting *" + summary + "* is missing a `main_channel` element");
-    }
-
-    if (parameters.additional_channels === "default") {
-        parameters.additional_channels = slack_handler.defaultChannels;
-    }
-
-    if (!Array.isArray(parameters.additional_channels)) {
-        return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed or missing `additional_channel` element");
-    }
-
-    parameters.additional_channels = parameters.additional_channels.filter(value => value != parameters.main_channel);
-
-    if (parameters.agenda !== "" && !Array.isArray(parameters.agenda)) {
-        return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
-    }
-
-    parameters.agenda_string = "";
-
-    for (var i = 0; i < parameters.agenda.length; i++) {
-        parameters.agenda_string += "\n    • " + parameters.agenda[i].trim();
-    }
-
-    delete parameters.agenda;
-
-    // Get rid of the main_channel if it is within additional channels
-
-    return parameters;
 };
 
 module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate, emojis) {
