@@ -112,14 +112,14 @@ module.exports.getParametersFromDescription = async function (summary, descripti
         return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
     }
 
-    parameters.agenda_string = "";
+    // parameters.agenda_string = "";
 
-    for (var i = 0; i < parameters.agenda.length; i++) {
-        parameters.agenda_string += "\n    • " + parameters.agenda[i].trim();
-    }
+    // for (var i = 0; i < parameters.agenda.length; i++) {
+    //     parameters.agenda_string += "\n    • " + parameters.agenda[i].trim();
+    // }
 
-    // delete parameters.agenda since its no longer needed
-    delete parameters.agenda;
+    // // delete parameters.agenda since its no longer needed
+    // delete parameters.agenda;
 
     return parameters;
 };

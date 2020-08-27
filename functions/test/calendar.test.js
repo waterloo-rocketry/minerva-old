@@ -42,7 +42,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
                 alert_type: "alert-single-channel",
-                agenda_string: "",
+                agenda: "",
                 extra: "N/A",
             });
         });
@@ -62,7 +62,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
                 alert_type: "alert-single-channel",
-                agenda_string: "\n    • item\n    • item1\n    • item2",
+                agenda: ["item", "item1", "item2"],
                 extra: "N/A",
             });
         });
@@ -85,7 +85,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C014J93U4JA", "C0155MHAHB4"],
                 alert_type: "alert-main-channel",
-                agenda_string: "\n    • item\n    • item1\n    • item2",
+                agenda: ["item", "item1", "item2"],
                 extra: "N/A",
             });
         });
@@ -107,7 +107,7 @@ describe("handlers/calenda-handler.js tests", function () {
                 main_channel: "C014J93U4JZ",
                 additional_channels: ["C0155MHAHB4"],
                 alert_type: "alert-single-channel",
-                agenda_string: "\n    • item\n    • item1\n    • item2",
+                agenda: ["item", "item1", "item2"],
                 extra: "N/A",
             });
         });

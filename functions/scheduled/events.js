@@ -81,10 +81,10 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     }
 
     if (parameters.event_type === "meeting") {
-        if (parameters.agenda_string.length === 0) {
+        if (parameters.agenda.length === 0 || parameters.agenda[0] === "") {
             message += "\nThere are currently no agenda items listed for this meeting.";
         } else {
-            message += "\nPlease see the agenda items:" + parameters.agenda_string;
+            message += "\nPlease see the agenda items:\n    • " + parameters.agenda.join("\n    • ");
         }
     } else if (parameters.event_type === "test") {
         message += "\nToday's test is located at: " + (event.location === undefined ? "Texas" : event.location);

@@ -13,7 +13,8 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
 
         const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelName);
 
-        const parameters = JSON.parse(event.description);
+        const parameters = calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
+
         // Copy the block so that any changes we make do not get copied to the next time the command is used.
         const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
 
@@ -31,7 +32,7 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
     }
 };
 
-module.exports.parseMeetingBlock = async function (event) {
+module.exports.parseMeetingBlock = async function (event, parameters) {
     // Doing this copies the block to a new object so that any inputs or changes do not get applied to the next time this block is used.
     const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
 
