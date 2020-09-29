@@ -14,7 +14,7 @@ module.exports.send = async function (userId, textParams, originChannel) {
 
     const message = await events.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
 
-    await slack_handler.postMessageToChannel(message, parameters.main_channel, false);
+    await slack_handler.postMessageToChannel(message, parameters.mainChannel, false);
 };
 
 module.exports.filterParameters = async function (textParams) {
