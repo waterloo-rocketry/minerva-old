@@ -11,17 +11,21 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
 
         const view = await slack_handler.openView(trigger, require("../../blocks/loading.json"));
 
-        const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelName);
+        const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelId);
 
-        const parameters = calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
+        console.log(JSON.stringify(event.description));
+
+        const parameters = await calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
+
+        console.log(parameters);
 
         // Copy the block so that any changes we make do not get copied to the next time the command is used.
-        const meetingBlock = this.parseMeetingBlock(event, parameters);
+        const meetingBlock = await this.parseMeetingBlock(event, parameters);
 
         await slack_handler.updateView(view.view.id, meetingBlock);
     } catch (error) {
-        if (error.data.error === "not_found") {
-            // Do nothing, since this happens when cancel is selected
+        if (error.data != undefined && error.data.error === "not_found") {
+            // Do nothing, this happens when 'cancel' has already been selected
             return Promise.resolve();
         } else if (JSON.stringify(error).includes("trigger_id")) {
             return Promise.reject("`trigger_id` expired. Sometimes this can happen when this command hasn't been used for a while. Try again.");
@@ -37,51 +41,19 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
     meetingBlock.blocks[0].text.text =
         "Editing meeting: *" + event.summary + "* occuring on *" + moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
 
-    //
     meetingBlock.blocks[2].element.initial_value = event.location;
     meetingBlock.blocks[4].element.initial_value = parameters.link;
+    meetingBlock.blocks[6].accessory.initial_channel = parameters.mainChannel;
+    meetingBlock.blocks[8].accessory.initial_channels = parameters.additionalChannels;
+    meetingBlock.blocks[10].element.initial_value = "- " + parameters.agenda.join("\n- ");
+    meetingBlock.blocks[12].element.initial_value = parameters.extra;
+    meetingBlock.blocks[14].accessory.placeholder.text = parameters.alertType;
+    meetingBlock.blocks[16].text.text = "Update just this meeting or all future " + event.summary + "?";
+
+    return meetingBlock;
 };
 
-/*module.exports.filterParameters = async function (textParams) {
-    if (textParams === "") {
-        return Promise.reject("Missing required parameter: `add/remove/list`");
-    }
-
-    textParams = textParams.replace(/\s/g, " ");
-    textParams = textParams.replace(/xA0/g, " ");
-    const initialParams = textParams.split(" ");
-
-    if (initialParams.length < 1) {
-        return Promise.reject("Missing required parameter: `add/remove/list`");
-    }
-
-    const parameters = {
-        modifier: "",
-        text: "",
-    };
-
-    switch (initialParams[0]) {
-        case "add":
-            break;
-        case "remove":
-            break;
-        case "list":
-            break;
-        case "send":
-            break;
-        default:
-            return Promise.reject("Missing required parameter: `add/remove/list`");
-    }
-    parameters.modifier = initialParams[0];
-
-    parameters.text = textParams.replace(initialParams[0], "").trim(); // gets rid of the first param (the modifier), then trims leading/trailing whitepsace
-
-    if (parameters.modifier === "remove" && (isNaN(parameters.text) || parseInt(parameters.text) < 1)) {
-        return Promise.reject("Second parameter of `remove` modifier must be a positive integer");
-    }
-
-    return parameters;
-};
+/*
 
 module.exports.generateAgendaListMessage = async function (description) {
     const lines = description.split("\n");

@@ -8,25 +8,7 @@ module.exports.send = async function (userId, textParams, originChannelID, origi
         } else if (textParams.startsWith("edit")) {
             return require("./meeting/edit").send(userId, textParams.replace("edit ", ""), originChannelID, originChannelName, trigger);
         } else {
-            return slack_handler.openModal(trigger, {
-                callback_id: "ryde-46e2b0",
-                title: "Request a Ride",
-                submit_label: "Request",
-                state: "Limo",
-                elements: [
-                    {
-                        type: "text",
-                        label: "Pickup Location",
-                        name: "loc_origin",
-                    },
-                    {
-                        type: "text",
-                        label: "Dropoff Location",
-                        name: "loc_destination",
-                    },
-                ],
-            });
-            //return Promise.reject("Incorrect usage: /reminder <reminder/edit>");
+            return Promise.reject("Incorrect usage: /reminder <reminder/edit>");
         }
     } catch (error) {
         return Promise.reject(error);
