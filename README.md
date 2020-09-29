@@ -62,7 +62,7 @@ To use, simply create events on the rocketry Google Calendar. In the description
 ```
 <meeting-type>
 <alert/alert-single-channel/alert-main-channel/copy/no-reminder>
-<#main_channel>
+<#mainChannel>
 [#any #additional #channels]
 [agenda,items,in,comma,separated,list,or,blank,for,nothing]
 [additional notes, or blank for nothing, formatted in markdown if desired]
@@ -93,7 +93,7 @@ You can manage agenda items using the `/agenda <add/list/remove>` command, avail
 
 ##### Usage
 
-This command looks for the next event of type `meeting` that contains the same `main_channel` as the channel the command was executed from. If an event is found matching these criteria the command will modify based on the following conditions:
+This command looks for the next event of type `meeting` that contains the same `mainChannel` as the channel the command was executed from. If an event is found matching these criteria the command will modify based on the following conditions:
 
 -   `/agenda add <item text>` the text after "add" will be added as an agenda item
 -   `/agenda list` will display a numerical list of the next events agenda items
