@@ -7,9 +7,9 @@ module.exports.send = async function (userId, textParams, initialChannel) {
 
         await slack_handler.isAdmin(userId);
 
-        const message = (parameters.alert_type === "alert" ? "<!channel>\n" : "") + parameters.link;
+        const message = (parameters.alertType === "alert" ? "<!channel>\n" : "") + parameters.link;
 
-        if (parameters.alert_type === "alert-single-channel") {
+        if (parameters.alertType === "alert-single-channel") {
             // when we alert single channel guests we simply want to PM them the message
             await slack_handler.directMessageSingleChannelGuestsInChannels(
                 message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
@@ -37,7 +37,7 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
 
     const parameters = {
         link: "",
-        alert_type: "",
+        alertType: "",
         channels: [],
     };
 
@@ -57,7 +57,7 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
         default:
             return Promise.reject("Parameter 2 must be either `copy/alert/alert-single-channel`");
     }
-    parameters.alert_type = unfilteredParams[1];
+    parameters.alertType = unfilteredParams[1];
 
     // loop through remaining parameters, which must be channels
     for (var index = 2; index < unfilteredParams.length; index++) {
@@ -73,7 +73,7 @@ module.exports.filterParameters = async function (textParams, initialChannel) {
     }
 
     // just so we stop people from accidentally @channel'ing every channel
-    if (parameters.alert_type === "alert" && parameters.channels.length > 5) {
+    if (parameters.alertType === "alert" && parameters.channels.length > 5) {
         return Promise.reject("Sorry, you cannot use `alert` when selecting more than 5 channels.");
     }
 

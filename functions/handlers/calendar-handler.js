@@ -37,25 +37,34 @@ module.exports.updateEventById = function (eventId, updatedFields) {
     });
 };
 
-module.exports.getNextEventByTypeAndChannel = async function (type, channelName) {
+module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
+    let events;
+
+    // We do not try-catch the entire function since iof getParametersFromDescription rejects
+    // (i.e. if an event is formatted wrong) we don't want to ignore the rest of the possible events
     try {
-        const events = await this.getNextEvents(20);
-
-        for (var event of events.data.items) {
-            if (event.description === undefined || event.description === "") continue;
-
-            const lines = event.description.split("\n");
-
-            if (lines[0] != type) continue;
-
-            if (lines[2] !== "#" + channelName) continue;
-            return Promise.resolve(event);
-        }
-        return Promise.reject("Next event not found");
+        events = await this.getNextEvents(20);
     } catch (error) {
         console.log(JSON.stringify(error));
         return Promise.reject(error);
     }
+
+    for (var event of events.data.items) {
+        if (event.description === undefined || event.description === "") continue;
+
+        let parameters;
+        try {
+            parameters = await this.getParametersFromDescription(event.summary, event.description, require("./slack-handler").defaultChannels);
+        } catch (error) {
+            continue;
+        }
+
+        if (parameters.eventType != type) continue;
+
+        if (parameters.mainChannel !== channelId) continue;
+        return Promise.resolve(event);
+    }
+    return Promise.reject("Next event not found");
 };
 
 module.exports.getParametersFromDescription = async function (summary, description, defaultChannels) {
@@ -64,10 +73,10 @@ module.exports.getParametersFromDescription = async function (summary, descripti
     try {
         parameters = JSON.parse(description);
     } catch (exception) {
-        return Promise.reject("Upcoming *" + meeting + "* contains malformed JSON");
+        return Promise.reject("Upcoming *" + summary + "* contains malformed JSON: " + exception);
     }
 
-    switch (parameters.event_type) {
+    switch (parameters.eventType) {
         case "meeting":
             break;
         case "test":
@@ -77,10 +86,10 @@ module.exports.getParametersFromDescription = async function (summary, descripti
         case "none":
             return Promise.reject("no-send");
         default:
-            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `event_type`");
+            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `eventType`");
     }
 
-    switch (parameters.alert_type) {
+    switch (parameters.alertType) {
         case "alert":
             break;
         case "alert-single-channel":
@@ -90,23 +99,23 @@ module.exports.getParametersFromDescription = async function (summary, descripti
         case "copy":
             break;
         default:
-            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `alert_type`");
+            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `alertType`");
     }
 
-    if (parameters.main_channel === undefined || parameters.main_channel === "") {
-        return Promise.reject("Upcoming meeting *" + summary + "* is missing a `main_channel` element");
+    if (parameters.mainChannel === undefined || parameters.mainChannel === "") {
+        return Promise.reject("Upcoming meeting *" + summary + "* is missing a `mainChannel` element");
     }
 
-    if (parameters.additional_channels === "default") {
-        parameters.additional_channels = defaultChannels;
+    if (parameters.additionalChannels === "default") {
+        parameters.additionalChannels = defaultChannels;
     }
 
-    if (!Array.isArray(parameters.additional_channels)) {
+    if (!Array.isArray(parameters.additionalChannels)) {
         return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed or missing `additional_channel` element");
     }
 
-    // Get rid of the main_channel if it is within additional channels
-    parameters.additional_channels = parameters.additional_channels.filter(value => value != parameters.main_channel);
+    // Get rid of the mainChannel if it is within additional channels
+    parameters.additionalChannels = parameters.additionalChannels.filter(value => value != parameters.mainChannel);
 
     if (parameters.agenda !== "" && !Array.isArray(parameters.agenda)) {
         return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
@@ -114,6 +123,10 @@ module.exports.getParametersFromDescription = async function (summary, descripti
 
     if (parameters.link === undefined || parameters.link === "") {
         parameters.link = "https://meet.jit.si/bay_area";
+    }
+
+    if (parameters.location === undefined || parameters.location === "") {
+        parameters.location = "E5 2001";
     }
 
     return parameters;

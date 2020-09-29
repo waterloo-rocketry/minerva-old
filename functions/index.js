@@ -1,10 +1,12 @@
 const functions = require("firebase-functions");
 const slack = require("./handlers/slack-handler");
 const events = require("./scheduled/events");
+const https = require("https");
 
 // prettier-ignore
 exports.slack_commands = functions.https.onRequest((request, response) => {
-    response.status(200).send("Command recieved");
+    response.status(200).send("Command recieved. Please wait a minimum of 10 seconds for a response before attempting again.");
+    if(request.body === undefined || request.body.channel_name === undefined) return;
 
     // handle requests that have do not originate from slack? i.e if request has no body
     require("./handlers/command-handler").process(request.body).then(result => {
@@ -28,7 +30,8 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
 // Run on the 25th and 55th minute of every hour since events start on X:30 or X:00 and we want to alert 5 mins or so ahead
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 // prettier-ignore
-exports.event_check = functions.pubsub.schedule("25,55 * * * *").timeZone("America/New_York").onRun(context => {
+exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("America/New_York").onRun(context => {
+    https.get("https://us-central1-rocketry-minerva-dev.cloudfunctions.net/slack_commands");
     events.checkForEvents()
     .then(() => {
         // do nothing

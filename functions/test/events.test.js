@@ -18,32 +18,39 @@ test.mockConfig({
 
 require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 const event = require("../scheduled/events");
-const LOWER_BOUND = 300000; // 5 minutes in milliseconds
-const UPPER_BOUND = 21600000; // 6 hours in milliseconds
+
+const ONE_MINUTE = 60000;
+const FIVE_MINUTES = 300000; // 5 minutes in milliseconds
+const SIX_HOURS = 21600000; // 6 hours in milliseconds
 
 describe("scheduled/event.js tests", function () {
     describe("isEventSoon", function () {
-        it("check event below lower bounds", async function () {
+        it("check event already happened", async function () {
             await expect(event.isEventSoon(-1)).to.be.rejectedWith("no-send");
         });
-        it("check event within lower bounds", async function () {
-            assert.equal(await event.isEventSoon(LOWER_BOUND - 1), true);
-            assert.equal(await event.isEventSoon(1), true);
+        it("check event 2 minutes away", async function () {
+            await expect(event.isEventSoon(ONE_MINUTE * 2)).to.be.rejectedWith("no-send");
         });
-        it("check event between bounds", async function () {
-            await expect(event.isEventSoon(LOWER_BOUND + 1)).to.be.rejectedWith("no-send");
-            await expect(event.isEventSoon(UPPER_BOUND - LOWER_BOUND - 1)).to.be.rejectedWith("no-send");
+        it("check event just below 5 minutes away", async function () {
+            assert.equal(await event.isEventSoon(FIVE_MINUTES - 50000), false);
+        });
+        it("check event just above 5 minutes away", async function () {
+            assert.equal(await event.isEventSoon(FIVE_MINUTES + 50000), false);
+        });
+        it("check event somewhere between bounds", async function () {
+            await expect(event.isEventSoon(FIVE_MINUTES + 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(SIX_HOURS - FIVE_MINUTES - 1)).to.be.rejectedWith("no-send");
         });
         it("check event within upper bounds", async function () {
-            assert.equal(await event.isEventSoon(UPPER_BOUND), false);
-            assert.equal(await event.isEventSoon(UPPER_BOUND + LOWER_BOUND - 1), false);
-            assert.equal(await event.isEventSoon(UPPER_BOUND - LOWER_BOUND + 1), false);
+            assert.equal(await event.isEventSoon(SIX_HOURS), false);
+            assert.equal(await event.isEventSoon(SIX_HOURS + FIVE_MINUTES - 1), false);
+            assert.equal(await event.isEventSoon(SIX_HOURS - FIVE_MINUTES + 1), false);
         });
         it("check event above upper bounds", async function () {
-            await expect(event.isEventSoon(UPPER_BOUND + LOWER_BOUND + 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(SIX_HOURS + FIVE_MINUTES + 1)).to.be.rejectedWith("no-send");
         });
     });
-
+    /*
     describe("generateMessage", function () {
         const testEvent = {
             summary: "Test Event",
@@ -77,10 +84,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert-single-channel",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -108,10 +115,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -137,10 +144,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert",
                         agenda: "",
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -171,10 +178,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert-main-channel",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-main-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -205,10 +212,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert-single-channel",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -239,10 +246,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert-single-channel",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/not_bay_area",
@@ -267,10 +274,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "test",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert",
+                        eventType: "test",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -295,10 +302,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "other",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert",
+                        eventType: "other",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -330,10 +337,10 @@ describe("scheduled/event.js tests", function () {
                 await event.generateMessage(
                     testEvent,
                     {
-                        event_type: "meeting",
-                        main_channel: "C014J93U4JZ",
-                        additional_channels: ["C0155MHAHB4"],
-                        alert_type: "alert-single-channel",
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
                         agenda: ["item", "item1", "item2"],
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
@@ -375,4 +382,5 @@ describe("scheduled/event.js tests", function () {
             assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
         });
     });
+*/
 });
