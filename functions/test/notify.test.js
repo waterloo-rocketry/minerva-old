@@ -37,7 +37,7 @@ describe("commands/notify.js tests", function () {
             );
         });
         it("alert-single-channel default channels", async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "C014J93U4JZ"), {
+            assert.deepStrictEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "C014J93U4JZ"), {
                 link: "https://waterloorocketry.slack.com/test",
                 alertType: "alert-single-channel",
                 channels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
@@ -49,14 +49,14 @@ describe("commands/notify.js tests", function () {
             );
         });
         it("copy two channels", async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> copy <#C014J93U4JZ| <#C0155TL4KKM|", "C014YVDDLTG"), {
+            assert.deepStrictEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> copy <#C014J93U4JZ| <#C0155TL4KKM|", "C014YVDDLTG"), {
                 link: "https://waterloorocketry.slack.com/test",
                 alertType: "copy",
                 channels: ["C014J93U4JZ", "C0155TL4KKM"],
             });
         });
         it("alert one channel", async function () {
-            assert.deepEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert <#C014J93U4JZ|", "C014YVDDLTG"), {
+            assert.deepStrictEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert <#C014J93U4JZ|", "C014YVDDLTG"), {
                 link: "https://waterloorocketry.slack.com/test",
                 alertType: "alert",
                 channels: ["C014J93U4JZ"],

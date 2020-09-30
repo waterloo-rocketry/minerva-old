@@ -80,7 +80,7 @@ describe("scheduled/event.js tests", function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -111,7 +111,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -140,7 +140,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -174,7 +174,7 @@ describe("scheduled/event.js tests", function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -208,7 +208,7 @@ describe("scheduled/event.js tests", function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -242,7 +242,7 @@ describe("scheduled/event.js tests", function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/not_bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -270,7 +270,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -298,7 +298,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -333,7 +333,7 @@ describe("scheduled/event.js tests", function () {
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
                 + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
 
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 await event.generateMessage(
                     testEvent,
                     {
@@ -361,7 +361,7 @@ describe("scheduled/event.js tests", function () {
                 return "watermelon";
             };
 
-            assert.deepEqual(await event.generateEmojiPair(), ["white_check_mark", "x"]);
+            assert.deepStrictEqual(await event.generateEmojiPair(), ["white_check_mark", "x"]);
         });
         it("pass duplicate emojis then unique emojis", async function () {
             let callCount = 0;
@@ -370,7 +370,7 @@ describe("scheduled/event.js tests", function () {
                 return callCount <= 5 ? "watermelon" : "melon"; // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
             };
 
-            assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
+            assert.deepStrictEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
         });
         it("pass unique emojis", async function () {
             let alternateEmoji = false;
@@ -379,7 +379,7 @@ describe("scheduled/event.js tests", function () {
                 return alternateEmoji ? "watermelon" : "melon"; // Alternates between returning two emojis
             };
 
-            assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
+            assert.deepStrictEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
         });
     });
 });
