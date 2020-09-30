@@ -32,25 +32,25 @@ describe("scheduled/event.js tests", function () {
             await expect(event.isEventSoon(ONE_MINUTE * 2)).to.be.rejectedWith("no-send");
         });
         it("check event just below 5 minutes away", async function () {
-            assert.equal(await event.isEventSoon(FIVE_MINUTES - 50000), false);
+            assert.equal(await event.isEventSoon(FIVE_MINUTES - 50000), true);
         });
         it("check event just above 5 minutes away", async function () {
-            assert.equal(await event.isEventSoon(FIVE_MINUTES + 50000), false);
+            assert.equal(await event.isEventSoon(FIVE_MINUTES + 50000), true);
         });
         it("check event somewhere between bounds", async function () {
-            await expect(event.isEventSoon(FIVE_MINUTES + 1)).to.be.rejectedWith("no-send");
-            await expect(event.isEventSoon(SIX_HOURS - FIVE_MINUTES - 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(FIVE_MINUTES + ONE_MINUTE + 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(SIX_HOURS - ONE_MINUTE - 1)).to.be.rejectedWith("no-send");
         });
         it("check event within upper bounds", async function () {
             assert.equal(await event.isEventSoon(SIX_HOURS), false);
-            assert.equal(await event.isEventSoon(SIX_HOURS + FIVE_MINUTES - 1), false);
-            assert.equal(await event.isEventSoon(SIX_HOURS - FIVE_MINUTES + 1), false);
+            assert.equal(await event.isEventSoon(SIX_HOURS - 1), false);
+            assert.equal(await event.isEventSoon(SIX_HOURS + 1), false);
         });
         it("check event above upper bounds", async function () {
             await expect(event.isEventSoon(SIX_HOURS + FIVE_MINUTES + 1)).to.be.rejectedWith("no-send");
         });
     });
-    /*
+
     describe("generateMessage", function () {
         const testEvent = {
             summary: "Test Event",
@@ -92,7 +92,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    FIVE_MINUTES - 1,
                     true,
                     new Date(1592900639642)
                 ),
@@ -123,7 +123,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    SIX_HOURS - 1,
                     false,
                     new Date(1592900639642),
                     await event.generateEmojiPair()
@@ -152,7 +152,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    SIX_HOURS - 1,
                     false,
                     new Date(1592900639642),
                     await event.generateEmojiPair()
@@ -186,7 +186,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    FIVE_MINUTES - 1,
                     true,
                     new Date(1592900639642)
                 ),
@@ -220,7 +220,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    FIVE_MINUTES - 1,
                     true,
                     new Date(1592900639642)
                 ),
@@ -254,7 +254,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/not_bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    FIVE_MINUTES - 1,
                     true,
                     new Date(1592900639642)
                 ),
@@ -282,7 +282,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    FIVE_MINUTES - 1,
                     true,
                     new Date(1592900639642),
                     await event.generateEmojiPair()
@@ -310,7 +310,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    SIX_HOURS - 1,
                     false,
                     new Date(1592900639642),
                     await event.generateEmojiPair()
@@ -345,7 +345,7 @@ describe("scheduled/event.js tests", function () {
                         extra: "N/A",
                         link: "https://meet.jit.si/bay_area",
                     },
-                    LOWER_BOUND - 1,
+                    FIVE_MINUTES - 1,
                     true,
                     new Date(1592900639642),
                     event.generateEmojiPair()
@@ -382,5 +382,4 @@ describe("scheduled/event.js tests", function () {
             assert.deepEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
         });
     });
-*/
 });

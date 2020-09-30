@@ -111,10 +111,10 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
 };
 
 module.exports.isEventSoon = async function (timeDifference) {
-    if (timeDifference - FIVE_MINUTES < ONE_MINUTE && timeDifference - FIVE_MINUTES > 0) {
+    if (Math.abs(timeDifference - FIVE_MINUTES) < ONE_MINUTE) {
         // if the time difference minus lower bound is less than 1 minute, than event is 5 minutes away. Event is soon.
         return Promise.resolve(true);
-    } else if (timeDifference - SIX_HOURS < ONE_MINUTE && timeDifference - SIX_HOURS > 0) {
+    } else if (Math.abs(timeDifference - SIX_HOURS) < ONE_MINUTE) {
         // if the time difference is within 1 minute of 6 hours away
         return Promise.resolve(false);
     } else {
