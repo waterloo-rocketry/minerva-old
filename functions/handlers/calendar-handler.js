@@ -40,7 +40,7 @@ module.exports.updateEventById = function (eventId, updatedFields) {
 module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
     let events;
 
-    // We do not try-catch the entire function since iof getParametersFromDescription rejects
+    // We do not try-catch the entire function since if getParametersFromDescription rejects
     // (i.e. if an event is formatted wrong) we don't want to ignore the rest of the possible events
     try {
         events = await this.getNextEvents(20);
@@ -52,10 +52,13 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
     for (var event of events.data.items) {
         if (event.description === undefined || event.description === "") continue;
 
+        event.description = event.description.replace(/<.*?>/g, "");
+
         let parameters;
         try {
             parameters = await this.getParametersFromDescription(event.summary, event.description, require("./slack-handler").defaultChannels);
         } catch (error) {
+            console.log(error);
             continue;
         }
 
@@ -117,12 +120,20 @@ module.exports.getParametersFromDescription = async function (summary, descripti
     // Get rid of the mainChannel if it is within additional channels
     parameters.additionalChannels = parameters.additionalChannels.filter(value => value != parameters.mainChannel);
 
-    if (parameters.agenda !== "" && !Array.isArray(parameters.agenda)) {
+    if (parameters.agendaItems === undefined || parameters.agendaItems === "") {
+        parameters.agendaItems = [];
+    }
+
+    if (parameters.agendaItems !== "" && !Array.isArray(parameters.agendaItems)) {
         return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
     }
 
     if (parameters.link === undefined || parameters.link === "") {
         parameters.link = "https://meet.jit.si/bay_area";
+    }
+
+    if (parameters.eventType === undefined || parameters.eventType === "") {
+        parameters.link = "meeting";
     }
 
     if (parameters.location === undefined || parameters.location === "") {
