@@ -15,13 +15,16 @@
         "text": "Cancel",
         "emoji": true
     },
+    "private_metadata": "",
+    "callback_id": "meeting_edit",
     "blocks": [
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
                 "text": "test"
-            }
+            },
+            "block_id": "meeting_title"
         },
         {
             "type": "divider"
@@ -34,12 +37,15 @@
                     "type": "plain_text",
                     "text": "E5 2001"
                 },
-                "initial_value": ""
+                "initial_value": "",
+                "action_id": "location"
             },
             "label": {
                 "type": "plain_text",
                 "text": "Meeting Location"
-            }
+            },
+            "block_id": "location",
+            "optional": true
         },
         {
             "type": "divider"
@@ -52,12 +58,15 @@
                     "type": "plain_text",
                     "text": "https://meet.jit.si/bay_area"
                 },
-                "initial_value": ""
+                "initial_value": "",
+                "action_id": "link"
             },
             "label": {
                 "type": "plain_text",
                 "text": "Meeting URL"
-            }
+            },
+            "block_id": "link",
+            "optional": true
         },
         {
             "type": "divider"
@@ -75,8 +84,10 @@
                     "text": "Select channels",
                     "emoji": true
                 },
-                "initial_channel": "C8VL7QCG0"
-            }
+                "initial_channel": "C8VL7QCG0",
+                "action_id": "main_channel"
+            },
+            "block_id": "main_channel"
         },
         {
             "type": "divider"
@@ -94,8 +105,10 @@
                     "text": "Select channels",
                     "emoji": true
                 },
-                "initial_channels": ["C8VL7QCG0"]
-            }
+                "initial_channels": ["C8VL7QCG0"],
+                "action_id": "additional_channels"
+            },
+            "block_id": "additional_channels"
         },
         {
             "type": "divider"
@@ -106,15 +119,18 @@
                 "type": "plain_text_input",
                 "placeholder": {
                     "type": "plain_text",
-                    "text": "Item 1\nItem 2"
+                    "text": "- Item 1\n- Item 2"
                 },
                 "multiline": true,
-                "initial_value": ""
+                "initial_value": "",
+                "action_id": "agenda_items"
             },
             "label": {
                 "type": "plain_text",
                 "text": "Agenda Items"
-            }
+            },
+            "block_id": "agenda_items",
+            "optional": true
         },
         {
             "type": "divider"
@@ -127,12 +143,15 @@
                     "type": "plain_text",
                     "text": " "
                 },
-                "initial_value": ""
+                "initial_value": "",
+                "action_id": "notes"
             },
             "label": {
                 "type": "plain_text",
                 "text": "Notes"
-            }
+            },
+            "block_id": "notes",
+            "optional": true
         },
         {
             "type": "divider"
@@ -174,8 +193,10 @@
                         },
                         "value": "copy"
                     }
-                ]
-            }
+                ],
+                "action_id": "alert_type"
+            },
+            "block_id": "alert_type"
         },
         {
             "type": "divider"
@@ -212,8 +233,10 @@
                         },
                         "value": "all"
                     }
-                ]
-            }
+                ],
+                "action_id": "update_type"
+            },
+            "block_id": "update_type"
         }
     ]
 }

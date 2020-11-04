@@ -2,7 +2,7 @@
     "type": "modal",
     "title": {
         "type": "plain_text",
-        "text": "Loading",
+        "text": "Error",
         "emoji": true
     },
     "close": {
@@ -15,7 +15,7 @@
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Please wait while I fetch the details of the upcoming meeting."
+                "text": ""
             }
         }
     ]
