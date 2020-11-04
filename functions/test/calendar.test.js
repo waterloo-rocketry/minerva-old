@@ -33,8 +33,8 @@ describe("handlers/calendar-handler.js tests", function () {
                     "alertType": "alert-single-channel",
                     "mainChannel": "C014J93U4JZ",
                     "additionalChannels": "default",
-                    "agenda": "",
-                    "extra": "N/A"
+                    "agendaItems": "",
+                    "notes": "N/A"
                 }`;
 
             assert.deepStrictEqual(await calendar_handler.getParametersFromDescription("Meeting", description, slack_handler.defaultChannels), {
@@ -42,8 +42,8 @@ describe("handlers/calendar-handler.js tests", function () {
                 mainChannel: "C014J93U4JZ",
                 additionalChannels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
                 alertType: "alert-single-channel",
-                agenda: "",
-                extra: "N/A",
+                agendaItems: "",
+                notes: "N/A",
                 location: "E5 2001",
                 link: "https://meet.jit.si/bay_area",
             });
@@ -54,19 +54,19 @@ describe("handlers/calendar-handler.js tests", function () {
                 "alertType": "alert-single-channel",
                 "mainChannel": "C014J93U4JZ",
                 "additionalChannels": "default",
-                "agenda": [
+                "agendaItems": [
                     "item", "item1", "item2"
                 ],
-                "extra": "N/A"
+                "notes": "N/A"
             }`;
             assert.deepStrictEqual(await calendar_handler.getParametersFromDescription("Meeting", description, slack_handler.defaultChannels), {
                 eventType: "meeting",
                 mainChannel: "C014J93U4JZ",
                 additionalChannels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
                 alertType: "alert-single-channel",
-                agenda: ["item", "item1", "item2"],
+                agendaItems: ["item", "item1", "item2"],
                 location: "E5 2001",
-                extra: "N/A",
+                notes: "N/A",
                 link: "https://meet.jit.si/bay_area",
             });
         });
@@ -78,10 +78,10 @@ describe("handlers/calendar-handler.js tests", function () {
                     "additionalChannels": [
                         "C014J93U4JA", "C0155MHAHB4"
                     ],
-                    "agenda": [
+                    "agendaItems": [
                         "item", "item1", "item2"
                     ],
-                    "extra": "N/A"
+                    "notes": "N/A"
                 }`;
 
             assert.deepStrictEqual(await calendar_handler.getParametersFromDescription("Meeting", description, slack_handler.defaultChannels), {
@@ -89,9 +89,9 @@ describe("handlers/calendar-handler.js tests", function () {
                 mainChannel: "C014J93U4JZ",
                 additionalChannels: ["C014J93U4JA", "C0155MHAHB4"],
                 alertType: "alert-main-channel",
-                agenda: ["item", "item1", "item2"],
+                agendaItems: ["item", "item1", "item2"],
                 location: "E5 2001",
-                extra: "N/A",
+                notes: "N/A",
                 link: "https://meet.jit.si/bay_area",
             });
         });
@@ -103,19 +103,19 @@ describe("handlers/calendar-handler.js tests", function () {
                 "additionalChannels": [
                     "C014J93U4JZ", "C0155MHAHB4"
                 ],
-                "agenda": [
+                "agendaItems": [
                     "item", "item1", "item2"
                 ],
-                "extra": "N/A"
+                "notes": "N/A"
             }`;
             assert.deepStrictEqual(await calendar_handler.getParametersFromDescription("Meeting", description, slack_handler.defaultChannels), {
                 eventType: "test",
                 mainChannel: "C014J93U4JZ",
                 additionalChannels: ["C0155MHAHB4"],
                 alertType: "alert-single-channel",
-                agenda: ["item", "item1", "item2"],
+                agendaItems: ["item", "item1", "item2"],
                 location: "E5 2001",
-                extra: "N/A",
+                notes: "N/A",
                 link: "https://meet.jit.si/bay_area",
             });
         });
@@ -127,10 +127,10 @@ describe("handlers/calendar-handler.js tests", function () {
                 "additionalChannels": [
                     "C014J93U4JZ", "C0155MHAHB4"
                 ],
-                "agenda": [
+                "agendaItems": [
                     "item", "item1", "item2"
                 ],
-                "extra": "N/A",
+                "notes": "N/A",
                 "link": "https://meet.jit.si/not_bay_area"
             }`;
             assert.deepStrictEqual(await calendar_handler.getParametersFromDescription("Meeting", description, slack_handler.defaultChannels), {
@@ -139,8 +139,8 @@ describe("handlers/calendar-handler.js tests", function () {
                 additionalChannels: ["C0155MHAHB4"],
                 alertType: "alert-single-channel",
                 location: "E5 2001",
-                agenda: ["item", "item1", "item2"],
-                extra: "N/A",
+                agendaItems: ["item", "item1", "item2"],
+                notes: "N/A",
                 link: "https://meet.jit.si/not_bay_area",
             });
         });

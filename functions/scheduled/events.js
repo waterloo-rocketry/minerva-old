@@ -79,17 +79,17 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     }
 
     if (parameters.eventType === "meeting") {
-        if (parameters.agenda.length === 0 || parameters.agenda[0] === "") {
+        if (parameters.agendaItems.length === 0 || parameters.agendaItems[0] === "") {
             message += "\nThere are currently no agenda items listed for this meeting.";
         } else {
-            message += "\nPlease see the agenda items:\n    • " + parameters.agenda.join("\n    • ");
+            message += "\nPlease see the agenda items:\n    • " + parameters.agendaItems.join("\n    • ");
         }
     } else if (parameters.eventType === "test") {
         message += "\nToday's test is located at: " + (event.location === undefined ? "Texas" : event.location);
     }
 
-    if (parameters.extra != "") {
-        message += "\nNotes: " + parameters.extra;
+    if (parameters.notes != "") {
+        message += "\nNotes: " + parameters.notes;
     }
 
     if (isEventSoon && parameters.eventType === "meeting") {
