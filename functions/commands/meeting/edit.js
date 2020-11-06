@@ -7,11 +7,7 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
     try {
         view = await slack_handler.openView(trigger, require("../../blocks/loading.json"));
 
-        console.log(originChannelId);
-
         const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelId);
-
-        console.log(JSON.stringify(event));
 
         const parameters = await calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
 
@@ -63,8 +59,9 @@ module.exports.parseMeetingBlock = async function (event, parameters, channel) {
 
     metadata.event_id = event.id;
     metadata.channel = channel;
+    metadata.summary = event.summary;
 
-    // this must be stored in a string and not an object or the slack API throws an invalid arguments
+    // This must be stored in a string and not an object or the slack API throws an invalid arguments error
     meetingBlock.private_metadata = JSON.stringify(metadata);
 
     meetingBlock.blocks[0].text.text =
@@ -89,12 +86,16 @@ module.exports.parseMeetingBlock = async function (event, parameters, channel) {
 module.exports.extractMeetingParameters = async function (meetingBlock) {
     const parameters = {};
 
-    //console.log("extract " + JSON.stringify(meetingBlock));
-    parameters.eventId = JSON.parse(meetingBlock.private_metadata).event_id;
+    parameters.eventId = meetingBlock.private_metadata.event_id;
 
     parameters.link = meetingBlock.state.values.link.link.value;
     if (parameters.link === null || parameters.link === undefined) {
         parameters.link = "";
+    }
+
+    parameters.location = meetingBlock.state.values.location.location.value;
+    if (parameters.location === null || parameters.location === undefined) {
+        parameters.location = "";
     }
 
     parameters.mainChannel = meetingBlock.state.values.main_channel.main_channel.selected_channel;
