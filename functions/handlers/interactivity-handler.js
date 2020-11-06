@@ -1,15 +1,14 @@
 const slack_handler = require("./slack-handler");
 
-module.exports.process = async function (request) {
-    request = JSON.parse(request);
+module.exports.process = async function (payload) {
     slack_handler.postMessageToChannel(
-        new Date().toISOString() + " " + request.user.name + " submitted " + request.view.callback_id + " for meeting " + request.view.private_metadata,
+        new Date().toISOString() + " " + payload.user.name + " submitted " + payload.view.callback_id + " for meeting " + payload.view.private_metadata.summary,
         "minerva-log",
         false
     );
-    if (request.view.callback_id === "meeting_edit") {
-        return require("../commands/meeting/edit").recieve(request.view);
+    if (payload.view.callback_id === "meeting_edit" && payload.type === "view_submission") {
+        return require("../commands/meeting/edit").recieve(payload.view);
     } else {
-        return Promise.reject("Command not recognized.");
+        return Promise.reject("Interaction not recognized.");
     }
 };

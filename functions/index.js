@@ -50,14 +50,14 @@ exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("Ame
 });
 
 exports.interactivity = functions.https.onRequest((request, response) => {
-    console.log(request.body.payload);
+    console.log(JSON.stringify(request.body.payload));
+    const payload = JSON.parse(request.body.payload);
+    payload.view.private_metadata = JSON.parse(payload.view.private_metadata);
     require("./handlers/interactivity-handler")
-        .process(request.body.payload)
+        .process(payload)
         .then(result => {
             if (result !== undefined && result != "") {
-                const payload = JSON.parse(request.body.payload);
-                console.log(payload);
-                slack.postEphemeralMessage(result, JSON.parse(payload.view.private_metadata).channel, payload.user.id);
+                slack.postEphemeralMessage(result, payload.view.private_metadata.channel, payload.user.id);
             }
         })
         .catch(error => {
