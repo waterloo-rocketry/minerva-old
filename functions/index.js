@@ -6,11 +6,18 @@ const https = require("https");
 // prettier-ignore
 exports.slack_commands = functions.https.onRequest((request, response) => {
     response.status(200).send("Command recieved. Please wait a minimum of 10 seconds for a response before attempting again.");
+
+    // This is what keeps the function hot
     if(request.body === undefined || request.body.channel_name === undefined)  {
         require("./handlers/command-handler");
+        require("./handlers/calendar-handler");
+        require("./handlers/slack-handler");
+        require("./handlers/interactivity-handler");
         require("./commands/meeting/edit");
         require("./commands/meeting/reminder");
+        require("./commands/meeting");
         require("./commands/notify");
+        require("./scheduled/events");
         return;
     }
 
@@ -36,21 +43,21 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 // prettier-ignore
 exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("America/New_York").onRun(context => {
+    // Call the command function to keep it hot
     https.get("https://us-central1-rocketry-minerva-dev.cloudfunctions.net/slack_commands");
     events.checkForEvents()
-    .then(() => {
-        // do nothing
-    })
-    .catch(error => {
-        console.log(error);
-        console.log(JSON.stringify(error));
-        slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
-    });
+        .then(() => {
+        }).catch(error => {
+            console.log(error);
+            console.log(JSON.stringify(error));
+            slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
+        }
+    );
     return "Ran meeting check";
 });
 
 exports.interactivity = functions.https.onRequest((request, response) => {
-    console.log(JSON.stringify(request.body.payload));
+    //console.log(JSON.stringify(request.body.payload));
     const payload = JSON.parse(request.body.payload);
     payload.view.private_metadata = JSON.parse(payload.view.private_metadata);
     require("./handlers/interactivity-handler")
@@ -63,13 +70,6 @@ exports.interactivity = functions.https.onRequest((request, response) => {
         .catch(error => {
             console.log(error);
             slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
-
-            //If there's an error sending this message, well, the bot just won't respond, in which case you know theres something wrong.
-            // slack.postEphemeralMessage(
-            //     "Command failed: " + error + "\nSee: https://github.com/waterloo-rocketry/minerva for help with commands.",
-            //     request.body.channel_name,
-            //     request.body.user_id
-            // );
         });
     response.status(200).send();
 });

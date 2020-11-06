@@ -1,6 +1,3 @@
-//const meeting_handler = require("../handlers/calendar-handler");
-const slack_handler = require("../handlers/slack-handler");
-
 module.exports.send = async function (userId, textParams, originChannelID, originChannelName, trigger) {
     try {
         if (textParams.startsWith("reminder")) {
