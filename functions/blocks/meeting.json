@@ -141,7 +141,7 @@
                 "type": "plain_text_input",
                 "placeholder": {
                     "type": "plain_text",
-                    "text": ""
+                    "text": " "
                 },
                 "initial_value": "",
                 "action_id": "notes"
