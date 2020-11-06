@@ -10,7 +10,7 @@ module.exports.send = async function (userId, textParams, originChannel) {
 
     const isEventSoon = false;
 
-    const parameters = await calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
+    const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
 
     const message = await events.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate);
 

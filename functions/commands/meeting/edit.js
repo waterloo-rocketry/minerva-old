@@ -9,9 +9,9 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
 
         const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelId);
 
-        const parameters = await calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
+        const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
 
-        const meetingBlock = await this.parseMeetingBlock(event, parameters, originChannelId);
+        const meetingBlock = await this.parseMeetingBlock(event, parameters);
 
         await slack_handler.updateView(view.view.id, meetingBlock);
     } catch (error) {
@@ -51,14 +51,14 @@ module.exports.recieve = async function (meetingBlock) {
     return Promise.resolve("Meeting updated");
 };
 
-module.exports.parseMeetingBlock = async function (event, parameters, channel) {
+module.exports.parseMeetingBlock = async function (event, parameters) {
     // Doing this copies the block to a new object so that any inputs or changes do not get applied to the next time this block is used.
     const meetingBlock = JSON.parse(JSON.stringify(require("../../blocks/meeting.json")));
 
     const metadata = {};
 
     metadata.event_id = event.id;
-    metadata.channel = channel;
+    metadata.channel = parameters.mainChannel;
     metadata.summary = event.summary;
 
     // This must be stored in a string and not an object or the slack API throws an invalid arguments error
@@ -67,7 +67,7 @@ module.exports.parseMeetingBlock = async function (event, parameters, channel) {
     meetingBlock.blocks[0].text.text =
         "Editing meeting: *" + event.summary + "* occuring on *" + moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
 
-    meetingBlock.blocks[2].element.initial_value = event.location;
+    meetingBlock.blocks[2].element.initial_value = parameters.location;
     meetingBlock.blocks[4].element.initial_value = parameters.link;
     meetingBlock.blocks[6].accessory.initial_channel = parameters.mainChannel;
     meetingBlock.blocks[8].accessory.initial_channels = parameters.additionalChannels;

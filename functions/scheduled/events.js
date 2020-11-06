@@ -24,7 +24,7 @@ module.exports.checkForEvents = async function () {
 
             const isEventSoon = await this.isEventSoon(timeDifference);
 
-            const parameters = await calendar_handler.getParametersFromDescription(event.summary, event.description, slack_handler.defaultChannels);
+            const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
 
             const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined;
 

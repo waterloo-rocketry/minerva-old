@@ -56,7 +56,7 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
 
         let parameters;
         try {
-            parameters = await this.getParametersFromDescription(event.summary, event.description, require("./slack-handler").defaultChannels);
+            parameters = await this.getParametersFromDescription(event, require("./slack-handler").defaultChannels);
         } catch (error) {
             console.log(error);
             continue;
@@ -70,11 +70,11 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
     return Promise.reject("Next event not found");
 };
 
-module.exports.getParametersFromDescription = async function (summary, description, defaultChannels) {
+module.exports.getParametersFromDescription = async function (event, defaultChannels) {
     var parameters;
 
     try {
-        parameters = JSON.parse(description);
+        parameters = JSON.parse(event.description);
     } catch (exception) {
         return Promise.reject("Upcoming *" + summary + "* contains malformed JSON: " + exception);
     }
@@ -136,8 +136,10 @@ module.exports.getParametersFromDescription = async function (summary, descripti
         parameters.link = "meeting";
     }
 
-    if (parameters.location === undefined || parameters.location === "") {
-        parameters.location = "E5 2001";
+    if (event.location === undefined || event.location === "") {
+        parameters.location = "";
+    } else {
+        parameters.location = event.location;
     }
 
     return parameters;
