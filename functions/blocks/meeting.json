@@ -84,7 +84,7 @@
                     "text": "Select channels",
                     "emoji": true
                 },
-                "initial_channel": "C8VL7QCG0",
+                "initial_channel": "C07MWEYPR",
                 "action_id": "main_channel"
             },
             "block_id": "main_channel"
