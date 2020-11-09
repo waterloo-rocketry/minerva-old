@@ -5,7 +5,7 @@ const web = new WebClient(functions.config().slack.token);
 const channelNameIdMapping = new Map();
 
 // https://api.slack.com/methods/chat.postMessage
-module.exports.postMessageToChannel = function (message, channel, unfurl = true) {
+module.exports.postMessageToChannel = function (message, channel, unfurl = trues) {
     return web.chat.postMessage({
         text: message,
         channel: channel,
@@ -23,8 +23,8 @@ module.exports.postMessageToChannels = function (message, channels, unfurl = tru
     return Promise.all(promises);
 };
 
-// https://api.slack.com/methods/chat.postMessage
 // same as above, just with a thread_ts option
+// https://api.slack.com/methods/chat.postMessage
 module.exports.postMessageToThread = function (message, channel, threadTs) {
     return web.chat.postMessage({
         text: message,
@@ -40,6 +40,14 @@ module.exports.postEphemeralMessage = function (message, channel, userId) {
         channel: channel,
         text: message,
         user: userId,
+    });
+};
+
+// https://api.slack.com/methods/chat.postMessage
+module.exports.postInteractiveMessage = function (blocks, channel) {
+    return web.chat.postMessage({
+        blocks: blocks,
+        channel: channel,
     });
 };
 
