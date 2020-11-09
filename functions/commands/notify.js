@@ -1,27 +1,21 @@
 const slack_handler = require("../handlers/slack-handler");
 
 module.exports.send = async function (userId, textParams, initialChannel) {
-    // check if parameters are valid
-    try {
-        const parameters = await this.filterParameters(textParams, initialChannel);
+    const parameters = await this.filterParameters(textParams, initialChannel);
 
-        await slack_handler.isAdmin(userId);
+    await slack_handler.isAdmin(userId);
 
-        const message = (parameters.alertType === "alert" ? "<!channel>\n" : "") + parameters.link;
+    const message = (parameters.alertType === "alert" ? "<!channel>\n" : "") + parameters.link;
 
-        if (parameters.alertType === "alert-single-channel") {
-            // when we alert single channel guests we simply want to PM them the message
-            await slack_handler.directMessageSingleChannelGuestsInChannels(
-                message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
-                parameters.channels
-            );
-        } else {
-            // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
-            await slack_handler.postMessageToChannels(message, parameters.channels, true);
-        }
-        return Promise.resolve();
-    } catch (error) {
-        return Promise.reject(error);
+    if (parameters.alertType === "alert-single-channel") {
+        // when we alert single channel guests we simply want to PM them the message
+        await slack_handler.directMessageSingleChannelGuestsInChannels(
+            message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+            parameters.channels
+        );
+    } else {
+        // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
+        await slack_handler.postMessageToChannels(message, parameters.channels, true);
     }
 };
 
