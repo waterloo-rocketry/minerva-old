@@ -15,23 +15,19 @@ module.exports.send = async function (userId, textParams, originChannelId, origi
 
         await slack_handler.updateView(view.view.id, meetingBlock);
     } catch (error) {
-        if (error.data != undefined && error.data.error === "not_found") {
-            // Do nothing, this happens when 'cancel' has already been selected
-            return Promise.resolve();
-        } else if (JSON.stringify(error).includes("trigger_id")) {
-            return Promise.reject("`trigger_id` expired. Sometimes this can happen when this command hasn't been used for a while. Try again.");
-        }
-        const errorBlock = require("../../blocks/error.json");
-        errorBlock.blocks[0].text.text = "An error has occured:\n\n*" + error + "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
+        if (view != undefined) {
+            const errorBlock = require("../../blocks/error.json");
+            errorBlock.blocks[0].text.text = "An error has occured:\n\n*" + error + "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
 
-        // Don't 'await' this since we only care to push the update. If they have closed the view or something, the message in chat will still show the error.
-        slack_handler.updateView(view.view.id, errorBlock);
+            // Don't 'await' this since we only care to push the update. If they have closed the view or something, the message in chat will still show the error.
+            slack_handler.updateView(view.view.id, errorBlock);
+        }
         return Promise.reject(error);
     }
 };
 
-module.exports.recieve = async function (meetingBlock) {
-    const parameters = await this.extractMeetingParameters(meetingBlock);
+module.exports.recieve = async function (meetingBlock, metadata) {
+    const parameters = await this.extractMeetingParameters(meetingBlock, metadata);
 
     const eventId = parameters.eventId;
     const loc = parameters.location;
@@ -47,7 +43,6 @@ module.exports.recieve = async function (meetingBlock) {
     updates.description = JSON.stringify(parameters);
 
     await calendar_handler.updateEventById(eventId, updates);
-
     return Promise.resolve("Meeting updated");
 };
 
@@ -59,7 +54,8 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
 
     metadata.event_id = event.id;
     metadata.channel = parameters.mainChannel;
-    metadata.summary = event.summary;
+    metadata.subject = event.summary;
+    metadata.type = "meeting_update";
 
     // This must be stored in a string and not an object or the slack API throws an invalid arguments error
     meetingBlock.private_metadata = JSON.stringify(metadata);
@@ -83,46 +79,46 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
     return meetingBlock;
 };
 
-module.exports.extractMeetingParameters = async function (meetingBlock) {
+module.exports.extractMeetingParameters = async function (view, metadata) {
     const parameters = {};
 
-    parameters.eventId = meetingBlock.private_metadata.event_id;
+    parameters.eventId = metadata.event_id;
 
-    parameters.link = meetingBlock.state.values.link.link.value;
+    parameters.link = view.state.values.link.link.value;
     if (parameters.link === null || parameters.link === undefined) {
         parameters.link = "";
     }
 
-    parameters.location = meetingBlock.state.values.location.location.value;
+    parameters.location = view.state.values.location.location.value;
     if (parameters.location === null || parameters.location === undefined) {
         parameters.location = "";
     }
 
-    parameters.mainChannel = meetingBlock.state.values.main_channel.main_channel.selected_channel;
-    parameters.additionalChannels = meetingBlock.state.values.additional_channels.additional_channels.selected_channels;
+    parameters.mainChannel = view.state.values.main_channel.main_channel.selected_channel;
+    parameters.additionalChannels = view.state.values.additional_channels.additional_channels.selected_channels;
 
     // Agenda items come in like
     // - Agenda 1
     // - Agenda 2
     // etc, have to convert back to a JSON list
-    if (meetingBlock.state.values.agenda_items.agenda_items.value !== null && meetingBlock.state.values.agenda_items.agenda_items.value !== undefined) {
-        parameters.agendaItems = meetingBlock.state.values.agenda_items.agenda_items.value.replace(/- /g, "").split("\n");
+    if (view.state.values.agenda_items.agenda_items.value !== null && view.state.values.agenda_items.agenda_items.value !== undefined) {
+        parameters.agendaItems = view.state.values.agenda_items.agenda_items.value.replace(/- /g, "").split("\n");
     } else {
         parameters.agendaItems = [];
     }
 
-    parameters.notes = meetingBlock.state.values.notes.notes.value;
+    parameters.notes = view.state.values.notes.notes.value;
     if (parameters.notes === null || parameters.notes === undefined) {
         parameters.notes = "";
     }
 
-    if (meetingBlock.state.values.alert_type.alert_type.selected_option === null) {
-        parameters.alertType = meetingBlock.blocks[14].accessory.placeholder.text;
+    if (view.state.values.alert_type.alert_type.selected_option === null) {
+        parameters.alertType = view.blocks[14].accessory.placeholder.text;
     } else {
-        parameters.alertType = meetingBlock.state.values.alert_type.alert_type.selected_option;
+        parameters.alertType = view.state.values.alert_type.alert_type.selected_option;
     }
 
-    parameters.updateType = meetingBlock.state.values.update_type.update_type.selected_option.value;
+    parameters.updateType = view.state.values.update_type.update_type.selected_option.value;
     parameters.eventType = "meeting";
 
     return parameters;
