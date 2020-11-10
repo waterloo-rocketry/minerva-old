@@ -30,10 +30,8 @@ module.exports.recieve = async function (eventId, trigger) {
             location: "",
             link: "https://meet.jit.si/bay_area",
         };
-        const meetingBlock = await edit.parseMeetingBlock(event, parameters);
 
-        // For some reason, you cant set the main channel parameter to null, you have to actually delete it...
-        delete meetingBlock.blocks[6].accessory.initial_channel;
+        const meetingBlock = await edit.parseMeetingBlock(event, parameters);
 
         await slack_handler.updateView(view.view.id, meetingBlock);
     } catch (error) {
