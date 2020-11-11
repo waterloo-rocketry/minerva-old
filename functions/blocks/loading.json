@@ -15,7 +15,7 @@
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Please wait while I fetch the details of the upcoming meeting."
+                "text": "Please wait "
             }
         }
     ]
