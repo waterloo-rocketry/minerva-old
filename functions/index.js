@@ -71,7 +71,7 @@ exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("Ame
             });
 
         // Check for events to initialize
-        // if (new Date().getMinutes == 0) {
+        if (new Date().getMinutes == 0) {
             initialize.send()
                 .then(() => {
                     // Do nothing
@@ -79,7 +79,7 @@ exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("Ame
                 .catch(error => {
                     console.log(error);
                 });
-        // }
+        }
         return "scheduled";
     });
 
