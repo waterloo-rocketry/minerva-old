@@ -58,25 +58,32 @@ module.exports.directMessageUser = function (message, userId, unfurl) {
 };
 
 // Someone think of a better name that follows previous convention
-// Todo: Add promises to array,
+// Returns a single promise with the message promises wrapped inside.
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
-        const promises = [];
+        const memberPromises = [];
+        const messagePromises = [];
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
         for (const channel of channels) {
             // get members of the channel
-            const channelMembers = (await this.getChannelMembers(channel)).members;
+            memberPromises.push(await this.getChannelMembers(channel));
+        }
 
-            const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
+        await Promise.all(memberPromises);
+
+        for (members of memberPromises) {
+            members = members.members;
+
+            const singleChannelMembersInChannel = members.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
-                promises.push(await this.directMessageUser(message, member, true));
+                messagePromises.push(await this.directMessageUser(message, member, true));
             }
         }
 
-        return Promise.resolve(promises);
+        return Promise.all(messagePromises);
     } catch (error) {
         return Promise.reject(error);
     }

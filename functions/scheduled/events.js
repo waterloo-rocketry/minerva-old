@@ -28,22 +28,24 @@ module.exports.checkForEvents = async function () {
         const messageResponses = [];
 
         messageResponses.push(
-            await slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
+            slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
         );
 
         if (parameters.alertType === "alert-single-channel") {
-            const dmMessageResponses = await slack_handler.directMessageSingleChannelGuestsInChannels(
-                message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
-                parameters.additionalChannels
+            messageResponses.push(
+                slack_handler.directMessageSingleChannelGuestsInChannels(
+                    message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+                    parameters.additionalChannels
+                )
             );
 
             for (let response of dmMessageResponses) {
                 messageResponses.push(response);
             }
         } else {
-            const additionalChannnelmessageResponses = await slack_handler.postMessageToChannels(message, parameters.additionalChannels, false);
+            const additionalChannelMessageResponses = await slack_handler.postMessageToChannels(message, parameters.additionalChannels, false);
 
-            for (let response of additionalChannnelmessageResponses) {
+            for (let response of additionalChannelMessageResponses) {
                 messageResponses.push(response);
             }
         }
