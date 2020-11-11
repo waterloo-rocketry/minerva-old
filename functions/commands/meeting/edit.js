@@ -2,10 +2,13 @@ const slack_handler = require("../../handlers/slack-handler");
 const calendar_handler = require("../../handlers/calendar-handler");
 const moment = require("moment-timezone");
 
-module.exports.send = async function (userId, textParams, originChannelId, originChannelName, trigger) {
+module.exports.send = async function (originChannelId, trigger) {
     var view;
     try {
-        view = await slack_handler.openView(trigger, require("../../blocks/loading.json"));
+        const loadingBlock = JSON.parse(JSON.stringify(require("../../blocks/loading.json")));
+        loadingBlock.blocks[0].text.text = "Loading meeting details...";
+
+        view = await slack_handler.openView(trigger, loadingBlock);
 
         const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelId);
 
