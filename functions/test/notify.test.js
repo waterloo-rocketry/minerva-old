@@ -17,49 +17,33 @@ test.mockConfig({
 });
 
 const notify = require("../commands/notify");
-require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 
 describe("commands/notify.js tests", function () {
-    describe("filterParameters", async function () {
-        it("missing link to text", async function () {
-            await expect(notify.filterParameters("", "C014J93U4JZ")).to.be.rejectedWith(
-                "Incorrect usage: /notify <link-to-message> <copy/alert/alert-single-channel> [#channel1, #channel2, ...]"
+    describe("parseNotifyBlock", async function () {
+        it("non-null meeting block items", async function () {
+            assert.deepStrictEqual(await notify.parseNotifyBlock("C014J93U4JZ"), require("./notifyBlocks/parsedNotifyBlock.json"));
+        });
+    });
+
+    describe("extractNotifyParameters", async function () {
+        it("missing or incorrect link", async function () {
+            await expect(notify.extractNotifyParameters(require("./notifyBlocks/noMessageBlockResult.json"))).to.be.rejectedWith(
+                "The 'message link' input box must be a link to a waterloo rocketry message"
             );
         });
-        it("incorrect link to text", async function () {
-            await expect(notify.filterParameters("<https://test.slack.com/", "C014J93U4JZ")).to.be.rejectedWith(
-                "Parameter 1 must be a link to a waterloo rocketry message"
+        it("no alert type", async function () {
+            await expect(notify.extractNotifyParameters(require("./notifyBlocks/noAlertBlockResult.json"))).to.be.rejectedWith("You must select an alert type");
+        });
+        it("no channels", async function () {
+            await expect(notify.extractNotifyParameters(require("./notifyBlocks/noChannelsBlockResult.json"))).to.be.rejectedWith(
+                "You must select at least one additional channel, not including the messages original channel"
             );
         });
-        it("incorrect alert type", async function () {
-            await expect(notify.filterParameters("<https://waterloorocketry.slack.com/ none", "C014J93U4JZ")).to.be.rejectedWith(
-                "Parameter 2 must be either `copy/alert/alert-single-channel`"
-            );
-        });
-        it("alert-single-channel default channels", async function () {
-            assert.deepStrictEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert-single-channel", "C014J93U4JZ"), {
-                link: "https://waterloorocketry.slack.com/test",
-                alertType: "alert-single-channel",
-                channels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
-            });
-        });
-        it("alerting too many channels", async function () {
-            await expect(notify.filterParameters("<https://waterloorocketry.slack.com/test> alert", "C014J93U4JZ")).to.be.rejectedWith(
-                "Sorry, you cannot use `alert` when selecting more than 5 channels."
-            );
-        });
-        it("copy two channels", async function () {
-            assert.deepStrictEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> copy <#C014J93U4JZ| <#C0155TL4KKM|", "C014YVDDLTG"), {
-                link: "https://waterloorocketry.slack.com/test",
-                alertType: "copy",
-                channels: ["C014J93U4JZ", "C0155TL4KKM"],
-            });
-        });
-        it("alert one channel", async function () {
-            assert.deepStrictEqual(await notify.filterParameters("<https://waterloorocketry.slack.com/test> alert <#C014J93U4JZ|", "C014YVDDLTG"), {
-                link: "https://waterloorocketry.slack.com/test",
+        it("good notify block", async function () {
+            assert.deepStrictEqual(await notify.extractNotifyParameters(require("./notifyBlocks/goodNotifyResult.json")), {
+                link: "https://waterloorocketry.slack.com/archives/C07MXA613/p1605073692312300",
                 alertType: "alert",
-                channels: ["C014J93U4JZ"],
+                channels: ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MX5JDB"],
             });
         });
     });

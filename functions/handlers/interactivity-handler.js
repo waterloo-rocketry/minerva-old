@@ -9,6 +9,8 @@ module.exports.process = async function (payload, metadata) {
     if (payload.type === "view_submission") {
         if (payload.view.callback_id === "meeting_edit") {
             return require("../commands/meeting/edit").recieve(payload.view, metadata);
+        } else if (payload.view.callback_id === "notify") {
+            return require("../commands/notify").recieve(payload.view, metadata);
         }
     } else if (payload.type === "block_actions") {
         if (payload.actions[0].action_id === "initialize") {
