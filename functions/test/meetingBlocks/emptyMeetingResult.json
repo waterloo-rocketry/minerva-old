@@ -1,0 +1,321 @@
+{
+    "state": {
+        "values": {
+            "alert_type": {
+                "alert_type": {
+                    "selected_option": null,
+                    "type": "static_select"
+                }
+            },
+            "location": {
+                "location": {
+                    "value": null,
+                    "type": "plain_text_input"
+                }
+            },
+            "link": {
+                "link": {
+                    "type": "plain_text_input",
+                    "value": null
+                }
+            },
+            "additional_channels": {
+                "additional_channels": {
+                    "selected_channels": [],
+                    "type": "multi_channels_select"
+                }
+            },
+            "agenda_items": {
+                "agenda_items": {
+                    "value": null,
+                    "type": "plain_text_input"
+                }
+            },
+            "notes": {
+                "notes": {
+                    "value": null,
+                    "type": "plain_text_input"
+                }
+            },
+            "update_type": {
+                "update_type": {
+                    "selected_option": {
+                        "value": "next",
+                        "text": {
+                            "emoji": true,
+                            "text": "This meeting",
+                            "type": "plain_text"
+                        }
+                    },
+                    "type": "radio_buttons"
+                }
+            },
+            "main_channel": {
+                "main_channel": {
+                    "type": "channels_select",
+                    "selected_channel": "C014J93U4JZ"
+                }
+            }
+        }
+    },
+    "blocks": [
+        {
+            "text": {
+                "verbatim": false,
+                "text": "Editing meeting: *S20 Weekly Meetings* occuring on *November 4th, 2020 at 7:30 PM*",
+                "type": "mrkdwn"
+            },
+            "type": "section",
+            "block_id": "meeting_title"
+        },
+        {
+            "type": "divider",
+            "block_id": "Wxcg2"
+        },
+        {
+            "block_id": "location",
+            "label": {
+                "text": "Meeting Location",
+                "type": "plain_text",
+                "emoji": true
+            },
+            "optional": true,
+            "element": {
+                "type": "plain_text_input",
+                "dispatch_action_config": {
+                    "trigger_actions_on": ["on_enter_pressed"]
+                },
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "E5 2001",
+                    "emoji": true
+                },
+                "action_id": "location"
+            },
+            "type": "input",
+            "dispatch_action": false
+        },
+        {
+            "block_id": "TvK",
+            "type": "divider"
+        },
+        {
+            "optional": true,
+            "block_id": "link",
+            "type": "input",
+            "element": {
+                "action_id": "link",
+                "dispatch_action_config": {
+                    "trigger_actions_on": ["on_enter_pressed"]
+                },
+                "initial_value": "https://meet.jit.si/bay_area",
+                "placeholder": {
+                    "text": "https://meet.jit.si/bay_area",
+                    "emoji": true,
+                    "type": "plain_text"
+                },
+                "type": "plain_text_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "emoji": true,
+                "text": "Meeting URL"
+            },
+            "dispatch_action": false
+        },
+        {
+            "type": "divider",
+            "block_id": "IgB"
+        },
+        {
+            "type": "section",
+            "block_id": "main_channel",
+            "accessory": {
+                "placeholder": {
+                    "text": "Select channels",
+                    "type": "plain_text",
+                    "emoji": true
+                },
+                "action_id": "main_channel",
+                "initial_channel": "C014J93U4JZ",
+                "type": "channels_select"
+            },
+            "text": {
+                "text": "Main channel",
+                "type": "mrkdwn",
+                "verbatim": false
+            }
+        },
+        {
+            "type": "divider",
+            "block_id": "BmaZ+"
+        },
+        {
+            "block_id": "additional_channels",
+            "accessory": {
+                "initial_channels": ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MXA613", "C07MX5JDB"],
+                "type": "multi_channels_select",
+                "action_id": "additional_channels",
+                "placeholder": {
+                    "emoji": true,
+                    "type": "plain_text",
+                    "text": "Select channels"
+                }
+            },
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Additional Channels",
+                "verbatim": false
+            }
+        },
+        {
+            "type": "divider",
+            "block_id": "Y=S"
+        },
+        {
+            "element": {
+                "multiline": true,
+                "type": "plain_text_input",
+                "dispatch_action_config": {
+                    "trigger_actions_on": ["on_enter_pressed"]
+                },
+                "initial_value": "",
+                "placeholder": {
+                    "emoji": true,
+                    "type": "plain_text",
+                    "text": "Item 1\nItem 2"
+                },
+                "action_id": "agenda_items"
+            },
+            "dispatch_action": false,
+            "block_id": "agenda_items",
+            "optional": true,
+            "label": {
+                "type": "plain_text",
+                "emoji": true,
+                "text": "Agenda Items"
+            },
+            "type": "input"
+        },
+        {
+            "type": "divider",
+            "block_id": "Cfy4t"
+        },
+        {
+            "block_id": "notes",
+            "optional": true,
+            "label": {
+                "type": "plain_text",
+                "text": "Notes",
+                "emoji": true
+            },
+            "element": {
+                "initial_value": "230 AM",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": " ",
+                    "emoji": true
+                },
+                "dispatch_action_config": {
+                    "trigger_actions_on": ["on_enter_pressed"]
+                },
+                "action_id": "notes",
+                "type": "plain_text_input"
+            },
+            "dispatch_action": false,
+            "type": "input"
+        },
+        {
+            "block_id": "U6lkr",
+            "type": "divider"
+        },
+        {
+            "type": "section",
+            "block_id": "alert_type",
+            "text": {
+                "verbatim": false,
+                "type": "mrkdwn",
+                "text": "Alert Type"
+            },
+            "accessory": {
+                "placeholder": {
+                    "text": "alert-single-channel",
+                    "type": "plain_text",
+                    "emoji": true
+                },
+                "type": "static_select",
+                "action_id": "alert_type",
+                "options": [
+                    {
+                        "value": "alert-single-channel",
+                        "text": {
+                            "text": "Alert single channel",
+                            "type": "plain_text",
+                            "emoji": true
+                        }
+                    },
+                    {
+                        "value": "alert",
+                        "text": {
+                            "emoji": true,
+                            "type": "plain_text",
+                            "text": "Alert"
+                        }
+                    },
+                    {
+                        "text": {
+                            "emoji": true,
+                            "text": "Copy",
+                            "type": "plain_text"
+                        },
+                        "value": "copy"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "divider",
+            "block_id": "JWevL"
+        },
+        {
+            "accessory": {
+                "action_id": "update_type",
+                "options": [
+                    {
+                        "value": "next",
+                        "text": {
+                            "text": "This meeting",
+                            "type": "plain_text",
+                            "emoji": true
+                        }
+                    },
+                    {
+                        "value": "all",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Future meetings",
+                            "emoji": true
+                        }
+                    }
+                ],
+                "type": "radio_buttons",
+                "initial_option": {
+                    "value": "next",
+                    "text": {
+                        "text": "This meeting",
+                        "type": "plain_text",
+                        "emoji": true
+                    }
+                }
+            },
+            "text": {
+                "type": "mrkdwn",
+                "text": "Update just this meeting or all future S20 Weekly Meetings?\n*Note: this feature has not been implemented yet. Right now, only the next meeting will be updated.*",
+                "verbatim": false
+            },
+            "type": "section",
+            "block_id": "update_type"
+        }
+    ]
+}
