@@ -54,9 +54,10 @@ exports.slack_commands = functions.https.onRequest((request, response) => {
 // The format of the schedule string corresponds to: https://man7.org/linux/man-pages/man5/crontab.5.html or verbage (i.e. every 2 minutes)
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 // prettier-ignore
-exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("America/New_York").onRun(context => {
-        // Call the command function to keep it hot
-        https.get("https://us-central1-rocketry-minerva-dev.cloudfunctions.net/slack_commands");
+exports.scheduled = functions.pubsub.schedule("every 1 minutes").timeZone("America/New_York").onRun(context => {
+    // Call the command function to keep it hot
+    https.get("https://us-central1-rocketry-minerva-dev.cloudfunctions.net/slack_commands");
+    if (new Date().getMinutes % 5 === 0) {
         events.checkForEvents()
             .then(() => {
                 // Do nothing
@@ -69,19 +70,19 @@ exports.event_check = functions.pubsub.schedule("every 2 minutes").timeZone("Ame
                     slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
                 }
             });
-
-        // Check for events to initialize
-        if (new Date().getMinutes == 0) {
-            initialize.send()
-                .then(() => {
-                    // Do nothing
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-        }
-        return "scheduled";
-    });
+    }
+    // Check for events to initialize
+    if (new Date().getMinutes === 0) {
+        initialize.send()
+            .then(() => {
+                // Do nothing
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+    return "scheduled";
+});
 
 exports.interactivity = functions.https.onRequest((request, response) => {
     response.status(200).send();
