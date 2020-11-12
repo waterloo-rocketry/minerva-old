@@ -16,7 +16,3 @@ module.exports.send = async function (userId, textParams, originChannel) {
 
     await slack_handler.postMessageToChannel(message, parameters.mainChannel, false);
 };
-
-module.exports.filterParameters = async function (textParams) {
-    return parameters;
-};

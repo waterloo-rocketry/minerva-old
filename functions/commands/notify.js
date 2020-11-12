@@ -1,4 +1,3 @@
-const {initial} = require("lodash");
 const slack_handler = require("../handlers/slack-handler");
 
 module.exports.send = async function (userId, trigger, initialChannel) {
@@ -10,7 +9,6 @@ module.exports.send = async function (userId, trigger, initialChannel) {
         view = await slack_handler.openView(trigger, loadingBlock);
 
         await slack_handler.isAdmin(userId);
-
         const notifyBlock = await this.parseNotifyBlock(initialChannel);
 
         view = await slack_handler.updateView(view.view.id, notifyBlock);
