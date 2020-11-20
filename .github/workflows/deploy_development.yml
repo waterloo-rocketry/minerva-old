@@ -25,6 +25,9 @@ jobs:
               with:
                   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: eu-central-1
-            - name: Serverless Deploy
-              run: npm run-script deploy
+                  aws-region: us-east-1
+            - name: Deploy to AWS CloudFormation
+              uses: aws-actions/aws-cloudformation-github-deploy@v1
+              with:
+                  name: minerva
+                  template: development_template.yaml
