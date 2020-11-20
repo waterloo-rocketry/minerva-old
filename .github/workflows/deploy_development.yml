@@ -7,19 +7,17 @@ on:
             - "!master"
 
 jobs:
-    deploy:
+    deploy_source:
+        name: deploy lambda from source
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
-            - uses: actions/setup-node@v1
+            - name: checkout source code
+              uses: actions/checkout@v1
+            - name: default deploy
+              uses: appleboy/lambda-action@master
               with:
-                  node-version: "10.x"
-            - run: for d in */ ; do cd $d && npm install --no-package-lock --loglevel=error && cd .. ; done
-            - uses: r0zar/sam-deploy-action@v1.4
-              env:
-                  TEMPLATE: "development_template.yml"
-                  AWS_STACK_NAME: minerva
-                  AWS_REGION: "us-east-1"
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_DEPLOY_BUCKET: ${{ secrets.AWS_DEPLOY_BUCKET }}
+                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws_region: us-east-1
+                  function_name: gorush
+                  source: src/index.js
