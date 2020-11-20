@@ -1,62 +1,80 @@
-const functions = require("firebase-functions");
 const slack = require("./handlers/slack-handler");
 const events = require("./scheduled/events");
 const errors = require("./handlers/error-handler");
 const initialize = require("./interactivity/initialize");
 const https = require("https");
+const qs = require("querystring");
 
-// prettier-ignore
-exports.slack_commands = functions.https.onRequest((request, response) => {
-    response.status(200).send("Command recieved. Please wait a minimum of 10 seconds for a response before attempting again.");
-
-    // This is what keeps the function hot
-    if(request.body === undefined || request.body.channel_name === undefined)  {
+exports.slack_commands_sync = async (event, context) => {
+    if (event === null || event === undefined || event.body === undefined) {
         console.log("Keep function hot");
-        require("./handlers/command-handler");
-        require("./handlers/calendar-handler");
-        require("./handlers/error-handler");
-        require("./handlers/slack-handler");
-        require("./handlers/interactivity-handler");
-        require("./commands/meeting/edit");
-        require("./commands/meeting/reminder");
-        require("./commands/meeting");
-        require("./commands/notify");
-        require("./scheduled/events");
-        require("./interactivity/initialize");
-        require("./blocks/error.json");
-        require("./blocks/initialize.json");
-        require("./blocks/loading.json");
-        require("./blocks/meeting.json");
         return;
     }
 
-    // handle requests that have do not originate from slack? i.e if request has no body
-    require("./handlers/command-handler").process(request.body).then(result => {
-        if (result !== undefined && result != "") {
-            slack.postEphemeralMessage(result, request.body.channel_name, request.body.user_id);
+    const body = qs.parse(event.body);
+
+    await new Promise((resolve, reject) => {
+        const req = https.request(
+            "https://k0a0yv69m5.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsynchronous-1K6EO00AY77QT",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Content-Length": JSON.stringify(body).length,
+                },
+            },
+            res => {}
+        );
+
+        req.write(JSON.stringify(body));
+        req.end();
+
+        setTimeout(() => {
+            resolve();
+        }, 400);
+    });
+
+    return {
+        statusCode: 200,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: "Command Recieved. Please wait up to 10 seconds before trying again.",
+    };
+};
+
+exports.slack_commands_async = async (event, context) => {
+    if (event === null || event === undefined || event.body === undefined) {
+        console.log("Keep function hot");
+        return;
+    }
+
+    const body = JSON.parse(event.body);
+
+    try {
+        const result = await require("./handlers/command-handler").process(body);
+        if (result != undefined) {
+            await slack.postEphemeralMessage(result, body.channel_name, body.user_id);
         }
-    }).catch(async error => {
+    } catch (error) {
         try {
             await errors.filter(error);
-        } catch(error) {
-            slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
+        } catch (error) {
+            await slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
 
-            //If there's an error sending this message, well, the bot just won't respond, in which case you know theres something wrong.
-            slack.postEphemeralMessage(
+            await slack.postEphemeralMessage(
                 "Command failed: " + error + "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
-                request.body.channel_name,
-                request.body.user_id
+                body.channel_name,
+                body.user_id
             );
         }
-    });
-});
+    }
+};
 
 // The format of the schedule string corresponds to: https://man7.org/linux/man-pages/man5/crontab.5.html or verbage (i.e. every 2 minutes)
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 // prettier-ignore
-exports.scheduled = functions.pubsub.schedule("every 1 minutes").timeZone("America/New_York").onRun(context => {
-    // Call the command function to keep it hot
-    https.get("https://us-central1-rocketry-minerva-dev.cloudfunctions.net/slack_commands");
+exports.scheduled = async (event, context) => {
     if (new Date().getMinutes % 5 === 0) {
         events.checkForEvents()
             .then(() => {
@@ -82,9 +100,9 @@ exports.scheduled = functions.pubsub.schedule("every 1 minutes").timeZone("Ameri
             });
     }
     return "scheduled";
-});
+}
 
-exports.interactivity = functions.https.onRequest((request, response) => {
+exports.interactivity = async (event, context) => {
     response.status(200).send();
 
     const payload = JSON.parse(request.body.payload);
@@ -117,4 +135,4 @@ exports.interactivity = functions.https.onRequest((request, response) => {
                 slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
             }
         });
-});
+};

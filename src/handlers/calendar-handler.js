@@ -1,11 +1,10 @@
 const {google} = require("googleapis");
 const calendar = google.calendar("v3");
-const functions = require("firebase-functions");
 
-const auth = new google.auth.OAuth2(functions.config().googleaccount.client, functions.config().googleaccount.secret, functions.config().googleaccount.redirect);
+const auth = new google.auth.OAuth2(process.env.googleaccount_client, process.env.googleaccount_secret, process.env.googleaccount_redirect);
 
 auth.setCredentials({
-    refresh_token: functions.config().googleaccount.token,
+    refresh_token: process.env.googleaccount_token,
 });
 
 // Returns next n events. Commonly used data in result.data.items

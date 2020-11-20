@@ -1,31 +1,31 @@
-const test = require("firebase-functions-test")();
+// const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
 
 // Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-test.mockConfig({
-    slack: {
-        token: "",
-    },
-    googleaccount: {
-        client: "",
-        secret: "",
-        redirect: "",
-    },
-});
+// test.mockConfig({
+//     slack: {
+//         token: "",
+//     },
+//     googleaccount: {
+//         client: "",
+//         secret: "",
+//         redirect: "",
+//     },
+// });
 
-const notify = require("../commands/notify");
+const notify = require("../../src/commands/notify");
 
 describe("commands/notify.js tests", function () {
-    describe("parseNotifyBlock", async function () {
+    describe("parseNotifyBlock", function () {
         it("non-null meeting block items", async function () {
             assert.deepStrictEqual(await notify.parseNotifyBlock("C014J93U4JZ"), require("./notifyBlocks/parsedNotifyBlock.json"));
         });
     });
 
-    describe("extractNotifyParameters", async function () {
+    describe("extractNotifyParameters", function () {
         it("missing or incorrect link", async function () {
             await expect(notify.extractNotifyParameters(require("./notifyBlocks/noMessageBlockResult.json"))).to.be.rejectedWith(
                 "The 'message link' input box must be a link to a waterloo rocketry message"

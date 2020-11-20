@@ -1,26 +1,25 @@
-const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
 
 // Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-test.mockConfig({
-    slack: {
-        token: "",
-    },
-    googleaccount: {
-        client: "",
-        secret: "",
-        redirect: "",
-    },
-});
+// test.mockConfig({
+//     slack: {
+//         token: "",
+//     },
+//     googleaccount: {
+//         client: "",
+//         secret: "",
+//         redirect: "",
+//     },
+// });
 
-const edit = require("../commands/meeting/edit");
+const edit = require("../../src/commands/meeting/edit");
 
 describe("commands/meeting/edit.js tests", function () {
     // One test for this should suffice, there is no logic, it's simply a method for changing a JSON object
-    describe("parseMeetingBlock", async function () {
+    describe("parseMeetingBlock", function () {
         it("parse a meeting block", async function () {
             assert.deepStrictEqual(
                 await edit.parseMeetingBlock(
@@ -28,7 +27,7 @@ describe("commands/meeting/edit.js tests", function () {
                         id: "123456789",
                         summary: "F20 Weekly Meetings",
                         start: {
-                            dateTime: new Date(2020, 10, 05),
+                            dateTime: new Date(2020, 10, 5),
                         },
                     },
                     {
@@ -47,7 +46,7 @@ describe("commands/meeting/edit.js tests", function () {
         });
     });
 
-    describe("extractMeetingParameters", async function () {
+    describe("extractMeetingParameters", function () {
         it("check null meeting block items", async function () {
             assert.deepStrictEqual(
                 await edit.extractMeetingParameters(require("./meetingBlocks/emptyMeetingResult.json"), {

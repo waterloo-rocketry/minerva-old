@@ -1,23 +1,23 @@
-const test = require("firebase-functions-test")();
+//const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
 
 // Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-test.mockConfig({
-    slack: {
-        token: "",
-    },
-    googleaccount: {
-        client: "",
-        secret: "",
-        redirect: "",
-    },
-});
+// test.mockConfig({
+//     slack: {
+//         token: "",
+//     },
+//     googleaccount: {
+//         client: "",
+//         secret: "",
+//         redirect: "",
+//     },
+// });
 
-require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
-const event = require("../scheduled/events");
+require("../../src/handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
+const event = require("../../src/scheduled/events");
 
 const ONE_MINUTE = 60000;
 const FIVE_MINUTES = 300000; // 5 minutes in milliseconds
@@ -59,7 +59,7 @@ describe("scheduled/event.js tests", function () {
 
         // replace getRandomEmoji with function with repeatable outcome
         let alternateEmoji = false;
-        require("../handlers/slack-handler").getRandomEmoji = function () {
+        require("../../src/handlers/slack-handler").getRandomEmoji = function () {
             alternateEmoji = !alternateEmoji;
 
             return alternateEmoji ? "watermelon" : "melon";
@@ -357,7 +357,7 @@ describe("scheduled/event.js tests", function () {
     describe("generateEmojiPair", function () {
         it("pass duplicate emojis", async function () {
             // Override to pass only one emoji
-            require("../handlers/slack-handler").getRandomEmoji = function () {
+            require("../../src/handlers/slack-handler").getRandomEmoji = function () {
                 return "watermelon";
             };
 
@@ -365,7 +365,7 @@ describe("scheduled/event.js tests", function () {
         });
         it("pass duplicate emojis then unique emojis", async function () {
             let callCount = 0;
-            require("../handlers/slack-handler").getRandomEmoji = function () {
+            require("../../src/handlers/slack-handler").getRandomEmoji = function () {
                 callCount++;
                 return callCount <= 5 ? "watermelon" : "melon"; // returns :watermelon: for comingEmoji + first 4 attempts to get notComingEmoji
             };
@@ -374,7 +374,7 @@ describe("scheduled/event.js tests", function () {
         });
         it("pass unique emojis", async function () {
             let alternateEmoji = false;
-            require("../handlers/slack-handler").getRandomEmoji = function () {
+            require("../../src/handlers/slack-handler").getRandomEmoji = function () {
                 alternateEmoji = !alternateEmoji;
                 return alternateEmoji ? "watermelon" : "melon"; // Alternates between returning two emojis
             };

@@ -8,6 +8,8 @@ module.exports.send = async function (originChannelId, trigger) {
         const loadingBlock = JSON.parse(JSON.stringify(require("../../blocks/loading.json")));
         loadingBlock.blocks[0].text.text = "Loading meeting details...";
 
+        console.log("OPENING VIEW");
+
         view = await slack_handler.openView(trigger, loadingBlock);
 
         const event = await calendar_handler.getNextEventByTypeAndChannel("meeting", originChannelId);

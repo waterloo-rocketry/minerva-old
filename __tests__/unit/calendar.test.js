@@ -1,24 +1,25 @@
-const test = require("firebase-functions-test")();
+//const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
 
 // Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-test.mockConfig({
-    slack: {
-        token: "",
-    },
-    googleaccount: {
-        client: "",
-        secret: "",
-        redirect: "",
-    },
-});
+// test.mockConfig({
+//     slack: {
+//         token: "",
+//     },
+//     googleaccount: {
+//         client: "",
+//         secret: "",
+//         redirect: "",
+//     },
+// });
 
-require("../handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
-const calendar_handler = require("../handlers/calendar-handler.js");
-const slack_handler = require("../handlers/slack-handler.js");
+const calendar_handler = require("../../src/handlers/calendar-handler");
+const slack_handler = require("../../src/handlers/slack-handler.js");
+slack_handler.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
+
 const LOWER_BOUND = 300000; // 5 minutes in milliseconds
 const UPPER_BOUND = 21600000; // 6 hours in milliseconds
 

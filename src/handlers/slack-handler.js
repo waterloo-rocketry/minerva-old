@@ -1,7 +1,6 @@
 const {WebClient} = require("@slack/web-api");
-const functions = require("firebase-functions");
 
-const web = new WebClient(functions.config().slack.token);
+const web = new WebClient(process.env.slack_token);
 const channelNameIdMapping = new Map();
 
 // https://api.slack.com/methods/chat.postMessage
