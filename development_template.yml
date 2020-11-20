@@ -17,6 +17,7 @@ Resources:
             Description: Minerva slack commands synchronous tasks
             Policies:
                 - AWSLambdaBasicExecutionRole
+            CodeUri: deploy
 
     slackCommandsAsynchronous:
         Type: AWS::Serverless::Function
@@ -29,6 +30,7 @@ Resources:
             Description: Minerva slack commands asychronous tasks
             Policies:
                 - AWSLambdaBasicExecutionRole
+            CodeUri: deploy
 
     interactivity:
         Type: AWS::Serverless::Function
@@ -41,6 +43,7 @@ Resources:
             Description: Minerva interactivity
             Policies:
                 - AWSLambdaBasicExecutionRole
+            CodeUri: deploy
 
     scheduled:
         Type: AWS::Serverless::Function
@@ -53,3 +56,4 @@ Resources:
             Description: Minerva scheduled events
             Policies:
                 - AWSLambdaBasicExecutionRole
+            CodeUri: deploy
