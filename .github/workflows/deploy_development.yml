@@ -30,4 +30,4 @@ jobs:
               uses: aws-actions/aws-cloudformation-github-deploy@v1
               with:
                   name: minerva
-                  template: development_template.yaml
+                  template: development_template.yml
