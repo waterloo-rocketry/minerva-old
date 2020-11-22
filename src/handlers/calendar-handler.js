@@ -1,10 +1,11 @@
 const {google} = require("googleapis");
 const calendar = google.calendar("v3");
+const environment = require("./environment-handler");
 
-const auth = new google.auth.OAuth2(process.env.googleaccount_client, process.env.googleaccount_secret, process.env.googleaccount_redirect);
+const auth = new google.auth.OAuth2(environment.googleClient, environment.googleSecret, environment.googleRedirect);
 
 auth.setCredentials({
-    refresh_token: process.env.googleaccount_token,
+    refresh_token: environment.googleToken,
 });
 
 // Returns next n events. Commonly used data in result.data.items

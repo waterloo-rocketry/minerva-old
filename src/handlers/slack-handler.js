@@ -1,6 +1,7 @@
 const {WebClient} = require("@slack/web-api");
+const environment = require("./environment-handler");
 
-const web = new WebClient(process.env.slack_token);
+const web = new WebClient(environment.slackToken);
 const channelNameIdMapping = new Map();
 
 // https://api.slack.com/methods/chat.postMessage
