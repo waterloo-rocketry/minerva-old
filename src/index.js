@@ -1,7 +1,3 @@
-const slack = require("./handlers/slack-handler");
-const events = require("./scheduled/events");
-const errors = require("./handlers/error-handler");
-const initialize = require("./interactivity/initialize");
 const https = require("https");
 const qs = require("querystring");
 
@@ -25,10 +21,8 @@ exports.slack_commands_sync = async (event, context) => {
             },
             res => {}
         );
-
         req.write(JSON.stringify(body));
         req.end();
-
         setTimeout(() => {
             resolve();
         }, 400);
@@ -49,6 +43,9 @@ exports.slack_commands_async = async (event, context) => {
         return;
     }
 
+    require("./handlers/environment-handler").setDefaults(context);
+    const slack = require("./handlers/slack-handler");
+
     const body = JSON.parse(event.body);
 
     try {
@@ -58,7 +55,7 @@ exports.slack_commands_async = async (event, context) => {
         }
     } catch (error) {
         try {
-            await errors.filter(error);
+            await require("./handlers/error-handler").filter(error);
         } catch (error) {
             await slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
 
@@ -75,37 +72,69 @@ exports.slack_commands_async = async (event, context) => {
 // We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 // prettier-ignore
 exports.scheduled = async (event, context) => {
-    if (new Date().getMinutes % 5 === 0) {
-        events.checkForEvents()
-            .then(() => {
-                // Do nothing
-            })
-            .catch(async error => {
-                try {
-                    await errors.filter(error);
-                } catch (error) {
-                    console.log(JSON.stringify(error));
-                    slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
-                }
-            });
-    }
+    require("./handlers/environment-handler").setDefaults(context);
+    const slack = require("./handlers/slack-handler");
+
+    //if (new Date().getMinutes % 2 === 0) {
+        try {
+            await require("./scheduled/events").checkForEvents();
+        } catch(error) {
+            try {
+                await require("./handlers/error-handler").filter(error);
+            } catch (error) {
+                console.log(JSON.stringify(error));
+                slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
+            }
+        }
+    //}
     // Check for events to initialize
     if (new Date().getMinutes === 0) {
-        initialize.send()
-            .then(() => {
-                // Do nothing
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        try {
+            await require("./interactivity/initialize").send();
+        } catch(error) {
+            console.log(error);
+        }
     }
     return "scheduled";
 }
 
-exports.interactivity = async (event, context) => {
-    response.status(200).send();
+exports.interactivity_sync = async (event, context) => {
+    if (event === null || event === undefined || event.body === undefined) {
+        console.log("Keep function hot");
+        return;
+    }
 
-    const payload = JSON.parse(request.body.payload);
+    const payload = qs.parse(event.body).payload;
+
+    await new Promise((resolve, reject) => {
+        const req = https.request(
+            "https://w81to1ds7f.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-1ZL8L59GESDW",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Content-Length": JSON.stringify(payload).length,
+                },
+            },
+            res => {}
+        );
+        req.write(JSON.stringify(payload));
+        req.end();
+        setTimeout(() => {
+            resolve();
+        }, 600);
+    });
+
+    return {
+        statusCode: 200,
+    };
+};
+
+exports.interactivity_async = async (event, context) => {
+    require("./handlers/environment-handler").setDefaults(context);
+
+    const slack = require("./handlers/slack-handler");
+    const payload = JSON.parse(JSON.parse(event.body));
 
     let metadata;
     if (payload.type === "view_submission") {
@@ -120,19 +149,17 @@ exports.interactivity = async (event, context) => {
         return;
     }
 
-    require("./handlers/interactivity-handler")
-        .process(payload, metadata)
-        .then(result => {
-            if (result !== undefined && result != "") {
-                slack.postEphemeralMessage(result, metadata.channel, payload.user.id);
-            }
-        })
-        .catch(async error => {
-            try {
-                await errors.filter(error);
-            } catch (error) {
-                console.log(JSON.stringify(error));
-                slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
-            }
-        });
+    try {
+        const result = await require("./handlers/interactivity-handler").process(payload, metadata);
+        if (result != undefined) {
+            await slack.postEphemeralMessage(result, body.channel_name, body.user_id);
+        }
+    } catch (error) {
+        try {
+            await require("./handlers/error-handler").filter(error);
+        } catch (error) {
+            console.log(error);
+            await slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
+        }
+    }
 };
