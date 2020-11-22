@@ -1,16 +1,13 @@
-const https = require("https");
-const qs = require("querystring");
-
 exports.slack_commands_sync = async (event, context) => {
     if (event === null || event === undefined || event.body === undefined) {
         console.log("Keep function hot");
         return;
     }
 
-    const body = qs.parse(event.body);
+    const body = require("querystring").parse(event.body);
 
     await new Promise((resolve, reject) => {
-        const req = https.request(
+        const req = require("https").request(
             "https://k0a0yv69m5.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsynchronous-1K6EO00AY77QT",
             {
                 method: "POST",
@@ -104,10 +101,10 @@ exports.interactivity_sync = async (event, context) => {
         return;
     }
 
-    const payload = qs.parse(event.body).payload;
+    const payload = require("querystring").parse(event.body).payload;
 
     await new Promise((resolve, reject) => {
-        const req = https.request(
+        const req = require("https").request(
             "https://w81to1ds7f.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-1ZL8L59GESDW",
             {
                 method: "POST",
