@@ -17,7 +17,6 @@ Resources:
             Description: Minerva slack commands synchronous tasks
             Policies:
                 - AWSLambdaBasicExecutionRole
-            CodeUri: deploy
 
     slackCommandsAsynchronous:
         Type: AWS::Serverless::Function
@@ -30,20 +29,30 @@ Resources:
             Description: Minerva slack commands asychronous tasks
             Policies:
                 - AWSLambdaBasicExecutionRole
-            CodeUri: deploy
 
-    interactivity:
+    interactivitySync:
         Type: AWS::Serverless::Function
         Properties:
             AutoPublishAlias: development
-            Handler: src/index.interactivity
+            Handler: src/index.interactivity_sync
             Runtime: nodejs12.x
             MemorySize: 128
             Timeout: 100
             Description: Minerva interactivity
             Policies:
                 - AWSLambdaBasicExecutionRole
-            CodeUri: deploy
+
+    interactivityAsync:
+        Type: AWS::Serverless::Function
+        Properties:
+            AutoPublishAlias: development
+            Handler: src/index.interactivity_async
+            Runtime: nodejs12.x
+            MemorySize: 128
+            Timeout: 100
+            Description: Minerva interactivity
+            Policies:
+                - AWSLambdaBasicExecutionRole
 
     scheduled:
         Type: AWS::Serverless::Function
@@ -56,4 +65,3 @@ Resources:
             Description: Minerva scheduled events
             Policies:
                 - AWSLambdaBasicExecutionRole
-            CodeUri: deploy
