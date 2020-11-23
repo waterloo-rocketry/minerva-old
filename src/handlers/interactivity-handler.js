@@ -2,7 +2,13 @@ const slack_handler = require("./slack-handler");
 
 module.exports.process = async function (payload, metadata) {
     slack_handler.postMessageToChannel(
-        new Date().toISOString() + " " + payload.user.name + " interacted with `" + metadata.type + "` for `" + metadata.subject + "`",
+        new Date().toISOString() +
+            " " +
+            payload.user.name +
+            " interacted with `" +
+            metadata.type +
+            "`" +
+            (metadata.subject != "" ? "for `" + metadata.subject + "`" : ""), // If the interaction has a subject, say the subject. Otherwise, do not.
         "minerva-log",
         false
     );

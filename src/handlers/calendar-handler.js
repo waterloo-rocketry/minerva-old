@@ -75,8 +75,8 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
 
     try {
         parameters = JSON.parse(event.description);
-    } catch (exception) {
-        return Promise.reject("Upcoming *" + summary + "* contains malformed JSON: " + exception);
+    } catch (error) {
+        return Promise.reject("Upcoming *" + event.summary + "* contains malformed JSON: " + error);
     }
 
     switch (parameters.eventType) {
@@ -89,7 +89,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         case "none":
             return Promise.reject("no-send");
         default:
-            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `eventType`");
+            return Promise.reject("Upcoming *" + event.summary + "* contains an unknown or missing `eventType`");
     }
 
     switch (parameters.alertType) {
@@ -102,11 +102,11 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         case "copy":
             break;
         default:
-            return Promise.reject("Upcoming *" + summary + "* contains an unknown or missing `alertType`");
+            return Promise.reject("Upcoming *" + event.summary + "* contains an unknown or missing `alertType`");
     }
 
     if (parameters.mainChannel === undefined || parameters.mainChannel === "") {
-        return Promise.reject("Upcoming meeting *" + summary + "* is missing a `mainChannel` element");
+        return Promise.reject("Upcoming meeting *" + event.summary + "* is missing a `mainChannel` element");
     }
 
     if (parameters.additionalChannels === "default") {
@@ -114,7 +114,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (!Array.isArray(parameters.additionalChannels)) {
-        return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed or missing `additional_channel` element");
+        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing `additional_channel` element");
     }
 
     // Get rid of the mainChannel if it is within additional channels
@@ -125,7 +125,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (parameters.agendaItems !== "" && !Array.isArray(parameters.agendaItems)) {
-        return Promise.reject("Upcoming meeting *" + summary + "* contains a malformed `agenda` element");
+        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed `agenda` element");
     }
 
     if (parameters.link === undefined || parameters.link === "") {
