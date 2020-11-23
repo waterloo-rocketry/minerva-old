@@ -54,6 +54,8 @@ exports.slack_commands_async = async (event, context) => {
         try {
             await require("./handlers/error-handler").filter(error);
         } catch (error) {
+            console.log(error);
+
             await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
 
             await slack.postEphemeralMessage(
@@ -157,7 +159,9 @@ exports.interactivity_async = async (event, context) => {
             await require("./handlers/error-handler").filter(error);
         } catch (error) {
             console.log(error);
+
             await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
+
             await slack.postEphemeralMessage(
                 "Command failed: " + error + "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
                 metadata.channel,

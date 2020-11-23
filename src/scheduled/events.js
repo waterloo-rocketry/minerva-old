@@ -149,7 +149,6 @@ module.exports.generateEmojiPair = async function () {
 };
 
 module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
-    console.log(channel + " " + timestamp);
     await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
     await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
 };

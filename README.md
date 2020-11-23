@@ -2,11 +2,11 @@
 
 ## What is Minerva?
 
-Minerva is Waterloo Rocketry's soon-to-be slackbot. Minerva will handle all meetings, commands, and other slackbot stuff for the entire team.
+Minerva is Waterloo Rocketry's custom slackbot. Minerva will handle all meetings, commands, and other slackbot stuff for the entire team.
 
 ## How does it work?
 
-Minerva makes use of Google Firebase Functions to listen to HTTP requests made by Slack and other APIs to create custom responses.
+Minerva makes use AWS Lambda Functions to listen to HTTP requests made by Slack and other APIs to create custom responses.
 
 ## Features
 

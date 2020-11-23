@@ -3,7 +3,8 @@ const calendar_handler = require("../handlers/calendar-handler");
 const edit = require("../commands/meeting/edit");
 
 module.exports.send = async function () {
-    const events = (await calendar_handler.getNextEvents(5)).data.items;
+    // Identify any events in the next 10 that don't have a defined description, if they do, send a inquiry to initialize it.
+    const events = (await calendar_handler.getNextEvents(10)).data.items;
     const inquiries = [];
     for (let event of events) {
         if (event.description === "" || event.description === undefined) {
@@ -39,8 +40,7 @@ module.exports.recieve = async function (eventId, trigger) {
             const errorBlock = require("../blocks/error.json");
             errorBlock.blocks[0].text.text = "An error has occured:\n\n*" + error + "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
 
-            // Don't 'await' this since we only care to push the update. If they have closed the view or something, the message in chat will still show the error.
-            slack_handler.updateView(view.view.id, errorBlock);
+            await slack_handler.updateView(view.view.id, errorBlock);
         }
         return Promise.reject(error);
     }

@@ -22,8 +22,7 @@ module.exports.send = async function (originChannelId, trigger) {
             const errorBlock = require("../../blocks/error.json");
             errorBlock.blocks[0].text.text = "An error has occured:\n\n*" + error + "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
 
-            // Don't 'await' this since we only care to push the update. If they have closed the view or something, the message in chat will still show the error.
-            slack_handler.updateView(view.view.id, errorBlock);
+            await slack_handler.updateView(view.view.id, errorBlock);
         }
         return Promise.reject(error);
     }
