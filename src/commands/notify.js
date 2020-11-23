@@ -9,6 +9,7 @@ module.exports.send = async function (userId, trigger, initialChannel) {
         view = await slack_handler.openView(trigger, loadingBlock);
 
         await slack_handler.isAdmin(userId);
+
         const notifyBlock = await this.parseNotifyBlock(initialChannel);
 
         view = await slack_handler.updateView(view.view.id, notifyBlock);
@@ -27,19 +28,20 @@ module.exports.send = async function (userId, trigger, initialChannel) {
 module.exports.recieve = async function (view, metadata) {
     const parameters = await this.extractNotifyParameters(view, metadata);
 
-    console.log(JSON.stringify(parameters));
-
     const message = (parameters.alertType === "alert" ? "<!channel>\n" : "") + parameters.link;
 
     if (parameters.alertType === "alert-single-channel") {
         // when we alert single channel guests we simply want to PM them the message
-        await slack_handler.directMessageSingleChannelGuestsInChannels(
-            message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+        const responses = await slack_handler.directMessageSingleChannelGuestsInChannels(
+            message +
+                "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert.\n\n" +
+                "If you're unsure what this message is about, feel free to message the original poster for more information._",
             parameters.channels
         );
+        return responses.length + " single-channel-guests messaged.";
     } else {
         // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
-        await slack_handler.postMessageToChannels(message, parameters.channels, true);
+        await Promise.all(slack_handler.postMessageToChannels(message, parameters.channels, true));
     }
 };
 

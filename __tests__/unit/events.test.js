@@ -34,17 +34,13 @@ describe("scheduled/event.js tests", function () {
         it("check event just below 5 minutes away", async function () {
             assert.equal(await event.isEventSoon(FIVE_MINUTES - 50000), true);
         });
-        it("check event just above 5 minutes away", async function () {
-            assert.equal(await event.isEventSoon(FIVE_MINUTES + 50000), true);
-        });
         it("check event somewhere between bounds", async function () {
             await expect(event.isEventSoon(FIVE_MINUTES + ONE_MINUTE + 1)).to.be.rejectedWith("no-send");
             await expect(event.isEventSoon(SIX_HOURS - ONE_MINUTE - 1)).to.be.rejectedWith("no-send");
         });
         it("check event within upper bounds", async function () {
-            assert.equal(await event.isEventSoon(SIX_HOURS), false);
             assert.equal(await event.isEventSoon(SIX_HOURS - 1), false);
-            assert.equal(await event.isEventSoon(SIX_HOURS + 1), false);
+            assert.equal(await event.isEventSoon(SIX_HOURS - ONE_MINUTE + 1), false);
         });
         it("check event above upper bounds", async function () {
             await expect(event.isEventSoon(SIX_HOURS + FIVE_MINUTES + 1)).to.be.rejectedWith("no-send");
@@ -102,8 +98,7 @@ describe("scheduled/event.js tests", function () {
         it("check far message", async function () {
             // prettier-ignore
             const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
+                "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nPlease see the agenda items:"
                 + "\n    • item"
                 + "\n    • item1"
@@ -134,8 +129,7 @@ describe("scheduled/event.js tests", function () {
         it("check no agenda items", async function () {
             // prettier-ignore
             const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
+                "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nThere are currently no agenda items listed for this meeting."
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
@@ -293,8 +287,7 @@ describe("scheduled/event.js tests", function () {
         it("check other message", async function () {
             // prettier-ignore
             const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
+                "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nNotes: N/A"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
@@ -380,6 +373,85 @@ describe("scheduled/event.js tests", function () {
             };
 
             assert.deepStrictEqual(await event.generateEmojiPair(), ["watermelon", "melon"]);
+        });
+    });
+
+    describe("generateResultMessage", function () {
+        it("check close alert message", async function () {
+            assert.deepStrictEqual(
+                event.generateResultMessage(
+                    {summary: "Test Event"},
+                    {
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
+                        agendaItems: ["item", "item1", "item2"],
+                        notes: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                    },
+                    true,
+                    3
+                ),
+                "5 minute reminder sent for `Test Event`. 3 single-channel-guests messaged across 1 channels."
+            );
+        });
+        it("check far alert message", async function () {
+            assert.deepStrictEqual(
+                event.generateResultMessage(
+                    {summary: "Test Event"},
+                    {
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
+                        agendaItems: ["item", "item1", "item2"],
+                        notes: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                    },
+                    false,
+                    3
+                ),
+                "6 hour reminder sent for `Test Event`. 3 single-channel-guests messaged across 1 channels."
+            );
+        });
+        it("check copy message multiple channels", async function () {
+            assert.deepStrictEqual(
+                event.generateResultMessage(
+                    {summary: "Test Event"},
+                    {
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "copy",
+                        agendaItems: ["item", "item1", "item2"],
+                        notes: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                    },
+                    false,
+                    3
+                ),
+                "6 hour reminder sent for `Test Event`. 2 channels messaged."
+            );
+        });
+        it("check copy message one channel", async function () {
+            assert.deepStrictEqual(
+                event.generateResultMessage(
+                    {summary: "Test Event"},
+                    {
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: [],
+                        alertType: "copy",
+                        agendaItems: ["item", "item1", "item2"],
+                        notes: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                    },
+                    false,
+                    3
+                ),
+                "6 hour reminder sent for `Test Event`. 1 channel messaged."
+            );
         });
     });
 });
