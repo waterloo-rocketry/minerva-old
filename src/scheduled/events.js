@@ -12,51 +12,47 @@ module.exports.checkForEvents = async function () {
     // we cap this at 4 events
     const events = (await calendar_handler.getNextEvents(4)).data.items;
 
-    let results = [];
     for (let event of events) {
         const startTimeDate = new Date(event.start.dateTime);
         const timeDifference = startTimeDate.getTime() - Date.now();
 
         const isEventSoon = await this.isEventSoon(timeDifference);
-
         const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
 
-        const emojiPair = !(isEventSoon && parameters.type === "meeting") ? await this.generateEmojiPair() : undefined;
+        const emojiPair = !isEventSoon && parameters.eventType === "meeting" ? await this.generateEmojiPair() : undefined;
 
         const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
 
-        const messageResponses = [];
+        let channelMessagePromises = [];
+        let directMessagePromises = [];
 
-        messageResponses.push(
+        channelMessagePromises.push(
             slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
         );
 
         if (parameters.alertType === "alert-single-channel") {
-            messageResponses.push(
-                slack_handler.directMessageSingleChannelGuestsInChannels(
-                    message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
-                    parameters.additionalChannels
-                )
+            directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
+                message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+                parameters.additionalChannels
             );
-
-            for (let response of dmMessageResponses) {
-                messageResponses.push(response);
-            }
         } else {
-            const additionalChannelMessageResponses = await slack_handler.postMessageToChannels(message, parameters.additionalChannels, false);
-
-            for (let response of additionalChannelMessageResponses) {
-                messageResponses.push(response);
-            }
+            channelMessagePromises.push(slack_handler.postMessageToChannels(message, parameters.additionalChannels, false));
         }
 
+        channelMessagePromises = await Promise.all(channelMessagePromises);
+
         if (emojiPair !== undefined) {
-            for (let response of messageResponses) {
+            for (let response of channelMessagePromises) {
                 await this.seedMessageReactions(response.channel, emojiPair, response.ts);
             }
         }
+
+        // Visual Studio might not recognize the 'await' as doing anything useful, but since directMessageSingleChannelGuestsInChannels is async,
+        // the result is wrapped in a promise, thus, it is actually useful.
+        directMessagePromises = await directMessagePromises;
+
+        await slack_handler.postMessageToChannel(this.generateResultMessage(event, parameters, isEventSoon, directMessagePromises.length), "minerva-log", false);
     }
-    return Promise.all(results);
 };
 
 module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate, emojis) {
@@ -93,18 +89,41 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
     }
 
-    if (parameters.alertType === "alert" || parameters.alertType === "alert-single-channel") {
+    if ((parameters.alertType === "alert" || parameters.alertType === "alert-single-channel") && isEventSoon) {
         message = "<!channel>\n" + message;
     }
 
     return message;
 };
 
+module.exports.generateResultMessage = function (event, parameters, isEventSoon, totalDirectMessagesSent) {
+    let message = "";
+
+    if (isEventSoon) {
+        message += "5 minute";
+    } else {
+        message += "6 hour";
+    }
+
+    message += " reminder sent for `" + event.summary + "`. ";
+
+    if (parameters.alertType === "alert-single-channel") {
+        message += totalDirectMessagesSent + " single-channel-guests messaged across " + parameters.additionalChannels.length + " channels.";
+    } else {
+        message += parameters.additionalChannels.length + 1 + " channel";
+        if (parameters.additionalChannels != 0) {
+            message += "s";
+        }
+        message += " messaged.";
+    }
+    return message;
+};
+
 module.exports.isEventSoon = async function (timeDifference) {
-    if (Math.abs(timeDifference - FIVE_MINUTES) < ONE_MINUTE) {
-        // if the time difference minus lower bound is less than 1 minute, than event is 5 minutes away. Event is soon.
+    if (timeDifference - FIVE_MINUTES < 0 && timeDifference - FIVE_MINUTES > -ONE_MINUTE) {
+        // if the time difference minus lower bound plus one minute is less than 1 minute, than event is 5 minutes away. Event is soon.
         return Promise.resolve(true);
-    } else if (Math.abs(timeDifference - SIX_HOURS) < ONE_MINUTE) {
+    } else if (timeDifference - SIX_HOURS < 0 && timeDifference - SIX_HOURS > -ONE_MINUTE) {
         // if the time difference is within 1 minute of 6 hours away
         return Promise.resolve(false);
     } else {
@@ -130,6 +149,7 @@ module.exports.generateEmojiPair = async function () {
 };
 
 module.exports.seedMessageReactions = async function (channel, emojis, timestamp) {
+    console.log(channel + " " + timestamp);
     await slack_handler.addReactionToMessage(channel, emojis[0], timestamp);
     await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
 };
