@@ -14,13 +14,14 @@ module.exports.postMessageToChannel = function (message, channel, unfurl = trues
 };
 
 // Given array of channels post the same message across all channels
+// Returns array of promises
 module.exports.postMessageToChannels = function (message, channels, unfurl = true) {
     const promises = [];
     for (var channel of channels) {
         if (channel === "") continue; //this is if we remove the initial channel sometimes it gets left in as '', possible to fix this
         promises.push(this.postMessageToChannel(message, channel, unfurl));
     }
-    return Promise.all(promises);
+    return promises;
 };
 
 // same as above, just with a thread_ts option
@@ -58,20 +59,20 @@ module.exports.directMessageUser = function (message, userId, unfurl) {
 };
 
 // Someone think of a better name that follows previous convention
-// Returns a single promise with the message promises wrapped inside.
+// Returns an array of message promises
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
-        const memberPromises = [];
+        let memberPromises = [];
         const messagePromises = [];
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
         for (const channel of channels) {
             // get members of the channel
-            memberPromises.push(await this.getChannelMembers(channel));
+            memberPromises.push(this.getChannelMembers(channel));
         }
 
-        await Promise.all(memberPromises);
+        memberPromises = await Promise.all(memberPromises);
 
         for (members of memberPromises) {
             members = members.members;
@@ -79,11 +80,11 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
             const singleChannelMembersInChannel = members.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
-                messagePromises.push(await this.directMessageUser(message, member, true));
+                messagePromises.push(this.directMessageUser(message, member, true));
             }
         }
 
-        return Promise.all(messagePromises);
+        return messagePromises;
     } catch (error) {
         return Promise.reject(error);
     }
