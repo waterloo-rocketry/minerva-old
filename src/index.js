@@ -54,7 +54,7 @@ exports.slack_commands_async = async (event, context) => {
         try {
             await require("./handlers/error-handler").filter(error);
         } catch (error) {
-            await slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
+            await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
 
             await slack.postEphemeralMessage(
                 "Command failed: " + error + "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
@@ -72,20 +72,21 @@ exports.scheduled = async (event, context) => {
     require("./handlers/environment-handler").setDefaults(context);
     const slack = require("./handlers/slack-handler");
 
-    //if (new Date().getMinutes % 2 === 0) {
+    // Check for event reminders every 5 minutes
+    if (new Date().getMinutes() % 5 === 0) {
         try {
             await require("./scheduled/events").checkForEvents();
         } catch(error) {
             try {
                 await require("./handlers/error-handler").filter(error);
             } catch (error) {
-                console.log(JSON.stringify(error));
-                slack.postMessageToChannel("Error with upcoming meeting:\n" + error, "minerva-log", false);
+                console.log(error);
+                slack.postMessageToChannel("Error with upcoming meeting:\n`" + error + "`", "minerva-log", false);
             }
         }
-    //}
-    // Check for events to initialize
-    if (new Date().getMinutes === 0) {
+    }
+    // Check for events to initialize once an hour
+    if (new Date().getMinutes() === 0) {
         try {
             await require("./interactivity/initialize").send();
         } catch(error) {
@@ -149,14 +150,19 @@ exports.interactivity_async = async (event, context) => {
     try {
         const result = await require("./handlers/interactivity-handler").process(payload, metadata);
         if (result != undefined) {
-            await slack.postEphemeralMessage(result, body.channel_name, body.user_id);
+            await slack.postEphemeralMessage(result, metadata.channel, payload.user.id);
         }
     } catch (error) {
         try {
             await require("./handlers/error-handler").filter(error);
         } catch (error) {
             console.log(error);
-            await slack.postMessageToChannel("```" + JSON.stringify(error, null, 4) + "```", "minerva-log", false);
+            await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
+            await slack.postEphemeralMessage(
+                "Command failed: " + error + "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
+                metadata.channel,
+                payload.user.id
+            );
         }
     }
 };
