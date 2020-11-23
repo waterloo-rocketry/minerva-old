@@ -22,7 +22,7 @@
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Editing meeting: *F20 Weekly Meetings* occuring on *November 6th, 2020 at 12:00 AM*"
+                "text": "Editing meeting: *F20 Weekly Meetings* occuring on *November 6th, 2020 at 3:33 AM*"
             },
             "block_id": "meeting_title"
         },
