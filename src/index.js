@@ -30,17 +30,22 @@ exports.slack_commands_sync = async (event, context) => {
         headers: {
             "Content-Type": "application/json",
         },
-        body: "Command Recieved. Please wait up to 10 seconds before trying again.",
+        body: "Command Received. Please wait up to 10 seconds before trying again.",
     };
 };
 
 exports.slack_commands_async = async (event, context) => {
+    require("./handlers/environment-handler").setDefaults(context);
     if (event === null || event === undefined || event.body === undefined) {
+        require("./handlers/environment-handler");
+        require("./handlers/command-handler");
+        require("./commands/meeting/edit");
+        require("./commands/meeting");
+        require("./commands/notify");
         console.log("Keep function hot");
         return;
     }
 
-    require("./handlers/environment-handler").setDefaults(context);
     const slack = require("./handlers/slack-handler");
 
     const body = JSON.parse(event.body);
