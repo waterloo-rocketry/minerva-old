@@ -19,7 +19,8 @@ module.exports.checkForEvents = async function () {
         const isEventSoon = await this.isEventSoon(timeDifference);
         const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
 
-        const emojiPair = !isEventSoon && parameters.eventType === "meeting" ? await this.generateEmojiPair() : undefined;
+        //prettier-ignore
+        const emojiPair = (!isEventSoon && parameters.eventType === "meeting") ? await this.generateEmojiPair() : undefined;
 
         const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
 
@@ -71,7 +72,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
             message += "\nPlease see the agenda items:\n    • " + parameters.agendaItems.join("\n    • ");
         }
     } else if (parameters.eventType === "test") {
-        message += "\nToday's test is located at: " + (event.location === undefined ? "Texas" : event.location);
+        message += "\nToday's test is located at: " + (parameters.location === "" ? "Texas" : parameters.location);
     }
 
     if (parameters.notes != "") {
@@ -79,12 +80,16 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
     }
 
     if (isEventSoon && parameters.eventType === "meeting") {
-        // prettier-ignore
-        message +=
-		    "\nWays to attend:" +
-		    "\n      :office: In person @ " + event.location +
-		    "\n      :globe_with_meridians: Online @ " + parameters.link +
-		    "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+        message += "\nWays to attend:";
+        if (parameters.location !== "") {
+            message += "\n      :office: In person @ " + parameters.location;
+        }
+        if (parameters.link !== "") {
+            message += "\n      :globe_with_meridians: Online @ " + parameters.link;
+            if (parameters.link === "https://meet.jit.si/bay_area") {
+                message += "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+            }
+        }
     } else {
         message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
     }

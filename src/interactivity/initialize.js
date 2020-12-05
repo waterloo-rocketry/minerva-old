@@ -14,7 +14,7 @@ module.exports.send = async function () {
     await Promise.all(inquiries);
 };
 
-module.exports.recieve = async function (eventId, trigger) {
+module.exports.receive = async function (eventId, trigger) {
     var view;
     try {
         view = await slack_handler.openView(trigger, require("../blocks/loading.json"));

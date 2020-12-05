@@ -1,20 +1,7 @@
-// const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
-
-// Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-// test.mockConfig({
-//     slack: {
-//         token: "",
-//     },
-//     googleaccount: {
-//         client: "",
-//         secret: "",
-//         redirect: "",
-//     },
-// });
 
 const notify = require("../../src/commands/notify");
 
@@ -28,7 +15,7 @@ describe("commands/notify.js tests", function () {
     describe("extractNotifyParameters", function () {
         it("missing or incorrect link", async function () {
             await expect(notify.extractNotifyParameters(require("./notifyBlocks/noMessageBlockResult.json"))).to.be.rejectedWith(
-                "The 'message link' input box must be a link to a waterloo rocketry message"
+                "The 'message link' input box must be a link to a Waterloo Rocketry slack message"
             );
         });
         it("no alert type", async function () {
@@ -36,7 +23,7 @@ describe("commands/notify.js tests", function () {
         });
         it("no channels", async function () {
             await expect(notify.extractNotifyParameters(require("./notifyBlocks/noChannelsBlockResult.json"))).to.be.rejectedWith(
-                "You must select at least one additional channel, not including the messages original channel"
+                "You must select at least one additional channel, not including the message's original channel"
             );
         });
         it("good notify block", async function () {

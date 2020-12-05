@@ -1,20 +1,7 @@
-//const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
-
-// Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-// test.mockConfig({
-//     slack: {
-//         token: "",
-//     },
-//     googleaccount: {
-//         client: "",
-//         secret: "",
-//         redirect: "",
-//     },
-// });
 
 const calendar_handler = require("../../src/handlers/calendar-handler");
 const slack_handler = require("../../src/handlers/slack-handler.js");

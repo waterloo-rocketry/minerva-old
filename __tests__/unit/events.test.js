@@ -1,20 +1,7 @@
-//const test = require("firebase-functions-test")();
 const assert = require("assert");
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
-
-// Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-// test.mockConfig({
-//     slack: {
-//         token: "",
-//     },
-//     googleaccount: {
-//         client: "",
-//         secret: "",
-//         redirect: "",
-//     },
-// });
 
 require("../../src/handlers/slack-handler").defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 const event = require("../../src/scheduled/events");
@@ -52,7 +39,9 @@ describe("scheduled/event.js tests", function () {
             summary: "Test Event",
             location: "The Bay",
         };
-
+        const testEventNoLocation = {
+            summary: "Test Event",
+        };
         // replace getRandomEmoji with function with repeatable outcome
         let alternateEmoji = false;
         require("../../src/handlers/slack-handler").getRandomEmoji = function () {
@@ -87,6 +76,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
                     true,
@@ -117,6 +107,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     SIX_HOURS - 1,
                     false,
@@ -145,6 +136,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: "",
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     SIX_HOURS - 1,
                     false,
@@ -179,6 +171,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
                     true,
@@ -213,6 +206,41 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
+                    },
+                    FIVE_MINUTES - 1,
+                    true,
+                    new Date(1592900639642)
+                ),
+                expectedMessage
+            );
+        });
+        it("check meeting message no location", async function () {
+            // prettier-ignore
+            const expectedMessage =
+                "<!channel>"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
+                + "\nPlease see the agenda items:"
+                + "\n    • item"
+                + "\n    • item1"
+                + "\n    • item2"
+                + "\nNotes: N/A"
+                + "\nWays to attend:"
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+
+            assert.deepStrictEqual(
+                await event.generateMessage(
+                    testEventNoLocation,
+                    {
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
+                        agendaItems: ["item", "item1", "item2"],
+                        notes: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                        location: "",
                     },
                     FIVE_MINUTES - 1,
                     true,
@@ -233,8 +261,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/not_bay_area"
-                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/not_bay_area";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -247,6 +274,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/not_bay_area",
+                        location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
                     true,
@@ -275,6 +303,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
                     true,
@@ -302,6 +331,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     SIX_HOURS - 1,
                     false,
@@ -337,6 +367,7 @@ describe("scheduled/event.js tests", function () {
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
                         link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
                     true,

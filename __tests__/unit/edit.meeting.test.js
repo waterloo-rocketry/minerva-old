@@ -3,18 +3,6 @@ const chai = require("chai");
 chai.use(require("chai-as-promised"));
 const expect = require("chai").expect;
 
-// Although we will not be using any API features, without mocking these values they become undefined and the tests fail
-// test.mockConfig({
-//     slack: {
-//         token: "",
-//     },
-//     googleaccount: {
-//         client: "",
-//         secret: "",
-//         redirect: "",
-//     },
-// });
-
 const edit = require("../../src/commands/meeting/edit");
 
 describe("commands/meeting/edit.js tests", function () {

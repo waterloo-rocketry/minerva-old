@@ -15,7 +15,7 @@ Minerva makes use AWS Lambda Functions to listen to HTTP requests made by Slack 
 
 ### Notify
 
-This is the Slack command `/notify`. Using this command allows you to copy a message from one channel to others with a variety of parameters. **This is restricted to admins only**.
+This is the Slack command `/notify`. Using this command allows you to broadcast messages from one channel to the other. **This is restricted to admins only**.
 
 #### Required parameters
 

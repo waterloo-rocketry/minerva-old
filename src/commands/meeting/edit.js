@@ -28,7 +28,7 @@ module.exports.send = async function (originChannelId, trigger) {
     }
 };
 
-module.exports.recieve = async function (meetingBlock, metadata) {
+module.exports.receive = async function (meetingBlock, metadata) {
     const parameters = await this.extractMeetingParameters(meetingBlock, metadata);
 
     const eventId = parameters.eventId;

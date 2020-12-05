@@ -25,7 +25,7 @@ module.exports.send = async function (userId, trigger, initialChannel) {
     }
 };
 
-module.exports.recieve = async function (view, metadata) {
+module.exports.receive = async function (view, metadata) {
     const parameters = await this.extractNotifyParameters(view, metadata);
 
     const message = (parameters.alertType === "alert" ? "<!channel>\n" : "") + parameters.link;
@@ -71,7 +71,7 @@ module.exports.extractNotifyParameters = async function (view) {
     };
 
     if (!parameters.link.startsWith("https://waterloorocketry.slack.com/")) {
-        return Promise.reject("The 'message link' input box must be a link to a waterloo rocketry message");
+        return Promise.reject("The 'message link' input box must be a link to a Waterloo Rocketry slack message");
     }
 
     const initialChannel = parameters.link.split("/")[4];
@@ -80,7 +80,7 @@ module.exports.extractNotifyParameters = async function (view) {
     parameters.channels = parameters.channels.filter(value => value != initialChannel);
 
     if (parameters.channels.length === 0) {
-        return Promise.reject("You must select at least one additional channel, not including the messages original channel");
+        return Promise.reject("You must select at least one additional channel, not including the message's original channel");
     }
 
     return parameters;
