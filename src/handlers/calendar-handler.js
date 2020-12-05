@@ -54,7 +54,12 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
 
         event.description = event.description.replace(/<.*?>/g, "");
 
-        const parameters = await this.getParametersFromDescription(event, require("./slack-handler").defaultChannels);
+        let parameters;
+        try {
+            parameters = await this.getParametersFromDescription(event, require("./slack-handler").defaultChannels);
+        } catch (error) {
+            continue;
+        }
 
         if (parameters.eventType != type) continue;
 
