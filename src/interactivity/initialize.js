@@ -3,11 +3,11 @@ const calendar_handler = require("../handlers/calendar-handler");
 const edit = require("../commands/meeting/edit");
 
 module.exports.send = async function () {
-    // Identify any events in the next 10 that don't have a defined description, if they do, send a inquiry to initialize it.
+    // Get the next 10 events, if the description is empty and the event happens on the next day, send an initialize message
     const events = (await calendar_handler.getNextEvents(10)).data.items;
     const inquiries = [];
     for (let event of events) {
-        if (event.description === "" || event.description === undefined) {
+        if ((event.description === "" || event.description === undefined) && this.isEventTomorrow(new Date(event.start.dateTime))) {
             inquiries.push(this.inquire(event));
         }
     }
@@ -52,4 +52,11 @@ module.exports.inquire = async function (event) {
     initializeBlock[1].elements[0].value = event.id;
 
     await slack_handler.postInteractiveMessage(initializeBlock, "minerva-log");
+};
+
+module.exports.isEventTomorrow = function (eventStartDate) {
+    const tomorrow = new Date();
+    console.log(tomorrow);
+    tomorrow.setDate(new Date().getDate() + 1);
+    return eventStartDate.getDate() === tomorrow.getDate();
 };

@@ -8,8 +8,9 @@
         "aws-sdk": "^2.794.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
-        "googleapis": "^39.2.0",
+        "googleapis": "^66.0.0",
         "lodash": "^4.17.19",
+        "mockdate": "^3.0.2",
         "moment": "^2.27.0",
         "moment-timezone": "^0.5.31"
     },
