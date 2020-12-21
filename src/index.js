@@ -93,7 +93,7 @@ exports.scheduled = async (event, context) => {
         }
     }
     // Check for events to initialize at midnight every night.
-    if (new Date().getHours() === 0) {
+    if (new Date().getHours() === 0 && new Date().getMinutes() === 0) {
         try {
             await require("./interactivity/initialize").send();
         } catch(error) {
