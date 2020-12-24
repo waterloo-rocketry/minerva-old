@@ -9,6 +9,10 @@ jobs:
         steps:
             - name: Check out code
               uses: actions/checkout@v2
+            - name: Setup timezone
+              uses: zcong1993/setup-timezone@v1.1.1
+              with:
+                timezone: EST
             - name: Use Node.js 12.x
               uses: actions/setup-node@v1
               with:
