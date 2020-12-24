@@ -1,11 +1,11 @@
 const {WebClient} = require("@slack/web-api");
-const functions = require("firebase-functions");
+const environment = require("./environment-handler");
 
-const web = new WebClient(functions.config().slack.token);
+const web = new WebClient(environment.slackToken);
 const channelNameIdMapping = new Map();
 
 // https://api.slack.com/methods/chat.postMessage
-module.exports.postMessageToChannel = function (message, channel, unfurl = true) {
+module.exports.postMessageToChannel = function (message, channel, unfurl = trues) {
     return web.chat.postMessage({
         text: message,
         channel: channel,
@@ -14,60 +14,77 @@ module.exports.postMessageToChannel = function (message, channel, unfurl = true)
 };
 
 // Given array of channels post the same message across all channels
+// Returns array of promises
 module.exports.postMessageToChannels = function (message, channels, unfurl = true) {
     const promises = [];
     for (var channel of channels) {
         if (channel === "") continue; //this is if we remove the initial channel sometimes it gets left in as '', possible to fix this
         promises.push(this.postMessageToChannel(message, channel, unfurl));
     }
-    return Promise.all(promises);
+    return promises;
 };
 
-// https://api.slack.com/methods/chat.postMessage
 // same as above, just with a thread_ts option
-module.exports.postMessageToThread = function (message, channel, thread_ts) {
+// https://api.slack.com/methods/chat.postMessage
+module.exports.postMessageToThread = function (message, channel, threadTs) {
     return web.chat.postMessage({
         text: message,
         channel: channel,
-        thread_ts: thread_ts,
+        thread_ts: threadTs,
     });
 };
 
 // These are messages that only appear for one person
 // https://api.slack.com/methods/chat.postEphemeral
-module.exports.postEphemeralMessage = function (message, channel, user_id) {
+module.exports.postEphemeralMessage = function (message, channel, userId) {
     return web.chat.postEphemeral({
         channel: channel,
         text: message,
-        user: user_id,
+        user: userId,
+    });
+};
+
+// https://api.slack.com/methods/chat.postMessage
+module.exports.postInteractiveMessage = function (blocks, channel) {
+    return web.chat.postMessage({
+        blocks: blocks,
+        channel: channel,
     });
 };
 
 // basically just an alias
 // https://api.slack.com/methods/chat.postMessage
-module.exports.directMessageUser = function (message, user_id, unfurl) {
-    return this.postMessageToChannel(message, user_id, unfurl);
+module.exports.directMessageUser = function (message, userId, unfurl) {
+    return this.postMessageToChannel(message, userId, unfurl);
 };
 
 // Someone think of a better name that follows previous convention
+// Returns an array of message promises
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
     try {
-        const promises = [];
+        let memberPromises = [];
+        const messagePromises = [];
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
         // check each channel
         for (const channel of channels) {
             // get members of the channel
-            const channelMembers = (await this.getChannelMembers(channel)).members;
+            memberPromises.push(this.getChannelMembers(channel));
+        }
 
-            const singleChannelMembersInChannel = channelMembers.filter(member => singleChannelGuests.includes(member));
+        memberPromises = await Promise.all(memberPromises);
+
+        for (members of memberPromises) {
+            members = members.members;
+
+            const singleChannelMembersInChannel = members.filter(member => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
-                promises.push(await this.directMessageUser(message, member, true));
+                messagePromises.push(this.directMessageUser(message, member, true));
             }
         }
 
-        return Promise.resolve(promises);
+        return messagePromises;
     } catch (error) {
         return Promise.reject(error);
     }
@@ -75,19 +92,18 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
 
 // https://api.slack.com/methods/reactions.add
 module.exports.addReactionToMessage = function (channel, emoji, timestamp) {
-
     return web.reactions.add({
         channel: channel,
         name: emoji,
-        timestamp: timestamp
+        timestamp: timestamp,
     });
 };
 
 // Reminder: user info is returned in the data.user object, not just data
 // https://api.slack.com/methods/users.info
-module.exports.getUserInfo = function (user_id) {
+module.exports.getUserInfo = function (userId) {
     return web.users.info({
-        user: user_id,
+        user: userId,
     });
 };
 
@@ -137,11 +153,10 @@ module.exports.generateChannelNameIdMapping = async function () {
 };
 
 // https://api.slack.com/methods/conversations.list
-// Limit set to 900 because SlackAPI default is 100, and I never want to deal with this issue again
-module.exports.getChannels = function (types, exclude_archived) {
+module.exports.getChannels = function (types, excludeArchived) {
     return web.conversations.list({
         types: types,
-        exclude_archived: exclude_archived,
+        exclude_archived: excludeArchived,
         limit: 900,
     });
 };
@@ -163,4 +178,20 @@ module.exports.getRandomEmoji = async function () {
     // This will never return the final object in the list since the domain of Math.random is [0, 1)
     // There is likely a better sol'n. But this works
     return emojiArray[Math.floor(Math.random() * emojiArray.length)];
+};
+
+// https://api.slack.com/methods/view.open
+module.exports.openView = async function (triggerId, view) {
+    return web.views.open({
+        trigger_id: triggerId,
+        view: view,
+    });
+};
+
+// https://api.slack.com/methods/view.update
+module.exports.updateView = async function (viewId, view) {
+    return web.views.update({
+        view_id: viewId,
+        view: view,
+    });
 };

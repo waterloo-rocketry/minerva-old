@@ -1,0 +1,22 @@
+{
+    "type": "modal",
+    "title": {
+        "type": "plain_text",
+        "text": "Loading",
+        "emoji": true
+    },
+    "close": {
+        "type": "plain_text",
+        "text": "Cancel",
+        "emoji": true
+    },
+    "blocks": [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Please wait "
+            }
+        }
+    ]
+}

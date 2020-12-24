@@ -1,0 +1,23 @@
+{
+    "name": "replaced-by-user-input",
+    "description": "replaced-by-user-input",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@slack/web-api": "^5.11.0",
+        "aws-sdk": "^2.794.0",
+        "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
+        "googleapis": "^66.0.0",
+        "lodash": "^4.17.19",
+        "mockdate": "^3.0.2",
+        "moment": "^2.27.0",
+        "moment-timezone": "^0.5.31"
+    },
+    "devDependencies": {
+        "jest": "^24.7.1"
+    },
+    "scripts": {
+        "test": "jest"
+    }
+}

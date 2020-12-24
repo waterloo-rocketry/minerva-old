@@ -1,0 +1,25 @@
+[
+    {
+        "type": "section",
+        "text": {
+            "type": "plain_text",
+            "text": " ",
+            "emoji": true
+        }
+    },
+    {
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Initialize",
+                    "emoji": true
+                },
+                "value": "",
+                "action_id": "initialize"
+            }
+        ]
+    }
+]

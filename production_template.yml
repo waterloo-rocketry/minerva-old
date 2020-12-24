@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+    minerva
+
+Transform:
+    - AWS::Serverless-2016-10-31
+
+Resources:
+    slackCommands:
+        Type: AWS::Serverless::Function
+        Properties:
+            AutoPublishAlias: development
+            Handler: src/index.slack_commands
+            Runtime: nodejs12.x
+            MemorySize: 128
+            Timeout: 100
+            Description: Minerva slack commands
+            Policies:
+                - AWSLambdaBasicExecutionRole
+
+    interactivity:
+        Type: AWS::Serverless::Function
+        Properties:
+            AutoPublishAlias: development
+            Handler: src/index.interactivity
+            Runtime: nodejs12.x
+            MemorySize: 128
+            Timeout: 100
+            Description: Minerva interactivity
+            Policies:
+                - AWSLambdaBasicExecutionRole
+
+    scheduled:
+        Type: AWS::Serverless::Function
+        Properties:
+            AutoPublishAlias: development
+            Handler: src/index.scheduled
+            Runtime: nodejs12.x
+            MemorySize: 128
+            Timeout: 100
+            Description: Minerva scheduled events
+            Policies:
+                - AWSLambdaBasicExecutionRole

@@ -1,0 +1,170 @@
+{
+    "previous_view_id": null,
+    "title": {
+        "text": "Notify",
+        "emoji": true,
+        "type": "plain_text"
+    },
+    "private_metadata": "{\"channel\":\"C014J93U4JZ\",\"subject\":\"\",\"type\":\"notify\"}",
+    "clear_on_close": false,
+    "type": "modal",
+    "root_view_id": "V01EGN3P50B",
+    "id": "V01EGN3P50B",
+    "app_installed_team_id": "T0144TUMRF1",
+    "callback_id": "notify",
+    "close": {
+        "type": "plain_text",
+        "emoji": true,
+        "text": "Cancel"
+    },
+    "external_id": "",
+    "hash": "1605073632.dJ26PTff",
+    "team_id": "T0144TUMRF1",
+    "app_id": "A0166NLLMU2",
+    "submit": {
+        "type": "plain_text",
+        "text": "Submit",
+        "emoji": true
+    },
+    "state": {
+        "values": {
+            "alert_type": {
+                "alert_type": {
+                    "type": "static_select",
+                    "selected_option": {
+                        "text": {
+                            "text": "Alert",
+                            "emoji": true,
+                            "type": "plain_text"
+                        },
+                        "value": "alert"
+                    }
+                }
+            },
+            "additional_channels": {
+                "additional_channels": {
+                    "selected_channels": [],
+                    "type": "multi_channels_select"
+                }
+            },
+            "link": {
+                "link": {
+                    "type": "plain_text_input",
+                    "value": "https://waterloorocketry.slack.com/archives/C07MXA613/p1605073692312300"
+                }
+            }
+        }
+    },
+    "notify_on_close": false,
+    "blocks": [
+        {
+            "block_id": "qBGZ",
+            "text": {
+                "type": "mrkdwn",
+                "verbatim": false,
+                "text": "Select parameters for notifying"
+            },
+            "type": "section"
+        },
+        {
+            "type": "divider",
+            "block_id": "tcyCK"
+        },
+        {
+            "block_id": "link",
+            "label": {
+                "emoji": true,
+                "type": "plain_text",
+                "text": "Message link"
+            },
+            "type": "input",
+            "dispatch_action": false,
+            "optional": false,
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "link",
+                "dispatch_action_config": {
+                    "trigger_actions_on": ["on_enter_pressed"]
+                },
+                "placeholder": {
+                    "type": "plain_text",
+                    "emoji": true,
+                    "text": "https://waterloorocketry.slack.com/archives/C07MWEYPR/p1593746531376800"
+                },
+                "initial_value": ""
+            }
+        },
+        {
+            "type": "divider",
+            "block_id": "8yW3"
+        },
+        {
+            "text": {
+                "verbatim": false,
+                "type": "mrkdwn",
+                "text": "Additional Channels"
+            },
+            "accessory": {
+                "action_id": "additional_channels",
+                "placeholder": {
+                    "emoji": true,
+                    "type": "plain_text",
+                    "text": "Select channels"
+                },
+                "initial_channels": [],
+                "type": "multi_channels_select"
+            },
+            "block_id": "additional_channels",
+            "type": "section"
+        },
+        {
+            "block_id": "Ub=U",
+            "type": "divider"
+        },
+        {
+            "text": {
+                "text": "Alert Type",
+                "type": "mrkdwn",
+                "verbatim": false
+            },
+            "accessory": {
+                "action_id": "alert_type",
+                "type": "static_select",
+                "placeholder": {
+                    "text": "Select an item",
+                    "type": "plain_text",
+                    "emoji": true
+                },
+                "options": [
+                    {
+                        "text": {
+                            "emoji": true,
+                            "text": "Alert single channel",
+                            "type": "plain_text"
+                        },
+                        "value": "alert-single-channel"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "emoji": true,
+                            "text": "Alert"
+                        },
+                        "value": "alert"
+                    },
+                    {
+                        "value": "copy",
+                        "text": {
+                            "emoji": true,
+                            "text": "Copy",
+                            "type": "plain_text"
+                        }
+                    }
+                ]
+            },
+            "block_id": "alert_type",
+            "type": "section"
+        }
+    ],
+    "bot_id": "B016WHWC400"
+}
