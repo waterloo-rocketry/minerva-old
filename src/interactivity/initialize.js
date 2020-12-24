@@ -56,7 +56,7 @@ module.exports.inquire = async function (event) {
 
 module.exports.isEventTomorrow = function (eventStartDate) {
     const tomorrow = new Date();
-    console.log(tomorrow);
+
     tomorrow.setDate(new Date().getDate() + 1);
     return eventStartDate.getDate() === tomorrow.getDate();
 };
