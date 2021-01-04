@@ -4,6 +4,6 @@ module.exports.send = async function (userId, textParams, originChannelID, origi
     } else if (textParams.startsWith("edit")) {
         return require("./meeting/edit").send(originChannelID, trigger);
     } else {
-        return Promise.reject("Incorrect usage: /reminder <reminder/edit>");
+        return Promise.reject("Incorrect usage: /meeting <reminder/edit>");
     }
 };
