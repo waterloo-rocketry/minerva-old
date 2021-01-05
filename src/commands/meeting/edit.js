@@ -39,6 +39,27 @@ module.exports.receive = async function (meetingBlock, metadata) {
     delete parameters.eventId;
     delete parameters.updateType;
 
+    // convert back to channel names
+    // this could definitely could be made better
+    var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
+
+    for (channelName of channelIdMapping.keys()) {
+        if (channelIdMapping.get(channelName) === parameters.mainChannel) {
+            parameters.mainChannel = channelName;
+        }
+    }
+
+    parameters.mainChannel = parameters.mainChannel;
+
+    for (additionalChannelKey in parameters.additionalChannels) {
+        const additionalChannelId = parameters.additionalChannels[additionalChannelKey];
+        for (channelName of channelIdMapping.keys()) {
+            if (channelIdMapping.has(channelName) && channelIdMapping.get(channelName) === additionalChannelId) {
+                parameters.additionalChannels[additionalChannelKey] = channelName;
+            }
+        }
+    }
+
     const updates = {};
 
     updates.location = loc;
