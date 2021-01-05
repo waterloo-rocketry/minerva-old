@@ -4,11 +4,18 @@ exports.slack_commands_sync = async (event, context) => {
         return;
     }
 
-    const body = require("querystring").parse(event.body);
+    const body = require("querystring").parse(Buffer.from(event.body, "base64").toString());
+
+    let url;
+    if (context.invokedFunctionArn.split(":")[7] === "development") {
+        url = "https://32fp9565v0.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsynchronous-1PP79Q6BVBGZR";
+    } else {
+        url = "https://noyvu1tx6d.execute-api.us-east-1.amazonaws.com/default/minerva-slackCommandsAsynchronous-1E7MLOJ11GZC1";
+    }
 
     await new Promise((resolve, reject) => {
         const req = require("https").request(
-            "https://k0a0yv69m5.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsynchronous-1K6EO00AY77QT",
+            url,
             {
                 method: "POST",
                 headers: {
@@ -72,8 +79,6 @@ exports.slack_commands_async = async (event, context) => {
     }
 };
 
-// The format of the schedule string corresponds to: https://man7.org/linux/man-pages/man5/crontab.5.html or verbage (i.e. every 2 minutes)
-// We can specify a timezone, but in this case it does not matter. Default is Pacific time which has the same minute # as Eastern (only hours are changed)
 // prettier-ignore
 exports.scheduled = async (event, context) => {
     require("./handlers/environment-handler").setDefaults(context);
@@ -109,11 +114,18 @@ exports.interactivity_sync = async (event, context) => {
         return;
     }
 
-    const payload = require("querystring").parse(event.body).payload;
+    const payload = require("querystring").parse(Buffer.from(event.body, "base64").toString()).payload;
+
+    let url;
+    if (context.invokedFunctionArn.split(":")[7] === "development") {
+        url = "https://wrm6nyty89.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-HNTIX0A0L940";
+    } else {
+        url = "https://podq4oj7s5.execute-api.us-east-1.amazonaws.com/default/minerva-interactivityAsync-HCMH5U1MHI5R";
+    }
 
     await new Promise((resolve, reject) => {
         const req = require("https").request(
-            "https://w81to1ds7f.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-1ZL8L59GESDW",
+            url,
             {
                 method: "POST",
                 headers: {
