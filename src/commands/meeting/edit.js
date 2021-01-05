@@ -42,7 +42,7 @@ module.exports.receive = async function (meetingBlock, metadata) {
     const updates = {};
 
     updates.location = loc;
-    updates.description = JSON.stringify(parameters);
+    updates.description = JSON.stringify(parameters, null, 4);
 
     await calendar_handler.updateEventById(eventId, updates);
 
