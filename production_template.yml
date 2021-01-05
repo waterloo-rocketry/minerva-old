@@ -6,23 +6,43 @@ Transform:
     - AWS::Serverless-2016-10-31
 
 Resources:
-    slackCommands:
+    slackCommandsSynchronous:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
-            Handler: src/index.slack_commands
+            Handler: src/index.slack_commands_sync
             Runtime: nodejs12.x
             MemorySize: 128
             Timeout: 100
-            Description: Minerva slack commands
+            Description: Minerva slack commands synchronous tasks
             Policies:
                 - AWSLambdaBasicExecutionRole
 
-    interactivity:
+    slackCommandsAsynchronous:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
-            Handler: src/index.interactivity
+            Handler: src/index.slack_commands_async
+            Runtime: nodejs12.x
+            MemorySize: 128
+            Timeout: 100
+            Description: Minerva slack commands asychronous tasks
+            Policies:
+                - AWSLambdaBasicExecutionRole
+
+    interactivitySync:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: src/index.interactivity_sync
+            Runtime: nodejs12.x
+            MemorySize: 128
+            Timeout: 100
+            Description: Minerva interactivity
+            Policies:
+                - AWSLambdaBasicExecutionRole
+
+    interactivityAsync:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: src/index.interactivity_async
             Runtime: nodejs12.x
             MemorySize: 128
             Timeout: 100
@@ -33,7 +53,6 @@ Resources:
     scheduled:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
             Handler: src/index.scheduled
             Runtime: nodejs12.x
             MemorySize: 128
