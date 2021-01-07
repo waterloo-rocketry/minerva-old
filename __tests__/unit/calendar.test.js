@@ -10,17 +10,23 @@ slack_handler.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C
 const LOWER_BOUND = 300000; // 5 minutes in milliseconds
 const UPPER_BOUND = 21600000; // 6 hours in milliseconds
 
+const channelIDMapping = new Map();
+channelIDMapping.set("general", "C014J93U4JZ");
+channelIDMapping.set("propulsion", "C0155MHAHB4");
+channelIDMapping.set("random", "C014KSDM37V");
+
+slack_handler.generateChannelNameIdMapping = function () {
+    return channelIDMapping;
+};
+
 describe("handlers/calendar-handler.js tests", function () {
     describe("parseDescription", function () {
-        const channelIDMapping = new Map();
-        channelIDMapping.set("general", "C014J93U4JZ");
-        channelIDMapping.set("propulsion", "C0155MHAHB4");
         it("parse description, no agenda items", async function () {
             const description = `{
                     "eventType": "meeting",
                     "alertType": "alert-single-channel",
-                    "mainChannel": "C014J93U4JZ",
-                    "additionalChannels": "default",
+                    "mainChannel": "general",
+                    "additionalChannels": [],
                     "agendaItems": "",
                     "notes": "N/A"
                 }`;
@@ -36,7 +42,7 @@ describe("handlers/calendar-handler.js tests", function () {
                 {
                     eventType: "meeting",
                     mainChannel: "C014J93U4JZ",
-                    additionalChannels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
+                    additionalChannels: [],
                     alertType: "alert-single-channel",
                     agendaItems: [],
                     notes: "N/A",
@@ -49,8 +55,8 @@ describe("handlers/calendar-handler.js tests", function () {
             const description = `{
                 "eventType": "meeting",
                 "alertType": "alert-single-channel",
-                "mainChannel": "C014J93U4JZ",
-                "additionalChannels": "default",
+                "mainChannel": "general",
+                "additionalChannels": [],
                 "agendaItems": [
                     "item", "item1", "item2"
                 ],
@@ -67,7 +73,7 @@ describe("handlers/calendar-handler.js tests", function () {
                 {
                     eventType: "meeting",
                     mainChannel: "C014J93U4JZ",
-                    additionalChannels: ["C0155MGT7NW", "C015BSR32E8", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"],
+                    additionalChannels: [],
                     alertType: "alert-single-channel",
                     agendaItems: ["item", "item1", "item2"],
                     location: "",
@@ -80,9 +86,9 @@ describe("handlers/calendar-handler.js tests", function () {
             const description = `{
                     "eventType": "test",
                     "alertType": "alert-main-channel",
-                    "mainChannel": "C014J93U4JZ",
+                    "mainChannel": "general",
                     "additionalChannels": [
-                        "C014J93U4JA", "C0155MHAHB4"
+                        "random", "propulsion"
                     ],
                     "agendaItems": [
                         "item", "item1", "item2"
@@ -101,7 +107,7 @@ describe("handlers/calendar-handler.js tests", function () {
                 {
                     eventType: "test",
                     mainChannel: "C014J93U4JZ",
-                    additionalChannels: ["C014J93U4JA", "C0155MHAHB4"],
+                    additionalChannels: ["C014KSDM37V", "C0155MHAHB4"],
                     alertType: "alert-main-channel",
                     agendaItems: ["item", "item1", "item2"],
                     location: "",
@@ -114,9 +120,9 @@ describe("handlers/calendar-handler.js tests", function () {
             const description = `{
                 "eventType": "test",
                 "alertType": "alert-single-channel",
-                "mainChannel": "C014J93U4JZ",
+                "mainChannel": "general",
                 "additionalChannels": [
-                    "C014J93U4JZ", "C0155MHAHB4"
+                    "general", "propulsion"
                 ],
                 "agendaItems": [
                     "item", "item1", "item2"
@@ -147,9 +153,9 @@ describe("handlers/calendar-handler.js tests", function () {
             const description = `{
                 "eventType": "test",
                 "alertType": "alert-single-channel",
-                "mainChannel": "C014J93U4JZ",
+                "mainChannel": "general",
                 "additionalChannels": [
-                    "C014J93U4JZ", "C0155MHAHB4"
+                    "general", "propulsion"
                 ],
                 "agendaItems": [
                     "item", "item1", "item2"
