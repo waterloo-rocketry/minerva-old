@@ -40,23 +40,17 @@ module.exports.receive = async function (meetingBlock, metadata) {
     delete parameters.updateType;
 
     // convert back to channel names
-    // this could definitely could be made better
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
 
-    for (channelName of channelIdMapping.keys()) {
-        if (channelIdMapping.get(channelName) === parameters.mainChannel) {
-            parameters.mainChannel = channelName;
-        }
-    }
+    parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
 
-    parameters.mainChannel = parameters.mainChannel;
-
-    for (additionalChannelKey in parameters.additionalChannels) {
-        const additionalChannelId = parameters.additionalChannels[additionalChannelKey];
-        for (channelName of channelIdMapping.keys()) {
-            if (channelIdMapping.has(channelName) && channelIdMapping.get(channelName) === additionalChannelId) {
-                parameters.additionalChannels[additionalChannelKey] = channelName;
-            }
+    for (channelKey in parameters.additionalChannels) {
+        if (channelIdMapping.has(parameters.additionalChannels[channelKey])) {
+            parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
+        } else {
+            // this should never be reached since these values come from Slack API
+            console.log(parameters.additionalChannels[channelKey] + " was not found in the channelIdMapping");
+            parameters.additionalChannels.splice(channelKey, 1);
         }
     }
 
@@ -139,7 +133,7 @@ module.exports.extractMeetingParameters = async function (view, metadata) {
     if (view.state.values.alert_type.alert_type.selected_option === null) {
         parameters.alertType = view.blocks[14].accessory.placeholder.text;
     } else {
-        parameters.alertType = view.state.values.alert_type.alert_type.selected_option;
+        parameters.alertType = view.state.values.alert_type.alert_type.selected_option.value;
     }
 
     parameters.updateType = view.state.values.update_type.update_type.selected_option.value;

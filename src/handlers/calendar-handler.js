@@ -108,7 +108,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
 
     if (parameters.mainChannel === undefined || parameters.mainChannel === "" || !channelIdMapping.has(parameters.mainChannel)) {
-        return Promise.reject("Upcoming meeting *" + event.summary + "* is missing a `mainChannel` element");
+        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing a `mainChannel` element");
     }
 
     parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
@@ -125,6 +125,9 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         if (channelIdMapping.has(parameters.additionalChannels[channelKey])) {
             parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
         } else {
+            slack_handler.postMessageToChannel(
+                "Could not find channel ID for *" + event.summary + "* additional channel `" + parameters.additionalChannels[channelKey] + "`"
+            );
             parameters.additionalChannels.splice(channelKey, 1);
         }
     }

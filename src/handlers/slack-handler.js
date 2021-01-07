@@ -147,6 +147,7 @@ module.exports.generateChannelNameIdMapping = async function () {
         var channels = (await this.getChannels("public_channel", true)).channels;
         channels.forEach(channel => {
             channelNameIdMapping.set(channel.name, channel.id);
+            channelNameIdMapping.set(channel.id, channel.name);
         });
         return channelNameIdMapping;
     }
