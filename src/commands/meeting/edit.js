@@ -40,13 +40,13 @@ module.exports.receive = async function (meetingBlock, metadata) {
     delete parameters.updateType;
 
     // convert back to channel names
-    var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
+    var channelIdNameMapping = await slack_handler.generateChannelIdNameMapping();
 
-    parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
+    parameters.mainChannel = channelIdNameMapping.get(parameters.mainChannel);
 
     for (channelKey in parameters.additionalChannels) {
-        if (channelIdMapping.has(parameters.additionalChannels[channelKey])) {
-            parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
+        if (channelIdNameMapping.has(parameters.additionalChannels[channelKey])) {
+            parameters.additionalChannels[channelKey] = channelIdNameMapping.get(parameters.additionalChannels[channelKey]);
         } else {
             // this should never be reached since these values come from Slack API
             console.log(parameters.additionalChannels[channelKey] + " was not found in the channelIdMapping");

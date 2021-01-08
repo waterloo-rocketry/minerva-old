@@ -10,16 +10,22 @@ slack_handler.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C
 const LOWER_BOUND = 300000; // 5 minutes in milliseconds
 const UPPER_BOUND = 21600000; // 6 hours in milliseconds
 
-const channelIDMapping = new Map();
-channelIDMapping.set("general", "C014J93U4JZ");
-channelIDMapping.set("propulsion", "C0155MHAHB4");
-channelIDMapping.set("random", "C014KSDM37V");
-channelIDMapping.set("C014J93U4JZ", "general");
-channelIDMapping.set("C0155MHAHB4", "propulsion");
-channelIDMapping.set("C014KSDM37V", "random");
+const channelNameIdMapping = new Map();
+channelNameIdMapping.set("general", "C014J93U4JZ");
+channelNameIdMapping.set("propulsion", "C0155MHAHB4");
+channelNameIdMapping.set("random", "C014KSDM37V");
+
+const channelIdNameMapping = new Map();
+channelIdNameMapping.set("C014J93U4JZ", "general");
+channelIdNameMapping.set("C0155MHAHB4", "propulsion");
+channelIdNameMapping.set("C014KSDM37V", "random");
 
 slack_handler.generateChannelNameIdMapping = function () {
-    return channelIDMapping;
+    return channelNameIdMapping;
+};
+
+slack_handler.generateChannelIdNameMapping = function () {
+    return channelIdNameMapping;
 };
 
 describe("handlers/calendar-handler.js tests", function () {
