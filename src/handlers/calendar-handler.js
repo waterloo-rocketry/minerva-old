@@ -108,7 +108,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
 
     if (parameters.mainChannel === undefined || parameters.mainChannel === "" || !channelIdMapping.has(parameters.mainChannel)) {
-        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing a `mainChannel` element");
+        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing `mainChannel` element");
     }
 
     parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
