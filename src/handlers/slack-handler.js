@@ -2,7 +2,8 @@ const {WebClient} = require("@slack/web-api");
 const environment = require("./environment-handler");
 
 const web = new WebClient(environment.slackToken);
-const channelNameIdMapping = new Map();
+const channelNameIdMapping = new Map(); // name -> id
+const channelIdNameMapping = new Map(); // id -> name
 
 // https://api.slack.com/methods/chat.postMessage
 module.exports.postMessageToChannel = function (message, channel, unfurl = trues) {
@@ -139,7 +140,7 @@ module.exports.getAllSingleChannelGuests = async function () {
     return Promise.resolve(singleChannel);
 };
 
-// Map channel names to ID's for functions that require IDs, not names
+// Map channel names to IDs
 module.exports.generateChannelNameIdMapping = async function () {
     if (channelNameIdMapping.length > 0) {
         return channelNameIdMapping;
@@ -149,6 +150,19 @@ module.exports.generateChannelNameIdMapping = async function () {
             channelNameIdMapping.set(channel.name, channel.id);
         });
         return channelNameIdMapping;
+    }
+};
+
+// Map channel IDs to names
+module.exports.generateChannelIdNameMapping = async function () {
+    if (channelIdNameMapping.length > 0) {
+        return channelIdNameMapping;
+    } else {
+        var channels = (await this.getChannels("public_channel", true)).channels;
+        channels.forEach(channel => {
+            channelIdNameMapping.set(channel.id, channel.name);
+        });
+        return channelIdNameMapping;
     }
 };
 

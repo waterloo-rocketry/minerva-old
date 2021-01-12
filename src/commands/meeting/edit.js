@@ -39,10 +39,25 @@ module.exports.receive = async function (meetingBlock, metadata) {
     delete parameters.eventId;
     delete parameters.updateType;
 
+    // convert back to channel names
+    var channelIdNameMapping = await slack_handler.generateChannelIdNameMapping();
+
+    parameters.mainChannel = channelIdNameMapping.get(parameters.mainChannel);
+
+    for (channelKey in parameters.additionalChannels) {
+        if (channelIdNameMapping.has(parameters.additionalChannels[channelKey])) {
+            parameters.additionalChannels[channelKey] = channelIdNameMapping.get(parameters.additionalChannels[channelKey]);
+        } else {
+            // this should never be reached since these values come from Slack API
+            console.log(parameters.additionalChannels[channelKey] + " was not found in the channelIdMapping");
+            parameters.additionalChannels.splice(channelKey, 1);
+        }
+    }
+
     const updates = {};
 
     updates.location = loc;
-    updates.description = JSON.stringify(parameters);
+    updates.description = JSON.stringify(parameters, null, 4);
 
     await calendar_handler.updateEventById(eventId, updates);
 
@@ -118,7 +133,7 @@ module.exports.extractMeetingParameters = async function (view, metadata) {
     if (view.state.values.alert_type.alert_type.selected_option === null) {
         parameters.alertType = view.blocks[14].accessory.placeholder.text;
     } else {
-        parameters.alertType = view.state.values.alert_type.alert_type.selected_option;
+        parameters.alertType = view.state.values.alert_type.alert_type.selected_option.value;
     }
 
     parameters.updateType = view.state.values.update_type.update_type.selected_option.value;

@@ -3,7 +3,9 @@
         "values": {
             "alert_type": {
                 "alert_type": {
-                    "selected_option": "copy",
+                    "selected_option": {
+                        "value": "copy"
+                    },
                     "type": "static_select"
                 }
             },
