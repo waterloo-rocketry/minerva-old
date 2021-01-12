@@ -70,3 +70,4 @@ clientsecrets.txt
 # Jetbrains IDE stuff
 .idea/
 
+deploy/deploy_variables.bat

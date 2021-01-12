@@ -1,6 +1,7 @@
 const {google} = require("googleapis");
 const calendar = google.calendar("v3");
 const environment = require("./environment-handler");
+const slack_handler = require("./slack-handler");
 
 const auth = new google.auth.OAuth2(environment.googleClient, environment.googleSecret, environment.googleRedirect);
 
@@ -52,8 +53,6 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
     for (var event of events.data.items) {
         if (event.description === undefined || event.description === "") continue;
 
-        event.description = event.description.replace(/<.*?>/g, "");
-
         let parameters;
         try {
             parameters = await this.getParametersFromDescription(event, require("./slack-handler").defaultChannels);
@@ -70,8 +69,14 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
 };
 
 module.exports.getParametersFromDescription = async function (event, defaultChannels) {
-    var parameters;
+    if (event.description === null || event.description === "") {
+        return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
+    }
 
+    event.description = event.description.replace(/<.*?>/g, "");
+    event.description = event.description.replace(/&nbsp;/g, "");
+
+    var parameters;
     try {
         parameters = JSON.parse(event.description);
     } catch (error) {
@@ -104,9 +109,13 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
             return Promise.reject("Upcoming *" + event.summary + "* contains an unknown or missing `alertType`");
     }
 
-    if (parameters.mainChannel === undefined || parameters.mainChannel === "") {
-        return Promise.reject("Upcoming meeting *" + event.summary + "* is missing a `mainChannel` element");
+    var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
+
+    if (parameters.mainChannel === undefined || parameters.mainChannel === "" || !channelIdMapping.has(parameters.mainChannel)) {
+        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing `mainChannel` element");
     }
+
+    parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
 
     if (parameters.additionalChannels === "default") {
         parameters.additionalChannels = defaultChannels;
@@ -114,6 +123,17 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
 
     if (!Array.isArray(parameters.additionalChannels)) {
         return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing `additional_channel` element");
+    }
+
+    for (channelKey in parameters.additionalChannels) {
+        if (channelIdMapping.has(parameters.additionalChannels[channelKey])) {
+            parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
+        } else {
+            slack_handler.postMessageToChannel(
+                "Could not find channel ID for *" + event.summary + "* additional channel `" + parameters.additionalChannels[channelKey] + "`"
+            );
+            parameters.additionalChannels.splice(channelKey, 1);
+        }
     }
 
     // Get rid of the mainChannel if it is within additional channels
