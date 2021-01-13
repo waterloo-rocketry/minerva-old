@@ -69,6 +69,10 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
 };
 
 module.exports.getParametersFromDescription = async function (event, defaultChannels) {
+    if (event.description === null || event.description === "") {
+        return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
+    }
+
     event.description = event.description.replace(/<.*?>/g, "");
     event.description = event.description.replace(/&nbsp;/g, "");
 

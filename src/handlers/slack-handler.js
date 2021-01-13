@@ -6,7 +6,7 @@ const channelNameIdMapping = new Map(); // name -> id
 const channelIdNameMapping = new Map(); // id -> name
 
 // https://api.slack.com/methods/chat.postMessage
-module.exports.postMessageToChannel = function (message, channel, unfurl = trues) {
+module.exports.postMessageToChannel = function (message, channel, unfurl = true) {
     return web.chat.postMessage({
         text: message,
         channel: channel,

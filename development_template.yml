@@ -6,10 +6,9 @@ Transform:
     - AWS::Serverless-2016-10-31
 
 Resources:
-    slackCommandsSynchronous:
+    slackCommandsSync:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
             Handler: src/index.slack_commands_sync
             Runtime: nodejs12.x
             MemorySize: 128
@@ -18,10 +17,9 @@ Resources:
             Policies:
                 - AWSLambdaBasicExecutionRole
 
-    slackCommandsAsynchronous:
+    slackCommandsAsync:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
             Handler: src/index.slack_commands_async
             Runtime: nodejs12.x
             MemorySize: 128
@@ -33,7 +31,6 @@ Resources:
     interactivitySync:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
             Handler: src/index.interactivity_sync
             Runtime: nodejs12.x
             MemorySize: 128
@@ -45,7 +42,6 @@ Resources:
     interactivityAsync:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
             Handler: src/index.interactivity_async
             Runtime: nodejs12.x
             MemorySize: 128
@@ -57,7 +53,6 @@ Resources:
     scheduled:
         Type: AWS::Serverless::Function
         Properties:
-            AutoPublishAlias: development
             Handler: src/index.scheduled
             Runtime: nodejs12.x
             MemorySize: 128

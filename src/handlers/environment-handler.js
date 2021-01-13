@@ -7,7 +7,7 @@ module.exports.googleToken = process.env.production_googleaccount_token;
 module.exports.setDefaults = function (context) {
     alias = context.invokedFunctionArn.split(":")[7];
 
-    if (alias === "development") {
+    if (alias !== "production") {
         this.slackToken = process.env.development_slack_token;
         this.googleClient = process.env.development_googleaccount_client;
         this.googleSecret = process.env.development_googleaccount_secret;

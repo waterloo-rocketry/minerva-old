@@ -7,10 +7,10 @@ exports.slack_commands_sync = async (event, context) => {
     const body = require("querystring").parse(Buffer.from(event.body, "base64").toString());
 
     let url;
-    if (context.invokedFunctionArn.split(":")[7] === "development") {
-        url = "https://32fp9565v0.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsynchronous-1PP79Q6BVBGZR";
+    if (context.invokedFunctionArn.split(":")[7] !== "production") {
+        url = "https://rh9ew5a2rd.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-23U2OZVQ02AT";
     } else {
-        url = "https://podq4oj7s5.execute-api.us-east-1.amazonaws.com/minerva-slackCommandsAsynchronous-1PP79Q6BVBGZR";
+        url = "https://obs7kx9u7g.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-23U2OZVQ02AT";
     }
 
     await new Promise((resolve, reject) => {
@@ -79,6 +79,7 @@ exports.slack_commands_async = async (event, context) => {
     }
 };
 
+// Runs once a minute
 // prettier-ignore
 exports.scheduled = async (event, context) => {
     require("./handlers/environment-handler").setDefaults(context);
@@ -117,10 +118,10 @@ exports.interactivity_sync = async (event, context) => {
     const payload = require("querystring").parse(Buffer.from(event.body, "base64").toString()).payload;
 
     let url;
-    if (context.invokedFunctionArn.split(":")[7] === "development") {
-        url = "https://wrm6nyty89.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-HNTIX0A0L940";
+    if (context.invokedFunctionArn.split(":")[7] !== "production") {
+        url = "https://ez4h5h0yki.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-HNTIX0A0L940";
     } else {
-        url = "https://podq4oj7s5.execute-api.us-east-1.amazonaws.com/default/minerva-interactivityAsync-HNTIX0A0L940";
+        url = "https://edmqut7avb.execute-api.us-east-1.amazonaws.com/production/minerva-interactivityAsync-HNTIX0A0L940";
     }
 
     await new Promise((resolve, reject) => {
