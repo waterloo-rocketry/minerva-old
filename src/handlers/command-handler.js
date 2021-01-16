@@ -25,6 +25,8 @@ module.exports.process = async function (request) {
         slack_handler.postEphemeralMessage("This command has been removed. Please see: /meeting");
     } else if (request.command === "/meeting") {
         return require("../commands/meeting").send(request.user_id, request.text, request.channel_id, request.channel_name, request.trigger_id);
+    } else if (request.command === "/initialize") {
+        return require("../commands/initialize").send();
     } else {
         return Promise.reject("Command not recognized.");
     }
