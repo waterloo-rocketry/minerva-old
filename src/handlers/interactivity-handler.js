@@ -1,17 +1,18 @@
 const slack_handler = require("./slack-handler");
 
 module.exports.process = async function (payload, metadata) {
-    slack_handler.postMessageToChannel(
+    var details =
         new Date().toISOString() +
-            " " +
-            payload.user.name +
-            " interacted with `" +
-            metadata.type +
-            "`" +
-            (metadata.subject != "" ? "for `" + metadata.subject + "`" : ""), // If the interaction has a subject, say the subject. Otherwise, do not.
-        "minerva-log",
-        false
-    );
+        " " +
+        payload.user.name +
+        " interacted with `" +
+        metadata.type +
+        "`" +
+        (metadata.subject != "" ? "for `" + metadata.subject + "`" : "");
+
+    slack_handler.postMessageToChannel(details, "minerva-log", false);
+    console.log(details);
+
     if (payload.type === "view_submission") {
         if (payload.view.callback_id === "meeting_edit") {
             return require("../commands/meeting/edit").receive(payload.view, metadata);
