@@ -69,7 +69,7 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
 };
 
 module.exports.getParametersFromDescription = async function (event, defaultChannels) {
-    if (event.description === null || event.description === "") {
+    if (event.description === null || event.description === undefined || event.description === "") {
         return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
     }
 
@@ -112,7 +112,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
 
     if (parameters.mainChannel === undefined || parameters.mainChannel === "" || !channelIdMapping.has(parameters.mainChannel)) {
-        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing `mainChannel` element");
+        return Promise.reject("Upcoming *" + event.summary + "* contains a malformed or missing `mainChannel` element");
     }
 
     parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
@@ -122,7 +122,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (!Array.isArray(parameters.additionalChannels)) {
-        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed or missing `additional_channel` element");
+        return Promise.reject("Upcoming *" + event.summary + "* contains a malformed or missing `additional_channel` element");
     }
 
     for (channelKey in parameters.additionalChannels) {
@@ -144,7 +144,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (parameters.agendaItems !== "" && !Array.isArray(parameters.agendaItems)) {
-        return Promise.reject("Upcoming meeting *" + event.summary + "* contains a malformed `agenda` element");
+        return Promise.reject("Upcoming *" + event.summary + "* contains a malformed `agenda` element");
     }
 
     if (parameters.link === undefined || parameters.link === "") {

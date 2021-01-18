@@ -13,24 +13,24 @@ const SIX_HOURS = 21600000; // 6 hours in milliseconds
 describe("scheduled/event.js tests", function () {
     describe("isEventSoon", function () {
         it("check event already happened", async function () {
-            await expect(event.isEventSoon(-1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(-1)).to.be.rejectedWith("Event outside time constraints");
         });
         it("check event 2 minutes away", async function () {
-            await expect(event.isEventSoon(ONE_MINUTE * 2)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(ONE_MINUTE * 2)).to.be.rejectedWith("Event outside time constraints");
         });
         it("check event just below 5 minutes away", async function () {
             assert.equal(await event.isEventSoon(FIVE_MINUTES - 50000), true);
         });
         it("check event somewhere between bounds", async function () {
-            await expect(event.isEventSoon(FIVE_MINUTES + ONE_MINUTE + 1)).to.be.rejectedWith("no-send");
-            await expect(event.isEventSoon(SIX_HOURS - ONE_MINUTE - 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(FIVE_MINUTES + ONE_MINUTE + 1)).to.be.rejectedWith("Event outside time constraints");
+            await expect(event.isEventSoon(SIX_HOURS - ONE_MINUTE - 1)).to.be.rejectedWith("Event outside time constraints");
         });
         it("check event within upper bounds", async function () {
             assert.equal(await event.isEventSoon(SIX_HOURS - 1), false);
             assert.equal(await event.isEventSoon(SIX_HOURS - ONE_MINUTE + 1), false);
         });
         it("check event above upper bounds", async function () {
-            await expect(event.isEventSoon(SIX_HOURS + FIVE_MINUTES + 1)).to.be.rejectedWith("no-send");
+            await expect(event.isEventSoon(SIX_HOURS + FIVE_MINUTES + 1)).to.be.rejectedWith("Event outside time constraints");
         });
     });
 
