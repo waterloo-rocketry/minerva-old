@@ -13,46 +13,50 @@ module.exports.checkForEvents = async function () {
     const events = (await calendar_handler.getNextEvents(4)).data.items;
 
     for (let event of events) {
-        const startTimeDate = new Date(event.start.dateTime);
-        const timeDifference = startTimeDate.getTime() - Date.now();
+        try {
+            const startTimeDate = new Date(event.start.dateTime);
+            const timeDifference = startTimeDate.getTime() - Date.now();
 
-        const isEventSoon = await this.isEventSoon(timeDifference);
-        const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
+            const isEventSoon = await this.isEventSoon(timeDifference);
+            const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
 
-        //prettier-ignore
-        const emojiPair = (!isEventSoon && parameters.eventType === "meeting") ? await this.generateEmojiPair() : undefined;
+            //prettier-ignore
+            const emojiPair = (!isEventSoon && parameters.eventType === "meeting") ? await this.generateEmojiPair() : undefined;
 
-        const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
+            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
 
-        let channelMessagePromises = [];
-        let directMessagePromises = [];
+            let channelMessagePromises = [];
+            let directMessagePromises = [];
 
-        channelMessagePromises.push(
-            slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
-        );
-
-        if (parameters.alertType === "alert-single-channel") {
-            directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
-                message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
-                parameters.additionalChannels
+            channelMessagePromises.push(
+                slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
             );
-        } else {
-            channelMessagePromises.push(slack_handler.postMessageToChannels(message, parameters.additionalChannels, false));
-        }
 
-        channelMessagePromises = await Promise.all(channelMessagePromises);
-
-        if (emojiPair !== undefined) {
-            for (let response of channelMessagePromises) {
-                await this.seedMessageReactions(response.channel, emojiPair, response.ts);
+            if (parameters.alertType === "alert-single-channel") {
+                directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
+                    message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+                    parameters.additionalChannels
+                );
+            } else {
+                channelMessagePromises.push(slack_handler.postMessageToChannels(message, parameters.additionalChannels, false));
             }
+
+            channelMessagePromises = await Promise.all(channelMessagePromises);
+
+            if (emojiPair !== undefined) {
+                for (let response of channelMessagePromises) {
+                    await this.seedMessageReactions(response.channel, emojiPair, response.ts);
+                }
+            }
+
+            // Your IDE might not recognize the 'await' as doing anything useful, but since directMessageSingleChannelGuestsInChannels is async,
+            // the result is wrapped in a promise, thus, it is actually useful.
+            directMessagePromises = await directMessagePromises;
+
+            await slack_handler.postMessageToChannel(this.generateResultMessage(event, parameters, isEventSoon, directMessagePromises.length), "minerva-log", false);
+        } catch (error) {
+            console.log(event.summary + " failed because " + error);
         }
-
-        // Visual Studio might not recognize the 'await' as doing anything useful, but since directMessageSingleChannelGuestsInChannels is async,
-        // the result is wrapped in a promise, thus, it is actually useful.
-        directMessagePromises = await directMessagePromises;
-
-        await slack_handler.postMessageToChannel(this.generateResultMessage(event, parameters, isEventSoon, directMessagePromises.length), "minerva-log", false);
     }
 };
 
@@ -134,7 +138,7 @@ module.exports.isEventSoon = async function (timeDifference) {
     } else {
         // it's not in those two times, so skip
         // but returning reject causes error, so add a flag to know that this is an OK error
-        return Promise.reject("no-send");
+        return Promise.reject("Event outside time constraints");
     }
 };
 
