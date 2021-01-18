@@ -44,11 +44,11 @@ exports.slack_commands_sync = async (event, context) => {
 exports.slack_commands_async = async (event, context) => {
     require("./handlers/environment-handler").setDefaults(context);
     if (event === null || event === undefined || event.body === undefined) {
-        require("./handlers/environment-handler");
         require("./handlers/command-handler");
         require("./commands/meeting/edit");
         require("./commands/meeting");
         require("./commands/notify");
+        require("./interactivity/initialize");
         console.log("Keep function hot");
         return;
     }
@@ -150,6 +150,14 @@ exports.interactivity_sync = async (event, context) => {
 
 exports.interactivity_async = async (event, context) => {
     require("./handlers/environment-handler").setDefaults(context);
+
+    if (event === null || event === undefined || event.body === undefined) {
+        require("./commands/meeting/edit");
+        require("./commands/notify");
+        require("./interactivity/initialize");
+        console.log("Keep function hot");
+        return;
+    }
 
     const slack = require("./handlers/slack-handler");
     const payload = JSON.parse(JSON.parse(event.body));
