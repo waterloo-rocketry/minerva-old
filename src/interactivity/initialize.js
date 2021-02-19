@@ -7,7 +7,7 @@ module.exports.send = async function (override) {
     const events = (await calendar_handler.getNextEvents(10)).data.items;
     const inquiries = [];
     for (let event of events) {
-        if (override || ((event.description === "" || event.description === undefined) && this.isEventTomorrow(new Date(event.start.dateTime)))) {
+        if ((event.description === "" || event.description === undefined) && (this.isEventTomorrow(new Date(event.start.dateTime)) || override)) {
             inquiries.push(this.inquire(event));
         }
     }
