@@ -10,7 +10,7 @@ module.exports.checkForEvents = async function () {
     // select 4 events since it's realistically the maximum number of events that could happen at the same time (2 at either the close or far time point)
     // we could increase this, but in order to keep CPU compute & internet transfer down (since this function runs often)
     // we cap this at 4 events
-    const events = (await calendar_handler.getNextEvents(4)).data.items;
+    const events = (await calendar_handler.getNextEvents(8)).data.items;
 
     for (let event of events) {
         try {
