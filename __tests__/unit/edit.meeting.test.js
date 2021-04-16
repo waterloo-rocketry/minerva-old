@@ -15,7 +15,7 @@ describe("commands/meeting/edit.js tests", function () {
                         id: "123456789",
                         summary: "F20 Weekly Meetings",
                         start: {
-                            dateTime: new Date('November 06 2020 3:33 EST'),
+                            dateTime: new Date("November 06 2020 3:33 EST"),
                         },
                     },
                     {
