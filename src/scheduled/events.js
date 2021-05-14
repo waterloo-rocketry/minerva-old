@@ -32,12 +32,23 @@ module.exports.checkForEvents = async function () {
                 slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
             );
 
-            if (parameters.alertType === "alert-single-channel") {
+            //if event is cancelled and alert type is single channel:
+            if(parameters.isCancelled === true && parameters.alertType === "alert-single-channel"){
+                directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
+                    message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._\n\n_This event has been CANCELLED. No meeting today!_", parameters.additionalChannels
+                );
+            } //if event is cancelled
+            else if(parameters.isCancelled === true){
+                channelMessagePromises.push(slack_handler.postMessageToChannel(message + "\n\n_This even has been CANCELLED. No meeting today!_", 
+                parameters.additionalChannels, false));
+            } //event not cancelled but alart type is single channel
+            else if (parameters.alertType === "alert-single-channel") {
                 directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
                     message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
                     parameters.additionalChannels
                 );
-            } else {
+            } //event not cancelled 
+            else {
                 channelMessagePromises.push(slack_handler.postMessageToChannels(message, parameters.additionalChannels, false));
             }
 

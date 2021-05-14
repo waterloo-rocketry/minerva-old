@@ -73,6 +73,15 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
     }
 
+    //initialize boolean parameter
+    parameters.isCancelled = false;
+
+    //NEW - check for event cancellation
+    if(event.summary.includes("Cancelled")){
+        parameters.isCancelled = true;
+    } 
+   
+
     event.description = event.description.replace(/<.*?>/g, "");
     event.description = event.description.replace(/&nbsp;/g, "");
 

@@ -193,5 +193,45 @@ describe("handlers/calendar-handler.js tests", function () {
                 }
             );
         });
+
+
+        //NEW //
+        it("parse description, agenda items, custom link, location specified", async function () {
+            const description = `{
+                "eventType": "test",
+                "alertType": "alert-single-channel",
+                "mainChannel": "general",
+                "additionalChannels": [
+                    "general", "software"
+                ],
+                "agendaItems": [
+                    "item", "item1", "item2"
+                ],
+                "notes": "N/A",
+                "link": "https://meet.jit.si/not_bay_area"
+            }`;
+            assert.deepStrictEqual(
+                await calendar_handler.getParametersFromDescription(
+                    {
+                        summary: "Cancelled Meeting",
+                        description: description,
+                        location: "E5 2001",
+                    },
+                    slack_handler.defaultChannels
+                ),
+                {
+                    eventType: "test",
+                    mainChannel: "C014J93U4JZ",
+                    additionalChannels: ["C0155MHAHB4"],
+                    alertType: "alert-single-channel",
+                    location: "E5 2001",
+                    agendaItems: ["item", "item1", "item2"],
+                    notes: "N/A",
+                    link: "https://meet.jit.si/not_bay_area",
+                }
+            );
+        });
+
+
     });
 });

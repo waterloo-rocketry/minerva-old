@@ -377,6 +377,44 @@ describe("scheduled/event.js tests", function () {
                 expectedMessage
             );
         });
+
+        ///NEW
+        it("check CANCELLED meeting message", async function () {
+            // prettier-ignore
+            const expectedMessage =
+                "<!channel>"
+                + "\nReminder: *Test Event* is occurring in *5 minutes*"
+                + "\nPlease see the agenda items:"
+                + "\n    • item"
+                + "\n    • item1"
+                + "\n    • item2"
+                + "\nNotes: N/A"
+                + "\nWays to attend:"
+                + "\n      :office: In person @ The Bay"
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)"
+                + "\nThis even has been CANCELLED. No meeting today!";
+
+            assert.deepStrictEqual(
+                await event.generateMessage(
+                    testEvent,
+                    {
+                        eventType: "meeting",
+                        mainChannel: "C014J93U4JZ",
+                        additionalChannels: ["C0155MHAHB4"],
+                        alertType: "alert-single-channel",
+                        agendaItems: ["item", "item1", "item2"],
+                        notes: "N/A",
+                        link: "https://meet.jit.si/bay_area",
+                        location: "The Bay",
+                    },
+                    FIVE_MINUTES - 1,
+                    true,
+                    new Date(1592900639642)
+                ),
+                expectedMessage
+            );
+        });
     });
     describe("generateEmojiPair", function () {
         it("pass duplicate emojis", async function () {
