@@ -8,8 +8,10 @@ exports.slack_commands_sync = async (event, context) => {
 
     let url;
     if (context.invokedFunctionArn.split(":")[7] !== "production") {
+        console.log("Sending to minerva slackCommandsAsync development...");
         url = "https://g34h315ctk.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-rzdj53m68JE9";
     } else {
+        console.log("Sending to minerva slackCommandsAsync production...");
         url = "https://bbfl9ivf5k.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-rzdj53m68JE9";
     }
 
@@ -119,8 +121,10 @@ exports.interactivity_sync = async (event, context) => {
 
     let url;
     if (context.invokedFunctionArn.split(":")[7] !== "production") {
+        console.log("Sending to minerva interactivityAsync development...");
         url = "https://g4jwnsqon1.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-E6D7tlk3NjwP";
     } else {
+        console.log("Sending to minerva interactivityAsync production...");
         url = "https://9vkjfez4a3.execute-api.us-east-1.amazonaws.com/production/minerva-interactivityAsync-E6D7tlk3NjwP";
     }
 
