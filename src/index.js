@@ -119,9 +119,9 @@ exports.interactivity_sync = async (event, context) => {
 
     let url;
     if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        url = "https://bbfl9ivf5k.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-rzdj53m68JE9";
-    } else {
         url = "https://g34h315ctk.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-rzdj53m68JE9";
+    } else {
+        url = "https://bbfl9ivf5k.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-rzdj53m68JE9";
     }
 
     await new Promise((resolve, reject) => {
