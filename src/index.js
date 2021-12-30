@@ -8,9 +8,11 @@ exports.slack_commands_sync = async (event, context) => {
 
     let url;
     if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        url = "https://rh9ew5a2rd.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-23U2OZVQ02AT";
+        console.log("Sending to minerva slackCommandsAsync development...");
+        url = "https://g34h315ctk.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-rzdj53m68JE9";
     } else {
-        url = "https://obs7kx9u7g.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-23U2OZVQ02AT";
+        console.log("Sending to minerva slackCommandsAsync production...");
+        url = "https://bbfl9ivf5k.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-rzdj53m68JE9";
     }
 
     await new Promise((resolve, reject) => {
@@ -119,9 +121,11 @@ exports.interactivity_sync = async (event, context) => {
 
     let url;
     if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        url = "https://ez4h5h0yki.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-HNTIX0A0L940";
+        console.log("Sending to minerva interactivityAsync development...");
+        url = "https://g4jwnsqon1.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-E6D7tlk3NjwP";
     } else {
-        url = "https://edmqut7avb.execute-api.us-east-1.amazonaws.com/production/minerva-interactivityAsync-HNTIX0A0L940";
+        console.log("Sending to minerva interactivityAsync production...");
+        url = "https://9vkjfez4a3.execute-api.us-east-1.amazonaws.com/production/minerva-interactivityAsync-E6D7tlk3NjwP";
     }
 
     await new Promise((resolve, reject) => {
