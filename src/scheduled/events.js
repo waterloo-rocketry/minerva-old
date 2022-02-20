@@ -33,7 +33,6 @@ module.exports.checkForEvents = async function () {
             );
 
             if (parameters.alertType === "alert-single-channel") {
-                console.log("[DEBUG] Alert type is 'alert-single-channel'")
                 directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
                     message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
                     parameters.additionalChannels
@@ -53,7 +52,6 @@ module.exports.checkForEvents = async function () {
             // Your IDE might not recognize the 'await' as doing anything useful, but since directMessageSingleChannelGuestsInChannels is async,
             // the result is wrapped in a promise, thus, it is actually useful.
             directMessagePromises = await directMessagePromises;
-            console.log("[DEBUG] Direct Message Responses:" + directMessagePromises)
 
             await slack_handler.postMessageToChannel(this.generateResultMessage(event, parameters, isEventSoon, directMessagePromises.length), "minerva-log", false);
         } catch (error) {

@@ -31,7 +31,6 @@ module.exports.receive = async function (view, metadata) {
     const message = (parameters.alertType === "alert" ? "<!channel>\n" : "") + parameters.link;
 
     if (parameters.alertType === "alert-single-channel") {
-        console.log("[DEBUG] Alert type is 'alert-single-channel'")
         // when we alert single channel guests we simply want to PM them the message
         const responses = await slack_handler.directMessageSingleChannelGuestsInChannels(
             message +
@@ -39,9 +38,6 @@ module.exports.receive = async function (view, metadata) {
                 "If you're unsure what this message is about, feel free to message the original poster for more information._",
             parameters.channels
         );
-        responses = await responses;
-        console.log("[DEBUG] Direct Message Responses:" + responses)
-
         return responses.length + " single-channel-guests messaged.";
     } else {
         // otherwise, just copy the message to the channels. It may have an 'alert' appended to it.
