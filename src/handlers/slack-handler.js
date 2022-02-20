@@ -62,11 +62,15 @@ module.exports.directMessageUser = function (message, userId, unfurl) {
 // Someone think of a better name that follows previous convention
 // Returns an array of message promises
 module.exports.directMessageSingleChannelGuestsInChannels = async function (message, channels) {
+    console.log("[DEBUG] directMessageSingleChannelGuestsInChannels called")
+    console.log("[DEBUG] Message: " + message)
+    console.log("[DEBUG] Channels: " + channels)
     try {
         let memberPromises = [];
         const messagePromises = [];
         // get all single channel users in the server
         const singleChannelGuests = await this.getAllSingleChannelGuests();
+        console.log("[DEBUG] Guests: " + singleChannelGuests)
         // check each channel
         for (const channel of channels) {
             // get members of the channel
@@ -78,7 +82,12 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
         for (members of memberPromises) {
             members = members.members;
 
+            console.log("[DEBUG] Members:" + members)
+
             const singleChannelMembersInChannel = members.filter(member => singleChannelGuests.includes(member));
+
+            console.log("[DEBUG] Single Channel Members in Channel:" + singleChannelMembersInChannel)
+
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
                 messagePromises.push(this.directMessageUser(message, member, true));
