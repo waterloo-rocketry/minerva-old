@@ -123,6 +123,7 @@ module.exports.isAdmin = async function (user_id) {
 module.exports.getChannelMembers = function (channel) {
     return web.conversations.members({
         channel: channel,
+        limit: 500
     });
 };
 
