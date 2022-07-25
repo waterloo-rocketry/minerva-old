@@ -28,7 +28,10 @@ module.exports.process = async function (request) {
         return require("../commands/meeting").send(request.user_id, request.text, request.channel_id, request.channel_name, request.trigger_id);
     } else if (request.command === "/initialize") {
         return require("../commands/initialize").send();
-    } else {
+    } else if (request.command === "/getTasks") {
+        return require("../commands/getTasks").send(request.user_id); // Can expland this later to specify which list we want
+    } 
+    else {
         return Promise.reject("Command not recognized.");
     }
 };

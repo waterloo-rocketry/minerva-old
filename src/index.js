@@ -50,6 +50,7 @@ exports.slack_commands_async = async (event, context) => {
         require("./commands/meeting/edit");
         require("./commands/meeting");
         require("./commands/notify");
+        require("./commands/getTasks");
         require("./interactivity/initialize");
         console.log("Keep function hot");
         return;
