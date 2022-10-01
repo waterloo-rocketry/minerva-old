@@ -83,15 +83,15 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         message += "\nNotes: " + parameters.notes;
     }
 
-    if (isEventSoon && parameters.eventType === "meeting") {
+    if (parameters.eventType === "meeting") {
         message += "\nWays to attend:";
         if (parameters.location !== "") {
             message += "\n      :office: In person @ " + parameters.location;
         }
         if (parameters.link !== "") {
             message += "\n      :globe_with_meridians: Online @ " + parameters.link;
-            if (parameters.link === "https://meet.jit.si/bay_area") {
-                message += "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+            if (parameters.link === "https://meet.jit.si/bay_area" || parameters.link === "https://meet.waterloorocketry.com/bay_area") {
+                message += "\n      :calling: By phone +1-512-647-1431  (2633 1815 39#)";
             }
         }
     } else {
