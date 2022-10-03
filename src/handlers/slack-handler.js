@@ -120,6 +120,8 @@ module.exports.isAdmin = async function (user_id) {
 
 // Requires channel ID not name
 // https://api.slack.com/methods/conversations.members
+// not good for finding single-channel-guests, only returns an array of IDs, no user data
+// result.members
 module.exports.getChannelMembers = function (channel) {
     return web.conversations.members({
         channel: channel,
@@ -129,9 +131,18 @@ module.exports.getChannelMembers = function (channel) {
 
 // Return list of all single channel guests in the entire server
 module.exports.getAllSingleChannelGuests = async function () {
-    const users = await web.users.list();
+    let all_users = [];
+    let users = await web.users.list({ limit: 900}); // have to set a limit below 1000 for pagination to work
+    all_users = all_users.concat(users.members);
+    
+    // use pagination to make calls to get all 1000+ users
+    while(users.response_metadata.next_cursor != "") {
+        users = await web.users.list({cursor: users.response_metadata.next_cursor, limit: 900});
+        all_users = all_users.concat(users.members);
+    }
+    
     var singleChannel = [];
-    users.members.forEach(user => {
+    all_users.forEach(user => {
         // is_admin is used in development since is_ultra_restricted does not work without a paid plan
         // if (user.is_admin) {
         if (user.is_ultra_restricted) {
