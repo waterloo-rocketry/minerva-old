@@ -63,7 +63,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
-                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -94,6 +94,10 @@ describe("scheduled/event.js tests", function () {
                 + "\n    • item1"
                 + "\n    • item2"
                 + "\nNotes: N/A"
+                + "\nWays to attend:"
+                + "\n      :office: In person @ The Bay"
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
             assert.deepStrictEqual(
@@ -123,6 +127,10 @@ describe("scheduled/event.js tests", function () {
                 "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
                 + "\nThere are currently no agenda items listed for this meeting."
                 + "\nNotes: N/A"
+                + "\nWays to attend:"
+                + "\n      :office: In person @ The Bay"
+                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
             assert.deepStrictEqual(
@@ -158,7 +166,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
-                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -193,7 +201,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
-                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -227,7 +235,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
-                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -354,7 +362,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
                 + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
-                + "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
