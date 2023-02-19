@@ -76,25 +76,28 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
             message += "\nPlease see the agenda items:\n    • " + parameters.agendaItems.join("\n    • ");
         }
     } else if (parameters.eventType === "test") {
-        message += "\nToday's test is located at: " + (parameters.location === "" ? "Texas" : parameters.location);
+        message += "\nToday's test is located at: " + (parameters.location === "" ? "Texas" : parameters.location)
     }
 
     if (parameters.notes != "") {
         message += "\nNotes: " + parameters.notes;
     }
 
-    if (isEventSoon && parameters.eventType === "meeting") {
+    if (parameters.eventType === "meeting") {
         message += "\nWays to attend:";
         if (parameters.location !== "") {
             message += "\n      :office: In person @ " + parameters.location;
         }
         if (parameters.link !== "") {
             message += "\n      :globe_with_meridians: Online @ " + parameters.link;
-            if (parameters.link === "https://meet.jit.si/bay_area") {
-                message += "\n      :calling: By phone +1-437-538-3987 (2633 1815 39)";
+            if (parameters.link === "https://meet.jit.si/bay_area" || parameters.link === "https://meet.waterloorocketry.com/bay_area") {
+                message += "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
             }
         }
-    } else {
+        
+    } 
+
+    if (!isEventSoon || parameters.eventType === "test") {
         message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
     }
 
