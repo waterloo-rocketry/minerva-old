@@ -15,25 +15,26 @@ Parameters:
         Type: String
 
 Globals:
-    Runtime: nodejs12.x
-    Environment:
-        Variables:
-            production_googleaccount_redirect: "https://developers.google.com/oauthplayground/"
-            production_slack_token:
-                Ref: SlackToken
-            production_googleaccount_client:
-                Ref: GoogleAccountClient
-            production_googleaccount_secret:
-                Ref: GoogleAccountSecret
-            production_googleaccount_token:
-                Ref: GoogleAccountToken
+    Function:
+        Runtime: nodejs12.x
+        Environment:
+            Variables:
+                production_googleaccount_redirect: "https://developers.google.com/oauthplayground/"
+                production_slack_token:
+                    Ref: SlackToken
+                production_googleaccount_client:
+                    Ref: GoogleAccountClient
+                production_googleaccount_secret:
+                    Ref: GoogleAccountSecret
+                production_googleaccount_token:
+                    Ref: GoogleAccountToken
 
 Resources:
     MinervaApi:
         Type: AWS::Serverless::Api
         Properties:
             StageName: prod
-    
+
     SlackCommandsSync:
         Type: AWS::Serverless::Function
         Properties:
@@ -65,7 +66,7 @@ Resources:
                     Properties:
                         RestApiId: !Ref MinervaApi
                         Path: /slack/commands-async
-                        Method: post                
+                        Method: post
 
     InteractivitySync:
         Type: AWS::Serverless::Function
