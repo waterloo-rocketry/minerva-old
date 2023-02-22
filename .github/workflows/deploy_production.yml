@@ -12,6 +12,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
+    defaults:
+      run:
+        working-directory: ./deploy
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
@@ -30,7 +33,6 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
       - name: Deploy with SAM CLI
         shell: bash
-        working-directory: ./deploy
         env:
           GOOGLE_ACCOUNT_CLIENT: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
           GOOGLE_ACCOUNT_SECRET: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
