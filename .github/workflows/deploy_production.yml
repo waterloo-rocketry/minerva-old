@@ -37,11 +37,12 @@ jobs:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: >
           sam deploy
-          --template deploy/production_template.yml
+          --template deploy_template.yml
           --no-confirm-changeset
           --no-fail-on-empty-changeset
           --config-env production
           --parameter-overrides
+          "DeployEnvironment=production"
           "GoogleAccountClient=$GOOGLE_ACCOUNT_CLIENT"
           "GoogleAccountSecret=$GOOGLE_ACCOUNT_SECRET"
           "GoogleAccountToken=$GOOGLE_ACCOUNT_TOKEN"

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: minerva-prod
+Description: Serverless Deployment for Minerva
 
 Transform:
     - AWS::Serverless-2016-10-31
@@ -13,32 +13,36 @@ Parameters:
         Type: String
     SlackToken:
         Type: String
+    DeployEnvironment:
+        Type: String
+        Default: development
+        AllowedValues:
+            - development
+            - production
 
 Globals:
+    Api:
+        OpenApiVersion: 3.0.3
     Function:
         Runtime: nodejs12.x
         Environment:
             Variables:
                 production_googleaccount_redirect: "https://developers.google.com/oauthplayground/"
-                production_slack_token:
-                    Ref: SlackToken
-                production_googleaccount_client:
-                    Ref: GoogleAccountClient
-                production_googleaccount_secret:
-                    Ref: GoogleAccountSecret
-                production_googleaccount_token:
-                    Ref: GoogleAccountToken
+                production_slack_token: !Ref SlackToken
+                production_googleaccount_client: !Ref GoogleAccountClient
+                production_googleaccount_secret: !Ref GoogleAccountSecret
+                production_googleaccount_token: !Ref GoogleAccountToken
 
 Resources:
     MinervaApi:
         Type: AWS::Serverless::Api
         Properties:
-            StageName: prod
+            StageName: !Ref DeployEnvironment
 
     SlackCommandsSync:
         Type: AWS::Serverless::Function
         Properties:
-            FunctionName: minerva-prod-slackCommandsSync
+            FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsSync"
             Handler: src/index.slack_commands_sync
             MemorySize: 128
             Timeout: 100
@@ -54,7 +58,7 @@ Resources:
     SlackCommandsAsync:
         Type: AWS::Serverless::Function
         Properties:
-            FunctionName: minerva-prod-slackCommandsAsync
+            FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsAsync"
             Handler: src/index.slack_commands_async
             MemorySize: 128
             Timeout: 100
@@ -71,7 +75,7 @@ Resources:
     InteractivitySync:
         Type: AWS::Serverless::Function
         Properties:
-            FunctionName: minerva-prod-interactivitySync
+            FunctionName: !Sub "minerva-${DeployEnvironment}-interactivitySync"
             Handler: src/index.interactivity_sync
             MemorySize: 128
             Timeout: 100
@@ -87,7 +91,7 @@ Resources:
     InteractivityAsync:
         Type: AWS::Serverless::Function
         Properties:
-            FunctionName: minerva-prod-interactivityAsync
+            FunctionName: !Sub "minerva-${DeployEnvironment}-interactivityAsync"
             Handler: src/index.interactivity_async
             MemorySize: 128
             Timeout: 100
@@ -103,7 +107,7 @@ Resources:
     Scheduled:
         Type: AWS::Serverless::Function
         Properties:
-            FunctionName: minerva-prod-scheduled
+            FunctionName: !Sub "minerva-${DeployEnvironment}-scheduled"
             Handler: src/index.scheduled
             MemorySize: 128
             Timeout: 100
