@@ -33,7 +33,7 @@ jobs:
         run: sam deploy --template production_template.yml \
           --no-confirm-changeset \
           --config-env production \
-          --parameter-overrides GoogleAccountClient=${{ secrets.GOOGLE_ACCOUNT_CLIENT }} \
-          GoogleAccountSecret=${{ secrets.GOOGLE_ACCOUNT_SECRET }} \
-          GoogleAccountToken=${{ secrets.GOOGLE_ACCOUNT_TOKEN }} \
-          SlackToken=${{ secrets.SLACK_TOKEN }} \
+          --parameter-overrides GoogleAccountClient=${{ vars.AWS_REGION }} \
+          GoogleAccountSecret=${{ vars.AWS_REGION }} \
+          GoogleAccountToken=${{ vars.AWS_REGION }} \
+          SlackToken=${{ vars.AWS_REGION }}
