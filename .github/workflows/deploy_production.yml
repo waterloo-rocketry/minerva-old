@@ -1,10 +1,10 @@
 name: Deploy to AWS
 
 on:
-    workflow_run:
-      workflows: ["Unit Test"]
-      branches: ["master"]
-      types: completed
+  workflow_run:
+    workflows: ["Unit Test"]
+    branches: ["master"]
+    types: ["completed"]
 
 jobs:
   deploy:
@@ -12,29 +12,26 @@ jobs:
     environment: production
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Set up Python 3.8
-      - uses: actions/setup-python@v4
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
-      - uses: aws-actions/setup-sam@v2
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
       - name: Configure AWS Credentials
-      - uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ var.AWS_REGION }}
       - name: Deploy with SAM CLI
-      - working-directory: ./deploy
-      - run: sam deploy --template production_template.yml \
-                        --no-confirm-changeset \
-                        --config-env production \
-                        --parameter-overrides GoogleAccountClient=${{ secrets.GOOGLE_ACCOUNT_CLIENT }} \
-                                               GoogleAccountSecret=${{ secrets.GOOGLE_ACCOUNT_SECRET }} \
-                                               GoogleAccountToken=${{ secrets.GOOGLE_ACCOUNT_TOKEN }} \
-                                               SlackToken=${{ secrets.SLACK_TOKEN }} \
-
-
-
-
-
+        working-directory: ./deploy
+        run: sam deploy --template production_template.yml \
+          --no-confirm-changeset \
+          --config-env production \
+          --parameter-overrides GoogleAccountClient=${{ secrets.GOOGLE_ACCOUNT_CLIENT }} \
+          GoogleAccountSecret=${{ secrets.GOOGLE_ACCOUNT_SECRET }} \
+          GoogleAccountToken=${{ secrets.GOOGLE_ACCOUNT_TOKEN }} \
+          SlackToken=${{ secrets.SLACK_TOKEN }} \
