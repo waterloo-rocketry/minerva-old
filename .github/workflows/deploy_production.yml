@@ -12,9 +12,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
-    defaults:
-      run:
-        working-directory: ./deploy
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
@@ -38,12 +35,14 @@ jobs:
           GOOGLE_ACCOUNT_SECRET: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
           GOOGLE_ACCOUNT_TOKEN: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        run: >-
-          sam deploy --template production_template.yml
-            --no-confirm-changeset
-            --config-env production
-            --parameter-overrides
-              "GoogleAccountClient=$GOOGLE_ACCOUNT_CLIENT"
-              "GoogleAccountSecret=$GOOGLE_ACCOUNT_SECRET"
-              "GoogleAccountToken=$GOOGLE_ACCOUNT_TOKEN"
-              "SlackToken=$SLACK_TOKEN"
+        run: >
+          sam deploy
+          --template deploy/production_template.yml
+          --no-confirm-changeset
+          --no-fail-on-empty-changeset
+          --config-env production
+          --parameter-overrides
+          "GoogleAccountClient=$GOOGLE_ACCOUNT_CLIENT"
+          "GoogleAccountSecret=$GOOGLE_ACCOUNT_SECRET"
+          "GoogleAccountToken=$GOOGLE_ACCOUNT_TOKEN"
+          "SlackToken=$SLACK_TOKEN"
