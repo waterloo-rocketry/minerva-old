@@ -29,11 +29,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
       - name: Deploy with SAM CLI
+        shell: bash
         working-directory: ./deploy
+        env:
+          GOOGLE_ACCOUNT_CLIENT: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
+          GOOGLE_ACCOUNT_SECRET: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
+          GOOGLE_ACCOUNT_TOKEN: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: sam deploy --template production_template.yml \
           --no-confirm-changeset \
           --config-env production \
-          --parameter-overrides GoogleAccountClient=${{ vars.AWS_REGION }} \
-          GoogleAccountSecret=${{ vars.AWS_REGION }} \
-          GoogleAccountToken=${{ vars.AWS_REGION }} \
-          SlackToken=${{ vars.AWS_REGION }}
+          --parameter-overrides "GoogleAccountClient=$GOOGLE_ACCOUNT_CLIENT" \
+          "GoogleAccountSecret=$GOOGLE_ACCOUNT_SECRET" \
+          "GoogleAccountToken=$GOOGLE_ACCOUNT_TOKEN" \
+          "SlackToken=$SLACK_TOKEN"
