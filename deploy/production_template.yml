@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: minerva-prod
+
+Transform:
+    - AWS::Serverless-2016-10-31
+
+Parameters:
+    GoogleAccountClient:
+        Type: String
+    GoogleAccountSecret:
+        Type: String
+    GoogleAccountToken:
+        Type: String
+    SlackToken:
+        Type: String
+
+Globals:
+    Runtime: nodejs12.x
+    Environment:
+        Variables:
+            production_googleaccount_redirect: "https://developers.google.com/oauthplayground/"
+            production_slack_token:
+                Ref: SlackToken
+            production_googleaccount_client:
+                Ref: GoogleAccountClient
+            production_googleaccount_secret:
+                Ref: GoogleAccountSecret
+            production_googleaccount_token:
+                Ref: GoogleAccountToken
+
+Resources:
+    MinervaApi:
+        Type: AWS::Serverless::Api
+        Properties:
+            StageName: prod
+    
+    SlackCommandsSync:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: minerva-prod-slackCommandsSync
+            Handler: src/index.slack_commands_sync
+            MemorySize: 128
+            Timeout: 100
+            Policies:
+                - AWSLambdaBasicExecutionRole
+            Events:
+                SlackEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MinervaApi
+                        Path: /slack/commands-sync
+                        Method: post
+    SlackCommandsAsync:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: minerva-prod-slackCommandsAsync
+            Handler: src/index.slack_commands_async
+            MemorySize: 128
+            Timeout: 100
+            Policies:
+                - AWSLambdaBasicExecutionRole
+            Events:
+                SlackEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MinervaApi
+                        Path: /slack/commands-async
+                        Method: post                
+
+    InteractivitySync:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: minerva-prod-interactivitySync
+            Handler: src/index.interactivity_sync
+            MemorySize: 128
+            Timeout: 100
+            Policies:
+                - AWSLambdaBasicExecutionRole
+            Events:
+                SlackEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MinervaApi
+                        Path: /slack/interactivity-sync
+                        Method: post
+    InteractivityAsync:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: minerva-prod-interactivityAsync
+            Handler: src/index.interactivity_async
+            MemorySize: 128
+            Timeout: 100
+            Policies:
+                - AWSLambdaBasicExecutionRole
+            Events:
+                SlackEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MinervaApi
+                        Path: /slack/interactivity-async
+                        Method: post
+    Scheduled:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: minerva-prod-scheduled
+            Handler: src/index.scheduled
+            MemorySize: 128
+            Timeout: 100
+            Policies:
+                - AWSLambdaBasicExecutionRole
+            Events:
+                SlackEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MinervaApi
+                        Path: /slack/scheduled
+                        Method: post

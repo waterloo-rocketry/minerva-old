@@ -1,0 +1,30 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "minerva"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-5mz04rwya0ky"
+s3_prefix = "minerva"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+
+[development]
+[development.deploy]
+[development.deploy.parameters]
+stack_name = "minerva-dev"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-5mz04rwya0ky"
+s3_prefix = "minerva"
+region = "us-east-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+
+[production]
+[production.deploy]
+[production.deploy.parameters]
+stack_name = "minerva-prod"
+s3_bucket = "minerva-deploy-prod"
+region = "us-east-2"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+
