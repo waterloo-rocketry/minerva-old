@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: '2010-09-09'
 Description: Serverless Deployment for Minerva
 
 Transform:
@@ -43,7 +43,8 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsSync"
-            Handler: src/index.slack_commands_sync
+            CodeUri: build/index
+            Handler: bundle.slack_commands_sync
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -59,7 +60,8 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsAsync"
-            Handler: src/index.slack_commands_async
+            CodeUri: build/index
+            Handler: bundle.slack_commands_async
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -76,7 +78,8 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-interactivitySync"
-            Handler: src/index.interactivity_sync
+            CodeUri: build/index
+            Handler: bundle.interactivity_sync
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -92,7 +95,8 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-interactivityAsync"
-            Handler: src/index.interactivity_async
+            CodeUri: build/index
+            Handler: bundle.interactivity_async
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -108,7 +112,8 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-scheduled"
-            Handler: src/index.scheduled
+            CodeUri: build/index
+            Handler: bundle.scheduled
             MemorySize: 128
             Timeout: 100
             Policies:

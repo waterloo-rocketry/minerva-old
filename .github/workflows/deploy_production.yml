@@ -20,6 +20,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.8"
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v3
+        with:
+            node-version: 12.x  
       - name: Set up AWS SAM CLI
         uses: aws-actions/setup-sam@v2
       - name: Configure AWS Credentials
@@ -28,6 +32,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
+      - name: Validate SAM template
+        run: sam validate -t deploy_template.yml
+      - name: npm install
+        run: npm install
+      - name: Build with esbuild
+        run: npm run build
       - name: Deploy with SAM CLI
         shell: bash
         env:

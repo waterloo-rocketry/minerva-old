@@ -1,0 +1,1 @@
+sam deploy --template production_template.yml --confirm-changeset --config-env production 
