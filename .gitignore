@@ -42,6 +42,7 @@ bower_components
 
 # Build files
 build/
+.aws-sam/
 
 # Dependency directories
 node_modules/

@@ -6,9 +6,10 @@ esbuild.buildSync({
 logLevel: 'info',
 entryPoints: [ "src/index.js" ],
 bundle: true,
+sourcemap: true,
 platform: 'node',
-minify: true,
-target: ['node12'],
+external: ['aws-sdk'],
+target: ['node16'],
 outfile: `build/index/bundle.js`
 });
 

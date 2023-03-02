@@ -19,12 +19,14 @@ Parameters:
         AllowedValues:
             - development
             - production
+Conditions:
+    IsProduction: !Equals [!Ref DeployEnvironment, "production"]
 
 Globals:
     Api:
         OpenApiVersion: 3.0.3
     Function:
-        Runtime: nodejs12.x
+        Runtime: nodejs16.x
         Environment:
             Variables:
                 production_googleaccount_redirect: "https://developers.google.com/oauthplayground/"
@@ -43,7 +45,6 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsSync"
-            CodeUri: build/index
             Handler: bundle.slack_commands_sync
             MemorySize: 128
             Timeout: 100
@@ -56,11 +57,18 @@ Resources:
                         RestApiId: !Ref MinervaApi
                         Path: /slack/commands-sync
                         Method: post
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Target: "es2020"
+                Sourcemap: !If [IsProduction, false, true]
+                EntryPoints: 
+                - src/index.js
+
     SlackCommandsAsync:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsAsync"
-            CodeUri: build/index
             Handler: bundle.slack_commands_async
             MemorySize: 128
             Timeout: 100
@@ -73,12 +81,18 @@ Resources:
                         RestApiId: !Ref MinervaApi
                         Path: /slack/commands-async
                         Method: post
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Target: "es2020"
+                Sourcemap: !If [IsProduction, false, true]
+                EntryPoints: 
+                - src/index.js
 
     InteractivitySync:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-interactivitySync"
-            CodeUri: build/index
             Handler: bundle.interactivity_sync
             MemorySize: 128
             Timeout: 100
@@ -91,11 +105,18 @@ Resources:
                         RestApiId: !Ref MinervaApi
                         Path: /slack/interactivity-sync
                         Method: post
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Target: "es2020"
+                Sourcemap: !If [IsProduction, false, true]
+                EntryPoints: 
+                - src/index.js
+
     InteractivityAsync:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-interactivityAsync"
-            CodeUri: build/index
             Handler: bundle.interactivity_async
             MemorySize: 128
             Timeout: 100
@@ -108,11 +129,18 @@ Resources:
                         RestApiId: !Ref MinervaApi
                         Path: /slack/interactivity-async
                         Method: post
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Target: "es2020"
+                Sourcemap: !If [IsProduction, false, true]
+                EntryPoints: 
+                - src/index.js    
+
     Scheduled:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-scheduled"
-            CodeUri: build/index
             Handler: bundle.scheduled
             MemorySize: 128
             Timeout: 100
@@ -125,3 +153,10 @@ Resources:
                         RestApiId: !Ref MinervaApi
                         Path: /slack/scheduled
                         Method: post
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Target: "es2020"
+                Sourcemap: !If [IsProduction, false, true]
+                EntryPoints: 
+                - src/index.js
