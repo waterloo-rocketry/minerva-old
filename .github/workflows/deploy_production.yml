@@ -33,9 +33,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
       - name: Validate SAM template
-        run: sam validate
+        run: sam validate --lint
       - name: npm install
         run: npm install
+      - name: Build with SAM CLI
+        run: sam build
       - name: Deploy with SAM CLI
         shell: bash
         env:
