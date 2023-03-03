@@ -36,8 +36,6 @@ jobs:
         run: sam validate -t deploy_template.yml
       - name: npm install
         run: npm install
-      - name: Build with esbuild
-        run: npm run build
       - name: Deploy with SAM CLI
         shell: bash
         env:
