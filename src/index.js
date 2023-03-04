@@ -1,7 +1,8 @@
+const environment = require("./handlers/environment-handler");
 const AWS = require('aws-sdk')
 const lambda = new AWS.Lambda()
-
-const environment = process.env.NODE_ENV
+const deployEnv = environment.environment;
+const querystring = require("querystring");
 
 exports.slack_commands_sync = async (event, context) => {
     if (event === null || event === undefined || event.body === undefined) {
@@ -9,12 +10,12 @@ exports.slack_commands_sync = async (event, context) => {
         return;
     }
 
-    const body = require("querystring").parse(Buffer.from(event.body, "base64").toString());
+    const body = querystring.parse(event.body)
 
-    console.log(`Sending to minerva-${environment}-slackCommandsAsync...`);
+    console.log(`Sending to minerva-${deployEnv}-slackCommandsAsync...`);
 
     const params = {
-        FunctionName: `minerva-${environment}-slackCommandsAsync`,
+        FunctionName: `minerva-${deployEnv}-slackCommandsAsync`,
         InvocationType: "Event",
         Payload: JSON.stringify(body),
     }
@@ -33,7 +34,7 @@ exports.slack_commands_sync = async (event, context) => {
     })
 
     return {
-        statusCode: 200,
+        statusCode: 202,
         headers: {
             "Content-Type": "application/json",
         },
@@ -42,8 +43,7 @@ exports.slack_commands_sync = async (event, context) => {
 };
 
 exports.slack_commands_async = async (event, context) => {
-    require("./handlers/environment-handler").setDefaults(context);
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event === null || event === undefined || event === {}) {
         require("./handlers/command-handler");
         require("./commands/meeting/edit");
         require("./commands/meeting");
@@ -55,7 +55,7 @@ exports.slack_commands_async = async (event, context) => {
 
     const slack = require("./handlers/slack-handler");
 
-    const body = JSON.parse(event.body);
+    const body = event;
 
     try {
         const result = await require("./handlers/command-handler").process(body);
@@ -82,7 +82,6 @@ exports.slack_commands_async = async (event, context) => {
 // Runs once a minute
 // prettier-ignore
 exports.scheduled = async (event, context) => {
-    require("./handlers/environment-handler").setDefaults(context);
     const slack = require("./handlers/slack-handler");
 
     // Check for event reminders every 5 minutes
@@ -115,14 +114,14 @@ exports.interactivity_sync = async (event, context) => {
         return;
     }
 
-    const payload = require("querystring").parse(Buffer.from(event.body, "base64").toString()).payload;
+    const body = querystring.parse(event.body)
 
-    console.log(`Sending to minerva-${environment}-interactivityAsync...`);
+    console.log(`Sending to minerva-${deployEnv}-interactivityAsync...`);
 
     const params = {
-        FunctionName: `minerva-${environment}-interactivityAsync`,
+        FunctionName: `minerva-${deployEnv}-interactivityAsync`,
         InvocationType: "Event",
-        Payload: JSON.stringify(payload),
+        Payload: JSON.stringify(body),
     }
 
     await new Promise((resolve, reject) => {
@@ -139,14 +138,12 @@ exports.interactivity_sync = async (event, context) => {
     })
 
     return {
-        statusCode: 200,
+        statusCode: 202,
     };
 };
 
 exports.interactivity_async = async (event, context) => {
-    require("./handlers/environment-handler").setDefaults(context);
-
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event === null || event === undefined || event === {}) {
         require("./commands/meeting/edit");
         require("./commands/notify");
         require("./interactivity/initialize");
@@ -155,7 +152,7 @@ exports.interactivity_async = async (event, context) => {
     }
 
     const slack = require("./handlers/slack-handler");
-    const payload = JSON.parse(JSON.parse(event.body));
+    const payload = JSON.parse(event.payload);
 
     let metadata;
     if (payload.type === "view_submission") {

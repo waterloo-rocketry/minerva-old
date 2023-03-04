@@ -1,4 +1,5 @@
 const slack_handler = require("../handlers/slack-handler");
+const environment = require("../handlers/environment-handler");
 
 module.exports.send = async function (userId, trigger, initialChannel) {
     var view;
@@ -70,8 +71,10 @@ module.exports.extractNotifyParameters = async function (view) {
         channels: view.state.values.additional_channels.additional_channels.selected_channels,
     };
 
-    if (!parameters.link.startsWith("https://waterloorocketry.slack.com/")) {
-        return Promise.reject("The 'message link' input box must be a link to a Waterloo Rocketry slack message");
+    const urlPrefix = environment.environment == "production" ? "https://waterloorocketry.slack.com/archives/" : "https://chrisslackbottesting.slack.com/archives/";
+
+    if (!parameters.link.startsWith(urlPrefix)) {
+        return Promise.reject("The 'message link' input box must be a link to a Slack message from this workspace");
     }
 
     const initialChannel = parameters.link.split("/")[4];
