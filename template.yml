@@ -29,11 +29,12 @@ Globals:
         Runtime: nodejs16.x
         Environment:
             Variables:
-                production_googleaccount_redirect: "https://developers.google.com/oauthplayground/"
-                production_slack_token: !Ref SlackToken
-                production_googleaccount_client: !Ref GoogleAccountClient
-                production_googleaccount_secret: !Ref GoogleAccountSecret
-                production_googleaccount_token: !Ref GoogleAccountToken
+                NODE_ENV: !Ref DeployEnvironment
+                googleaccount_redirect: "https://developers.google.com/oauthplayground/"
+                slack_token: !Ref SlackToken
+                googleaccount_client: !Ref GoogleAccountClient
+                googleaccount_secret: !Ref GoogleAccountSecret
+                googleaccount_token: !Ref GoogleAccountToken
 
 Resources:
     MinervaApi:
