@@ -1,3 +1,8 @@
+const AWS = require('aws-sdk')
+const lambda = new AWS.Lambda()
+
+const environment = process.env.NODE_ENV
+
 exports.slack_commands_sync = async (event, context) => {
     if (event === null || event === undefined || event.body === undefined) {
         console.log("Keep function hot");
@@ -6,33 +11,26 @@ exports.slack_commands_sync = async (event, context) => {
 
     const body = require("querystring").parse(Buffer.from(event.body, "base64").toString());
 
-    let url;
-    if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        console.log("Sending to minerva slackCommandsAsync development...");
-        url = "https://g34h315ctk.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-rzdj53m68JE9";
-    } else {
-        console.log("Sending to minerva slackCommandsAsync production...");
-        url = "https://bbfl9ivf5k.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-rzdj53m68JE9";
+    console.log(`Sending to minerva-${environment}-slackCommandsAsync...`);
+
+    const params = {
+        FunctionName: `minerva-${environment}-slackCommandsAsync`,
+        InvocationType: "Event",
+        Payload: JSON.stringify(body),
     }
 
     await new Promise((resolve, reject) => {
-        const req = require("https").request(
-            url,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Content-Length": JSON.stringify(body).length,
-                },
-            },
-            res => {}
-        );
-        req.write(JSON.stringify(body));
-        req.end();
-        setTimeout(() => {
-            resolve();
-        }, 400);
-    });
+        lambda.invoke(params, (err, data) => {
+            if (err) {
+                console.log(err, err.stack)
+                reject()
+            } else {
+                setTimeout(() => {
+                    resolve();
+                }, 400);
+            }
+        })
+    })
 
     return {
         statusCode: 200,
@@ -119,33 +117,26 @@ exports.interactivity_sync = async (event, context) => {
 
     const payload = require("querystring").parse(Buffer.from(event.body, "base64").toString()).payload;
 
-    let url;
-    if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        console.log("Sending to minerva interactivityAsync development...");
-        url = "https://g4jwnsqon1.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-E6D7tlk3NjwP";
-    } else {
-        console.log("Sending to minerva interactivityAsync production...");
-        url = "https://9vkjfez4a3.execute-api.us-east-1.amazonaws.com/production/minerva-interactivityAsync-E6D7tlk3NjwP";
+    console.log(`Sending to minerva-${environment}-interactivityAsync...`);
+
+    const params = {
+        FunctionName: `minerva-${environment}-interactivityAsync`,
+        InvocationType: "Event",
+        Payload: JSON.stringify(payload),
     }
 
     await new Promise((resolve, reject) => {
-        const req = require("https").request(
-            url,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Content-Length": JSON.stringify(payload).length,
-                },
-            },
-            res => {}
-        );
-        req.write(JSON.stringify(payload));
-        req.end();
-        setTimeout(() => {
-            resolve();
-        }, 600);
-    });
+        lambda.invoke(params, (err, data) => {
+            if (err) {
+                console.log(err, err.stack)
+                reject()
+            } else {
+                setTimeout(() => {
+                    resolve();
+                }, 600);
+            }
+        })
+    })
 
     return {
         statusCode: 200,
