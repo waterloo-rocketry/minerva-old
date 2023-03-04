@@ -20,7 +20,7 @@ Parameters:
             - development
             - production
 Conditions:
-    IsProduction: !Equals [!Ref DeployEnvironment, "production"]
+    IsProduction: !Equals [!Ref DeployEnvironment, production]
 
 Globals:
     Api:
@@ -45,7 +45,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsSync"
-            Handler: bundle.slack_commands_sync
+            Handler: index.slack_commands_sync
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -61,6 +61,7 @@ Resources:
             BuildMethod: esbuild
             BuildProperties:
                 Target: "es2020"
+                Minify: false
                 Sourcemap: !If [IsProduction, false, true]
                 EntryPoints: 
                 - src/index.js
@@ -69,7 +70,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-slackCommandsAsync"
-            Handler: bundle.slack_commands_async
+            Handler: index.slack_commands_async
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -85,6 +86,7 @@ Resources:
             BuildMethod: esbuild
             BuildProperties:
                 Target: "es2020"
+                Minify: false
                 Sourcemap: !If [IsProduction, false, true]
                 EntryPoints: 
                 - src/index.js
@@ -93,7 +95,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-interactivitySync"
-            Handler: bundle.interactivity_sync
+            Handler: index.interactivity_sync
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -109,6 +111,7 @@ Resources:
             BuildMethod: esbuild
             BuildProperties:
                 Target: "es2020"
+                Minify: false
                 Sourcemap: !If [IsProduction, false, true]
                 EntryPoints: 
                 - src/index.js
@@ -117,7 +120,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-interactivityAsync"
-            Handler: bundle.interactivity_async
+            Handler: index.interactivity_async
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -133,6 +136,7 @@ Resources:
             BuildMethod: esbuild
             BuildProperties:
                 Target: "es2020"
+                Minify: false
                 Sourcemap: !If [IsProduction, false, true]
                 EntryPoints: 
                 - src/index.js    
@@ -141,7 +145,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             FunctionName: !Sub "minerva-${DeployEnvironment}-scheduled"
-            Handler: bundle.scheduled
+            Handler: index.scheduled
             MemorySize: 128
             Timeout: 100
             Policies:
@@ -157,6 +161,7 @@ Resources:
             BuildMethod: esbuild
             BuildProperties:
                 Target: "es2020"
+                Minify: false
                 Sourcemap: !If [IsProduction, false, true]
                 EntryPoints: 
                 - src/index.js

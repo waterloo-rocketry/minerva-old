@@ -1,14 +1,15 @@
-name: Deploy to AWS (Production)
+name: Deploy to AWS (Development)
+
 on:
   workflow_run:
     workflows: ["Unit Test"]
-    branches: ["master"]
+    branches: ["development"]
     types: ["completed"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment: development
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
@@ -46,9 +47,9 @@ jobs:
           sam deploy
           --no-confirm-changeset
           --no-fail-on-empty-changeset
-          --config-env production
+          --config-env development
           --parameter-overrides
-          "DeployEnvironment=production"
+          "DeployEnvironment=development"
           "GoogleAccountClient=$GOOGLE_ACCOUNT_CLIENT"
           "GoogleAccountSecret=$GOOGLE_ACCOUNT_SECRET"
           "GoogleAccountToken=$GOOGLE_ACCOUNT_TOKEN"
