@@ -29,7 +29,7 @@ module.exports.receive = async function (eventId, trigger) {
             agendaItems: [],
             notes: "",
             location: "",
-            link: "https://meet.jit.si/bay_area",
+            link: "https://meet.waterloorocketry.com/bay_area",
         };
 
         const meetingBlock = await edit.parseMeetingBlock(event, parameters);

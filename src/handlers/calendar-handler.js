@@ -148,7 +148,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (parameters.link === undefined || parameters.link === "") {
-        parameters.link = "https://meet.jit.si/bay_area";
+        parameters.link = "https://meet.waterloorocketry.com/bay_area";
     }
 
     if (parameters.eventType === undefined || parameters.eventType === "") {

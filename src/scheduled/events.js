@@ -90,7 +90,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         }
         if (parameters.link !== "") {
             message += "\n      :globe_with_meridians: Online @ " + parameters.link;
-            if (parameters.link === "https://meet.jit.si/bay_area" || parameters.link === "https://meet.waterloorocketry.com/bay_area") {
+            if (parameters.link === "https://meet.waterloorocketry.com/bay_area" || parameters.link === "https://meet.waterloorocketry.com/bay_area") {
                 message += "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
             }
         }

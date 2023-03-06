@@ -26,7 +26,7 @@ describe("commands/meeting/edit.js tests", function () {
                         agendaItems: ["test"],
                         notes: "N/A",
                         location: "E5 2001",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                     }
                 ),
                 require("./meetingBlocks/parsedMeetingBlock.json")
@@ -84,7 +84,7 @@ describe("commands/meeting/edit.js tests", function () {
                     location: "E5 2001",
                     agendaItems: ["item", "item2"],
                     notes: "A note",
-                    link: "https://meet.jit.si/bay_area",
+                    link: "https://meet.waterloorocketry.com/bay_area",
                     updateType: "next",
                     eventId: "123456789",
                 }
