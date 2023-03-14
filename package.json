@@ -5,6 +5,7 @@
     "private": true,
     "dependencies": {
         "@slack/web-api": "^5.15.0",
+        "aws-cdk-lib": "^2.68.0",
         "aws-sdk": "^2.884.0",
         "axios": ">=0.21.2",
         "chai": "^4.3.4",
@@ -26,7 +27,6 @@
         "jest": "^24.9.0"
     },
     "scripts": {
-        "test": "jest",
-        "build": "node esbuild.js"
+        "test": "jest"
     }
 }
