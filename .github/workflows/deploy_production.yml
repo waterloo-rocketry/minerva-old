@@ -13,43 +13,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
       - name: Set up Node.js 16.x
         uses: actions/setup-node@v3
         with:
             node-version: 16.x  
-      - name: Set up AWS SAM CLI
-        uses: aws-actions/setup-sam@v2
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-      - name: Validate SAM template
-        run: sam validate --lint
       - name: npm install
         run: npm install
-      - name: Build with SAM CLI
-        run: sam build
-      - name: Deploy with SAM CLI
+      - name: Deploy with CDK Deploy
         shell: bash
         env:
           GOOGLE_ACCOUNT_CLIENT: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
           GOOGLE_ACCOUNT_SECRET: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
           GOOGLE_ACCOUNT_TOKEN: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        run: >
-          sam deploy
-          --no-confirm-changeset
-          --no-fail-on-empty-changeset
-          --config-env production
-          --parameter-overrides
-          "DeployEnvironment=production"
-          "GoogleAccountClient=$GOOGLE_ACCOUNT_CLIENT"
-          "GoogleAccountSecret=$GOOGLE_ACCOUNT_SECRET"
-          "GoogleAccountToken=$GOOGLE_ACCOUNT_TOKEN"
-          "SlackToken=$SLACK_TOKEN"
+        run: npx cdk deploy --require-approval never minerva-prod
