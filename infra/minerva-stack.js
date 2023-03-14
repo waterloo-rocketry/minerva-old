@@ -39,8 +39,8 @@ class MinervaStack extends cdk.Stack {
         const lambdaWithExecuteRole = new iam.Role( this, 'LambdaWithExecuteRole', {
             assumedBy: new iam.ServicePrincipal( "lambda.amazonaws.com" ),
             managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName( 'AWSLambdaBasicExecutionRole' ),
-                iam.ManagedPolicy.fromAwsManagedPolicyName( 'AWSLambdaRole' ),
+                iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaBasicExecutionRole' ),
+                iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaRole' ),
             ],
         } )
 
