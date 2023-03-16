@@ -1,4 +1,5 @@
 const cdk = require( 'aws-cdk-lib' );
+const apigateway = require( 'aws-cdk-lib/aws-apigateway' );
 const iam = require( 'aws-cdk-lib/aws-iam' );
 const lambda = require( 'aws-cdk-lib/aws-lambda' );
 const { ApiEventSource } = require( 'aws-cdk-lib/aws-lambda-event-sources' );
@@ -51,60 +52,52 @@ class MinervaStack extends cdk.Stack {
             ],
         } )
 
-        const minervaApi = new cdk.aws_sam.CfnApi( this, 'MinervaApi', {
-            stageName: deployEnv
-        } )
-
-        new lambda.Function( this, 'SlackCommandsSync', {
+        const slackCommandsSync = new lambda.Function( this, 'SlackCommandsSync', {
             ...lambdaFnProps,
             handler: 'index.slack_commands_sync',
             functionName: `minerva-${ deployEnv }-slackCommandsSync`,
             role: lambdaWithExecuteRole,
-            events: [
-                new ApiEventSource('post', '/slack/commands-sync', minervaApi )
-
-            ]
         } );
 
-        new lambda.Function( this, 'SlackCommandsAsync', {
+        const slackCommandsAsync = new lambda.Function( this, 'SlackCommandsAsync', {
             ...lambdaFnProps,
             handler: 'index.slack_commands_async',
             functionName: `minerva-${ deployEnv }-slackCommandsAsync`,
             role: lambdaRole,
-            events: [
-                new ApiEventSource('post', '/slack/commands-async', minervaApi )
-            ]
         } );
 
-        new lambda.Function( this, 'InteractivitySync', {
+        const interactivitySync = new lambda.Function( this, 'InteractivitySync', {
             ...lambdaFnProps,
             handler: 'index.interactivity_sync',
             functionName: `minerva-${ deployEnv }-interactivitySync`,
             role: lambdaWithExecuteRole,
-            events: [
-                new ApiEventSource('post', '/slack/interactivity-sync', minervaApi )
-            ]
         } );
 
-        new lambda.Function( this, 'InteractivityAsync', {
+        const interactivityAsync = new lambda.Function( this, 'InteractivityAsync', {
             ...lambdaFnProps,
             handler: 'index.interactivity_async',
             functionName: `minerva-${ deployEnv }-interactivity_async`,
             role: lambdaRole,
-            events: [
-                new ApiEventSource('post', '/slack/interactivity-async', minervaApi )
-            ]
         } );
 
-        new lambda.Function( this, 'Scheduled', {
+        const scheduled = new lambda.Function( this, 'Scheduled', {
             ...lambdaFnProps,
             handler: 'index.scheduled',
             functionName: `minerva-${ deployEnv }-scheduled`,
             role: lambdaWithExecuteRole,
-            events: [
-                new ApiEventSource('post', '/slack/scheduled', minervaApi )
-            ]
         });
+
+        const minervaApi = new apigateway.RestApi( this, 'MinervaApi', {
+            deployOptions: {stageName: deployEnv},
+        } )
+
+        const slackRoute = minervaApi.root.addResource('slack');
+
+        slackRoute.addResource('commands-sync').addMethod('POST', new apigateway.LambdaIntegration(slackCommandsSync));
+        slackRoute.addResource('commands-async').addMethod('POST', new apigateway.LambdaIntegration(slackCommandsAsync));
+        slackRoute.addResource('interactivity-sync').addMethod('POST', new apigateway.LambdaIntegration(interactivitySync));
+        slackRoute.addResource('interactivity-async').addMethod('POST', new apigateway.LambdaIntegration(interactivityAsync));
+        slackRoute.addResource('scheduled').addMethod('POST', new apigateway.LambdaIntegration(scheduled));
     }
 }
 
