@@ -29,8 +29,8 @@ jobs:
       - name: Deploy with CDK Deploy
         shell: bash
         env:
-          GOOGLE_ACCOUNT_CLIENT: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
-          GOOGLE_ACCOUNT_SECRET: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
-          GOOGLE_ACCOUNT_TOKEN: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          googleaccount_client: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
+          googleaccount_secret: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
+          googleaccount_token: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
         run: npx cdk deploy --require-approval never minerva-dev
