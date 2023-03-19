@@ -2,8 +2,8 @@ const cdk = require( 'aws-cdk-lib' );
 const apigateway = require( 'aws-cdk-lib/aws-apigateway' );
 const iam = require( 'aws-cdk-lib/aws-iam' );
 const lambda = require( 'aws-cdk-lib/aws-lambda' );
-const { ApiEventSource } = require( 'aws-cdk-lib/aws-lambda-event-sources' );
-
+const { NodejsFunction } = require('aws-cdk-lib/aws-lambda-nodejs');
+const path = require('path')
 
 class MinervaStack extends cdk.Stack {
     /**
@@ -21,7 +21,7 @@ class MinervaStack extends cdk.Stack {
             runtime: lambda.Runtime.NODEJS_16_X,
             timeout: cdk.Duration.seconds( 100 ),
             memorySize: 128,
-            code: lambda.Code.fromAsset( "src/" ),
+            entry: path.join(__dirname, '../src/index.js'),
             environment: {
                 NODE_ENV: deployEnv,
                 googleaccount_redirect: "https://developers.google.com/oauthplayground/",
@@ -52,35 +52,35 @@ class MinervaStack extends cdk.Stack {
             ],
         } )
 
-        const slackCommandsSync = new lambda.Function( this, 'SlackCommandsSync', {
+        const slackCommandsSync = new NodejsFunction( this, 'SlackCommandsSync', {
             ...lambdaFnProps,
             handler: 'index.slack_commands_sync',
             functionName: `minerva-${ deployEnv }-slackCommandsSync`,
             role: lambdaWithExecuteRole,
         } );
 
-        const slackCommandsAsync = new lambda.Function( this, 'SlackCommandsAsync', {
+        const slackCommandsAsync = new NodejsFunction( this, 'SlackCommandsAsync', {
             ...lambdaFnProps,
             handler: 'index.slack_commands_async',
             functionName: `minerva-${ deployEnv }-slackCommandsAsync`,
             role: lambdaRole,
         } );
 
-        const interactivitySync = new lambda.Function( this, 'InteractivitySync', {
+        const interactivitySync = new NodejsFunction( this, 'InteractivitySync', {
             ...lambdaFnProps,
             handler: 'index.interactivity_sync',
             functionName: `minerva-${ deployEnv }-interactivitySync`,
             role: lambdaWithExecuteRole,
         } );
 
-        const interactivityAsync = new lambda.Function( this, 'InteractivityAsync', {
+        const interactivityAsync = new NodejsFunction( this, 'InteractivityAsync', {
             ...lambdaFnProps,
             handler: 'index.interactivity_async',
-            functionName: `minerva-${ deployEnv }-interactivity_async`,
+            functionName: `minerva-${ deployEnv }-interactivityAsync`,
             role: lambdaRole,
         } );
 
-        const scheduled = new lambda.Function( this, 'Scheduled', {
+        const scheduled = new NodejsFunction( this, 'Scheduled', {
             ...lambdaFnProps,
             handler: 'index.scheduled',
             functionName: `minerva-${ deployEnv }-scheduled`,
