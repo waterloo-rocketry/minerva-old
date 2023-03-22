@@ -1,9 +1,12 @@
 const cdk = require( 'aws-cdk-lib' );
-const apigateway = require( 'aws-cdk-lib/aws-apigateway' );
+const apiGateway = require( 'aws-cdk-lib/aws-apigateway' );
 const iam = require( 'aws-cdk-lib/aws-iam' );
 const lambda = require( 'aws-cdk-lib/aws-lambda' );
+const awsEvents = require( 'aws-cdk-lib/aws-events' );
+const awsEventsTargets = require( 'aws-cdk-lib/aws-events-targets' );
 const { NodejsFunction } = require('aws-cdk-lib/aws-lambda-nodejs');
-const path = require('path')
+
+const path = require('path');
 
 class MinervaStack extends cdk.Stack {
     /**
@@ -17,6 +20,7 @@ class MinervaStack extends cdk.Stack {
 
         const { deployEnv } = props
 
+        // Default configuration for Lambda functions
         const lambdaFnProps = {
             runtime: lambda.Runtime.NODEJS_16_X,
             timeout: cdk.Duration.seconds( 100 ),
@@ -37,6 +41,7 @@ class MinervaStack extends cdk.Stack {
             }
         }
 
+        // Create a role for Lambda functions that need to execute other Lambda functions
         const lambdaWithExecuteRole = new iam.Role( this, 'LambdaWithExecuteRole', {
             assumedBy: new iam.ServicePrincipal( "lambda.amazonaws.com" ),
             managedPolicies: [
@@ -45,6 +50,7 @@ class MinervaStack extends cdk.Stack {
             ],
         } )
 
+        // Create a basic role for Lambda functions
         const lambdaRole = new iam.Role( this, 'LambdaRole', {
             assumedBy: new iam.ServicePrincipal( 'lambda.amazonaws.com' ),
             managedPolicies: [
@@ -52,6 +58,7 @@ class MinervaStack extends cdk.Stack {
             ],
         } )
 
+        // Create Lambda functions
         const slackCommandsSync = new NodejsFunction( this, 'SlackCommandsSync', {
             ...lambdaFnProps,
             handler: 'index.slack_commands_sync',
@@ -87,17 +94,31 @@ class MinervaStack extends cdk.Stack {
             role: lambdaWithExecuteRole,
         });
 
-        const minervaApi = new apigateway.RestApi( this, 'MinervaApi', {
+        // Create API Gateway
+        const minervaApi = new apiGateway.RestApi( this, 'MinervaApi', {
             deployOptions: {stageName: deployEnv},
         } )
 
+        // All Slack lambda functions are under the same "slack" route
         const slackRoute = minervaApi.root.addResource('slack');
+        // Attach the Lambda functions to the Slack route
+        slackRoute.addResource('commands-sync').addMethod('POST', new apiGateway.LambdaIntegration(slackCommandsSync));
+        slackRoute.addResource('commands-async').addMethod('POST', new apiGateway.LambdaIntegration(slackCommandsAsync));
+        slackRoute.addResource('interactivity-sync').addMethod('POST', new apiGateway.LambdaIntegration(interactivitySync));
+        slackRoute.addResource('interactivity-async').addMethod('POST', new apiGateway.LambdaIntegration(interactivityAsync));
+        slackRoute.addResource('scheduled').addMethod('POST', new apiGateway.LambdaIntegration(scheduled));
 
-        slackRoute.addResource('commands-sync').addMethod('POST', new apigateway.LambdaIntegration(slackCommandsSync));
-        slackRoute.addResource('commands-async').addMethod('POST', new apigateway.LambdaIntegration(slackCommandsAsync));
-        slackRoute.addResource('interactivity-sync').addMethod('POST', new apigateway.LambdaIntegration(interactivitySync));
-        slackRoute.addResource('interactivity-async').addMethod('POST', new apigateway.LambdaIntegration(interactivityAsync));
-        slackRoute.addResource('scheduled').addMethod('POST', new apigateway.LambdaIntegration(scheduled));
+        // Create an EventBridge rule to trigger the lambda functions every minute, keeping the lambda functions warm
+        const keepLambdaWarmRule = new awsEvents.Rule( this, 'KeepLambdaWarmRule', {
+            schedule: awsEvents.Schedule.rate( cdk.Duration.minutes( 1 ) ),
+            targets: [
+                new awsEventsTargets.LambdaFunction( slackCommandsSync ),
+                new awsEventsTargets.LambdaFunction( slackCommandsAsync ),
+                new awsEventsTargets.LambdaFunction( interactivitySync ),
+                new awsEventsTargets.LambdaFunction( interactivityAsync ),
+                new awsEventsTargets.LambdaFunction( scheduled ),
+            ],
+        } );
     }
 }
 
