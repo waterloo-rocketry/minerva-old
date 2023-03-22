@@ -1,6 +1,7 @@
 const cdk = require( 'aws-cdk-lib' );
 const apiGateway = require( 'aws-cdk-lib/aws-apigateway' );
 const iam = require( 'aws-cdk-lib/aws-iam' );
+const logs = require( 'aws-cdk-lib/aws-logs' );
 const lambda = require( 'aws-cdk-lib/aws-lambda' );
 const awsEvents = require( 'aws-cdk-lib/aws-events' );
 const awsEventsTargets = require( 'aws-cdk-lib/aws-events-targets' );
@@ -26,6 +27,7 @@ class MinervaStack extends cdk.Stack {
             timeout: cdk.Duration.seconds( 100 ),
             memorySize: 128,
             entry: path.join(__dirname, '../src/index.js'),
+            logRetention: logs.RetentionDays.ONE_MONTH,
             environment: {
                 NODE_ENV: deployEnv,
                 googleaccount_redirect: "https://developers.google.com/oauthplayground/",
