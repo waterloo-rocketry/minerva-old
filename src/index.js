@@ -5,7 +5,7 @@ const deployEnv = environment.environment;
 const querystring = require("querystring");
 
 exports.slack_commands_sync = async (event, context) => {
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event["detail-type"] === "Scheduled Event") {
         console.log("Keep function hot");
         return;
     }
@@ -43,7 +43,7 @@ exports.slack_commands_sync = async (event, context) => {
 };
 
 exports.slack_commands_async = async (event, context) => {
-    if (event === null || event === undefined || event === {}) {
+    if (event["detail-type"] === "Scheduled Event") {
         require("./handlers/command-handler");
         require("./commands/meeting/edit");
         require("./commands/meeting");
@@ -109,7 +109,7 @@ exports.scheduled = async (event, context) => {
 }
 
 exports.interactivity_sync = async (event, context) => {
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event["detail-type"] === "Scheduled Event") {
         console.log("Keep function hot");
         return;
     }
@@ -143,7 +143,7 @@ exports.interactivity_sync = async (event, context) => {
 };
 
 exports.interactivity_async = async (event, context) => {
-    if (event === null || event === undefined || event === {}) {
+    if (event["detail-type"] === "Scheduled Event") {
         require("./commands/meeting/edit");
         require("./commands/notify");
         require("./interactivity/initialize");
