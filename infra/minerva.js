@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const cdk = require('aws-cdk-lib');
-const { MinervaStack } = require('./minerva-stack');
+const { MinervaStack } = require('./minervaStack');
 
 const app = new cdk.App();
 
