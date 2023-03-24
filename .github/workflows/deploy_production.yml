@@ -2,7 +2,7 @@ name: Deploy to AWS (Production)
 on:
   workflow_run:
     workflows: ["Unit Test"]
-    branches: ["master"]
+    branches: ["main"]
     types: ["completed"]
 
 jobs:
