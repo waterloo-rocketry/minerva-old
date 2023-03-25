@@ -1,0 +1,35 @@
+name: Deploy to AWS (Production)
+on:
+  workflow_run:
+    workflows: ["Unit Test"]
+    branches: ["main"]
+    types: ["completed"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+            node-version: 16.x  
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: npm install
+        run: npm install
+      - name: Deploy with CDK Deploy
+        shell: bash
+        env:
+          googleaccount_client: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
+          googleaccount_secret: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
+          googleaccount_token: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+        run: npx cdk deploy --require-approval never minerva-prod

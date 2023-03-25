@@ -15,7 +15,7 @@ describe("commands/notify.js tests", function () {
     describe("extractNotifyParameters", function () {
         it("missing or incorrect link", async function () {
             await expect(notify.extractNotifyParameters(require("./notifyBlocks/noMessageBlockResult.json"))).to.be.rejectedWith(
-                "The 'message link' input box must be a link to a Waterloo Rocketry slack message"
+                "The 'message link' input box must be a link to a Slack message from this workspace"
             );
         });
         it("no alert type", async function () {
@@ -28,7 +28,7 @@ describe("commands/notify.js tests", function () {
         });
         it("good notify block", async function () {
             assert.deepStrictEqual(await notify.extractNotifyParameters(require("./notifyBlocks/goodNotifyResult.json")), {
-                link: "https://waterloorocketry.slack.com/archives/C07MXA613/p1605073692312300",
+                link: "https://chrisslackbottesting.slack.com/archives/C07MXA613/p1605073692312300",
                 alertType: "alert",
                 channels: ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MX5JDB"],
             });
