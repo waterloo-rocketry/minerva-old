@@ -71,7 +71,7 @@ module.exports.extractNotifyParameters = async function (view) {
         channels: view.state.values.additional_channels.additional_channels.selected_channels,
     };
 
-    const urlPrefix = environment.environment == "production" ? "https://waterloorocketry.slack.com/archives/" : "https://chrisslackbottesting.slack.com/archives/";
+    const urlPrefix = environment.slackUrl + "/archives/";
 
     if (!parameters.link.startsWith(urlPrefix)) {
         return Promise.reject("The 'message link' input box must be a link to a Slack message from this workspace");
