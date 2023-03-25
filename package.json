@@ -28,6 +28,6 @@
     },
     "scripts": {
         "test": "jest",
-        "deploy-dev": "git push origin development --force && open https://github.com/waterloo-rocketry/minerva/deployments?environment=development#activity-log"
+        "deploy-dev": "git push origin development --force && echo 'View deployment at  https://github.com/waterloo-rocketry/minerva/deployments?environment=development#activity-log'",
     }
 }
