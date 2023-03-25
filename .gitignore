@@ -40,8 +40,10 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+# Build files
+build/
+.aws-sam/
+cdk.out/
 
 # Dependency directories
 node_modules/
@@ -70,4 +72,4 @@ clientsecrets.txt
 # Jetbrains IDE stuff
 .idea/
 
-deploy/deploy_variables.bat
+deploy/

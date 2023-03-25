@@ -1,41 +1,40 @@
+const environment = require("./handlers/environment-handler");
+const AWS = require('aws-sdk')
+const lambda = new AWS.Lambda()
+const deployEnv = environment.environment;
+const querystring = require("querystring");
+
 exports.slack_commands_sync = async (event, context) => {
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event["detail-type"] === "Scheduled Event") {
         console.log("Keep function hot");
         return;
     }
 
-    const body = require("querystring").parse(Buffer.from(event.body, "base64").toString());
+    const body = querystring.parse(event.body)
 
-    let url;
-    if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        console.log("Sending to minerva slackCommandsAsync development...");
-        url = "https://g34h315ctk.execute-api.us-east-1.amazonaws.com/development/minerva-slackCommandsAsync-rzdj53m68JE9";
-    } else {
-        console.log("Sending to minerva slackCommandsAsync production...");
-        url = "https://bbfl9ivf5k.execute-api.us-east-1.amazonaws.com/production/minerva-slackCommandsAsync-rzdj53m68JE9";
+    console.log(`Sending to minerva-${deployEnv}-slackCommandsAsync...`);
+
+    const params = {
+        FunctionName: `minerva-${deployEnv}-slackCommandsAsync`,
+        InvocationType: "Event",
+        Payload: JSON.stringify(body),
     }
 
     await new Promise((resolve, reject) => {
-        const req = require("https").request(
-            url,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Content-Length": JSON.stringify(body).length,
-                },
-            },
-            res => {}
-        );
-        req.write(JSON.stringify(body));
-        req.end();
-        setTimeout(() => {
-            resolve();
-        }, 400);
-    });
+        lambda.invoke(params, (err, data) => {
+            if (err) {
+                console.log(err, err.stack)
+                reject()
+            } else {
+                setTimeout(() => {
+                    resolve();
+                }, 400);
+            }
+        })
+    })
 
     return {
-        statusCode: 200,
+        statusCode: 202,
         headers: {
             "Content-Type": "application/json",
         },
@@ -44,8 +43,7 @@ exports.slack_commands_sync = async (event, context) => {
 };
 
 exports.slack_commands_async = async (event, context) => {
-    require("./handlers/environment-handler").setDefaults(context);
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event["detail-type"] === "Scheduled Event") {
         require("./handlers/command-handler");
         require("./commands/meeting/edit");
         require("./commands/meeting");
@@ -57,7 +55,7 @@ exports.slack_commands_async = async (event, context) => {
 
     const slack = require("./handlers/slack-handler");
 
-    const body = JSON.parse(event.body);
+    const body = event;
 
     try {
         const result = await require("./handlers/command-handler").process(body);
@@ -84,7 +82,6 @@ exports.slack_commands_async = async (event, context) => {
 // Runs once a minute
 // prettier-ignore
 exports.scheduled = async (event, context) => {
-    require("./handlers/environment-handler").setDefaults(context);
     const slack = require("./handlers/slack-handler");
 
     // Check for event reminders every 5 minutes
@@ -112,50 +109,41 @@ exports.scheduled = async (event, context) => {
 }
 
 exports.interactivity_sync = async (event, context) => {
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event["detail-type"] === "Scheduled Event") {
         console.log("Keep function hot");
         return;
     }
 
-    const payload = require("querystring").parse(Buffer.from(event.body, "base64").toString()).payload;
+    const body = querystring.parse(event.body)
 
-    let url;
-    if (context.invokedFunctionArn.split(":")[7] !== "production") {
-        console.log("Sending to minerva interactivityAsync development...");
-        url = "https://g4jwnsqon1.execute-api.us-east-1.amazonaws.com/development/minerva-interactivityAsync-E6D7tlk3NjwP";
-    } else {
-        console.log("Sending to minerva interactivityAsync production...");
-        url = "https://9vkjfez4a3.execute-api.us-east-1.amazonaws.com/production/minerva-interactivityAsync-E6D7tlk3NjwP";
+    console.log(`Sending to minerva-${deployEnv}-interactivityAsync...`);
+
+    const params = {
+        FunctionName: `minerva-${deployEnv}-interactivityAsync`,
+        InvocationType: "Event",
+        Payload: JSON.stringify(body),
     }
 
     await new Promise((resolve, reject) => {
-        const req = require("https").request(
-            url,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Content-Length": JSON.stringify(payload).length,
-                },
-            },
-            res => {}
-        );
-        req.write(JSON.stringify(payload));
-        req.end();
-        setTimeout(() => {
-            resolve();
-        }, 600);
-    });
+        lambda.invoke(params, (err, data) => {
+            if (err) {
+                console.log(err, err.stack)
+                reject()
+            } else {
+                setTimeout(() => {
+                    resolve();
+                }, 600);
+            }
+        })
+    })
 
     return {
-        statusCode: 200,
+        statusCode: 202,
     };
 };
 
 exports.interactivity_async = async (event, context) => {
-    require("./handlers/environment-handler").setDefaults(context);
-
-    if (event === null || event === undefined || event.body === undefined) {
+    if (event["detail-type"] === "Scheduled Event") {
         require("./commands/meeting/edit");
         require("./commands/notify");
         require("./interactivity/initialize");
@@ -164,7 +152,7 @@ exports.interactivity_async = async (event, context) => {
     }
 
     const slack = require("./handlers/slack-handler");
-    const payload = JSON.parse(JSON.parse(event.body));
+    const payload = JSON.parse(event.payload);
 
     let metadata;
     if (payload.type === "view_submission") {
