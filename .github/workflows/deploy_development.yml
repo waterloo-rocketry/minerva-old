@@ -1,33 +1,37 @@
 name: Deploy to AWS (Development)
 
 on:
-  workflow_run:
-    workflows: ["Unit Test"]
-    branches: ["development"]
-    types: ["completed"]
+  push:
+    branches:
+      - 'development'
 
 jobs:
   deploy:
+    name: Deploy to AWS
     runs-on: ubuntu-latest
     environment: development
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          ref: development
       - name: Set up Node.js 16.x
         uses: actions/setup-node@v3
         with:
             node-version: 16.x  
+      - name: npm install
+        run: npm install
+      - name: Setup timezone
+        uses: zcong1993/setup-timezone@master
+        with:
+          timezone: EST
+      - name: Run unit tests
+        run: npm run test
+        working-directory: ../minerva/            
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-      - name: npm install
-        run: npm install
       - name: Deploy with CDK Deploy
         shell: bash
         env:
