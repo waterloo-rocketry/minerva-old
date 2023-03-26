@@ -1,6 +1,10 @@
 name: Unit Test
 
-on: [push]
+on: 
+  push:
+    branches-ignore:
+      - 'main'
+      - 'development'
 
 jobs:
   test:
@@ -23,3 +27,5 @@ jobs:
       - name: Run unit tests
         run: npm run test
         working-directory: ../minerva/
+
+
