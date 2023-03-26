@@ -62,7 +62,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
@@ -75,7 +75,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
@@ -96,7 +96,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
@@ -110,7 +110,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     SIX_HOURS - 1,
@@ -129,7 +129,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)"
                 + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
 
@@ -143,7 +143,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert",
                         agendaItems: "",
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     SIX_HOURS - 1,
@@ -165,7 +165,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
@@ -178,7 +178,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-main-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
@@ -200,7 +200,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
@@ -213,7 +213,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
@@ -234,7 +234,7 @@ describe("scheduled/event.js tests", function () {
                 + "\n    • item2"
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
@@ -247,7 +247,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "",
                     },
                     FIVE_MINUTES - 1,
@@ -269,7 +269,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/not_bay_area";
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/not_bay_area";
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -281,7 +281,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/not_bay_area",
+                        link: "https://meet.waterloorocketry.com/not_bay_area",
                         location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
@@ -310,7 +310,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
@@ -338,7 +338,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     SIX_HOURS - 1,
@@ -361,7 +361,7 @@ describe("scheduled/event.js tests", function () {
                 + "\nNotes: N/A"
                 + "\nWays to attend:"
                 + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.jit.si/bay_area"
+                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
                 + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
 
             assert.deepStrictEqual(
@@ -374,7 +374,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                         location: "The Bay",
                     },
                     FIVE_MINUTES - 1,
@@ -427,7 +427,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                     },
                     true,
                     3
@@ -446,7 +446,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "alert-single-channel",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                     },
                     false,
                     3
@@ -465,7 +465,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "copy",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                     },
                     false,
                     3
@@ -484,7 +484,7 @@ describe("scheduled/event.js tests", function () {
                         alertType: "copy",
                         agendaItems: ["item", "item1", "item2"],
                         notes: "N/A",
-                        link: "https://meet.jit.si/bay_area",
+                        link: "https://meet.waterloorocketry.com/bay_area",
                     },
                     false,
                     3

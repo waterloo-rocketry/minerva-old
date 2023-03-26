@@ -108,9 +108,9 @@
                 "dispatch_action_config": {
                     "trigger_actions_on": ["on_enter_pressed"]
                 },
-                "initial_value": "https://meet.jit.si/bay_area",
+                "initial_value": "https://meet.waterloorocketry.com/bay_area",
                 "placeholder": {
-                    "text": "https://meet.jit.si/bay_area",
+                    "text": "https://meet.waterloorocketry.com/bay_area",
                     "emoji": true,
                     "type": "plain_text"
                 },

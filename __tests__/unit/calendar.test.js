@@ -56,7 +56,7 @@ describe("handlers/calendar-handler.js tests", function () {
                     agendaItems: [],
                     notes: "N/A",
                     location: "",
-                    link: "https://meet.jit.si/bay_area",
+                    link: "https://meet.waterloorocketry.com/bay_area",
                 }
             );
         });
@@ -87,7 +87,7 @@ describe("handlers/calendar-handler.js tests", function () {
                     agendaItems: ["item", "item1", "item2"],
                     location: "",
                     notes: "N/A",
-                    link: "https://meet.jit.si/bay_area",
+                    link: "https://meet.waterloorocketry.com/bay_area",
                 }
             );
         });
@@ -121,7 +121,7 @@ describe("handlers/calendar-handler.js tests", function () {
                     agendaItems: ["item", "item1", "item2"],
                     location: "",
                     notes: "N/A",
-                    link: "https://meet.jit.si/bay_area",
+                    link: "https://meet.waterloorocketry.com/bay_area",
                 }
             );
         });
@@ -154,7 +154,7 @@ describe("handlers/calendar-handler.js tests", function () {
                     agendaItems: ["item", "item1", "item2"],
                     location: "",
                     notes: "N/A",
-                    link: "https://meet.jit.si/bay_area",
+                    link: "https://meet.waterloorocketry.com/bay_area",
                 }
             );
         });
@@ -170,7 +170,7 @@ describe("handlers/calendar-handler.js tests", function () {
                     "item", "item1", "item2"
                 ],
                 "notes": "N/A",
-                "link": "https://meet.jit.si/not_bay_area"
+                "link": "https://meet.waterloorocketry.com/not_bay_area"
             }`;
             assert.deepStrictEqual(
                 await calendar_handler.getParametersFromDescription(
@@ -189,7 +189,7 @@ describe("handlers/calendar-handler.js tests", function () {
                     location: "E5 2001",
                     agendaItems: ["item", "item1", "item2"],
                     notes: "N/A",
-                    link: "https://meet.jit.si/not_bay_area",
+                    link: "https://meet.waterloorocketry.com/not_bay_area",
                 }
             );
         });
