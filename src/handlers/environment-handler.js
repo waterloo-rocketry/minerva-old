@@ -13,7 +13,7 @@ const getSsmParameter = async (name) => {
 
     if (!response.ok) {
         throw new Error(
-        `Error occured while requesting secret ${name}. Response status was ${response.status}`
+        `Error occured while requesting secret ${name}. Response was ${response.status}: ${response.statusText}`
         );
     }
 
