@@ -28,3 +28,4 @@ module.exports.googleSecret = getSsmParameter(process.env.googleaccount_secret);
 module.exports.googleRedirect = getSsmParameter(process.env.googleaccount_redirect);
 module.exports.googleToken = getSsmParameter(process.env.googleaccount_token);
 module.exports.slackUrl =  process.env.NODE_ENV == "production" ? "https://waterloorocketry.slack.com" : "https://chrisslackbottesting.slack.com";
+
