@@ -56,25 +56,29 @@ class MinervaStack extends cdk.Stack {
         }
 
         // Create a policy that allows lambda functions to get parameters from SSM and decrypt them
-        const ssmSecretsPolicy = new iam.PolicyStatement( {
-            effect: iam.Effect.ALLOW,
-            actions: [
-                'ssm:GetParameter',
-                'kms:Decrypt',
-            ],
-            resources: [
-                'arn:aws:ssm:*:*:parameter/*',
-                'arn:aws:kms:*:*:key/*',
-            ],
-        } )
-
+        const ssmSecretsPolicy = new iam.PolicyDocument({
+            statements: [new iam.PolicyStatement({
+                effect: iam.Effect.ALLOW,
+                actions: [
+                    'ssm:GetParameter',
+                    'kms:Decrypt',
+                ],
+                resources: [
+                    'arn:aws:ssm:*:*:parameter/*',
+                    'arn:aws:kms:*:*:key/*',
+                ],
+            })]
+        })
+        
         // Create a role for Lambda functions that need to execute other Lambda functions
         const lambdaWithExecuteRole = new iam.Role( this, 'LambdaWithExecuteRole', {
             assumedBy: new iam.ServicePrincipal( "lambda.amazonaws.com" ),
+            inlinePolicies: {
+                ssmSecretsPolicy: ssmSecretsPolicy,
+            },
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaBasicExecutionRole' ),
                 iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaRole' ),
-                ssmSecretsPolicy,
             ],
         } )
 
