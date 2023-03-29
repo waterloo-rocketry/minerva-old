@@ -42,10 +42,10 @@ class MinervaStack extends cdk.Stack {
                 NODE_ENV: deployEnv,
                 googleaccount_redirect: "https://developers.google.com/oauthplayground/",
                 // These env vars do not contain the secrets themselves, but rather the names of the SSM parameters that contain the secrets
-                slack_token: process.env.slack_token,
-                googleaccount_client: process.env.googleaccount_client,
-                googleaccount_secret: process.env.googleaccount_secret,
-                googleaccount_token: process.env.googleaccount_token,
+                slack_token: "/minerva/slack_token",
+                googleaccount_client: "/minerva/googleaccount_client",
+                googleaccount_secret: "/minerva/googleaccount_secret",
+                googleaccount_token: "/minerva/googleaccount_token",
                 secrets_extension_http_port : "2773"
             },
             bundling: {
