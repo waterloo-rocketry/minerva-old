@@ -34,4 +34,9 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
       - name: Deploy with CDK Deploy
         shell: bash
+        env:
+          googleaccount_client: ${{ secrets.GOOGLE_ACCOUNT_CLIENT }}
+          googleaccount_secret: ${{ secrets.GOOGLE_ACCOUNT_SECRET }}
+          googleaccount_token: ${{ secrets.GOOGLE_ACCOUNT_TOKEN }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
         run: npx cdk deploy --require-approval never minerva-dev

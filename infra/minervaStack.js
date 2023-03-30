@@ -5,7 +5,7 @@ const logs = require( 'aws-cdk-lib/aws-logs' );
 const lambda = require( 'aws-cdk-lib/aws-lambda' );
 const awsEvents = require( 'aws-cdk-lib/aws-events' );
 const awsEventsTargets = require( 'aws-cdk-lib/aws-events-targets' );
-const ssm = require( 'aws-cdk-lib/aws-ssm' );
+const kms = require( 'aws-cdk-lib/aws-kms' );
 const { NodejsFunction } = require('aws-cdk-lib/aws-lambda-nodejs');
 
 const path = require('path');
@@ -20,13 +20,7 @@ class MinervaStack extends cdk.Stack {
     constructor ( scope, id, props ) {
         super( scope, id, props );
 
-        const { deployEnv } = props
-
-        // https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html#retrieving-secrets_lambda_ARNs
-        const awsSecretsExtensionArn = {
-            development: "arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
-            production: "arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
-        }
+        const { deployEnv, kmsKeyArn } = props
 
         // Default configuration for Lambda functions
         const lambdaFnProps = {
@@ -35,19 +29,15 @@ class MinervaStack extends cdk.Stack {
             memorySize: 128,
             entry: path.join(__dirname, '../src/index.js'),
             logRetention: logs.RetentionDays.ONE_MONTH,
-            layers: [
-                lambda.LayerVersion.fromLayerVersionArn( this, 'AWS-Parameters-and-Secrets-Lambda-Extension', awsSecretsExtensionArn[ deployEnv ] ),
-            ],
             environment: {
                 NODE_ENV: deployEnv,
                 googleaccount_redirect: "https://developers.google.com/oauthplayground/",
-                // These env vars do not contain the secrets themselves, but rather the names of the SSM parameters that contain the secrets
-                slack_token: "/minerva/slack_token",
-                googleaccount_client: "/minerva/googleaccount_client",
-                googleaccount_secret: "/minerva/googleaccount_secret",
-                googleaccount_token: "/minerva/googleaccount_token",
-                secrets_extension_http_port : "2773"
+                slack_token: process.env.slack_token,
+                googleaccount_client: process.env.googleaccount_client,
+                googleaccount_secret: process.env.googleaccount_secret,
+                googleaccount_token: process.env.googleaccount_token,
             },
+            environmentEncryption: kms.Key.fromKeyArn( this, 'KMSKey', kmsKeyArn ),
             bundling: {
                 target: 'es2020',
                 minify: false,
@@ -55,27 +45,9 @@ class MinervaStack extends cdk.Stack {
             }
         }
 
-        // Create a policy that allows lambda functions to get parameters from SSM and decrypt them
-        const ssmSecretsPolicy = new iam.PolicyDocument({
-            statements: [new iam.PolicyStatement({
-                effect: iam.Effect.ALLOW,
-                actions: [
-                    'ssm:GetParameter',
-                    'kms:Decrypt',
-                ],
-                resources: [
-                    'arn:aws:ssm:*:*:parameter/*',
-                    'arn:aws:kms:*:*:key/*',
-                ],
-            })]
-        })
-        
         // Create a role for Lambda functions that need to execute other Lambda functions
         const lambdaWithExecuteRole = new iam.Role( this, 'LambdaWithExecuteRole', {
             assumedBy: new iam.ServicePrincipal( "lambda.amazonaws.com" ),
-            inlinePolicies: {
-                ssmSecretsPolicy: ssmSecretsPolicy,
-            },
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaBasicExecutionRole' ),
                 iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaRole' ),
@@ -87,7 +59,6 @@ class MinervaStack extends cdk.Stack {
             assumedBy: new iam.ServicePrincipal( 'lambda.amazonaws.com' ),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName( 'service-role/AWSLambdaBasicExecutionRole' ),
-                ssmSecretsPolicy
             ],
         } )
 

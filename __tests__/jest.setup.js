@@ -1,4 +1,4 @@
-jest.mock("./src/handlers/environment-handler", () => {
+jest.mock("../src/handlers/environment-handler", () => {
     return {
         environment: "test",
         slackToken: "test",
