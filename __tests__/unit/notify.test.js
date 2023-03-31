@@ -28,7 +28,7 @@ describe("commands/notify.js tests", function () {
         });
         it("good notify block", async function () {
             assert.deepStrictEqual(await notify.extractNotifyParameters(require("./notifyBlocks/goodNotifyResult.json")), {
-                link: "https://chrisslackbottesting.slack.com/archives/C07MXA613/p1605073692312300",
+                link: "https://waterloorocketrydev.slack.com/archives/C07MXA613/p1605073692312300",
                 alertType: "alert",
                 channels: ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MX5JDB"],
             });
