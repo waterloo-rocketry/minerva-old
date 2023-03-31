@@ -6,6 +6,6 @@ jest.mock("../src/handlers/environment-handler", () => {
         googleSecret: "test",
         googleRedirect: "test",
         googleToken: "test",
-        slackUrl: "https://chrisslackbottesting.slack.com"
+        slackUrl: "https://waterloorocketrydev.slack.com"
     };
 });
