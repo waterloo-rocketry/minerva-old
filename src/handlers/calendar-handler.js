@@ -1,4 +1,4 @@
-const {google} = require("googleapis");
+const { google } = require("googleapis");
 const calendar = google.calendar("v3");
 const environment = require("./environment-handler");
 const slack_handler = require("./slack-handler");
@@ -111,7 +111,11 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
 
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
 
-    if (parameters.mainChannel === undefined || parameters.mainChannel === "" || !channelIdMapping.has(parameters.mainChannel)) {
+    if (
+        parameters.mainChannel === undefined ||
+        parameters.mainChannel === "" ||
+        !channelIdMapping.has(parameters.mainChannel)
+    ) {
         return Promise.reject("Upcoming *" + event.summary + "* contains a malformed or missing `mainChannel` element");
     }
 
@@ -122,22 +126,28 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (!Array.isArray(parameters.additionalChannels)) {
-        return Promise.reject("Upcoming *" + event.summary + "* contains a malformed or missing `additional_channel` element");
+        return Promise.reject(
+            "Upcoming *" + event.summary + "* contains a malformed or missing `additional_channel` element",
+        );
     }
 
-    for (channelKey in parameters.additionalChannels) {
+    for (let channelKey of parameters.additionalChannels) {
         if (channelIdMapping.has(parameters.additionalChannels[channelKey])) {
             parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
         } else {
             slack_handler.postMessageToChannel(
-                "Could not find channel ID for *" + event.summary + "* additional channel `" + parameters.additionalChannels[channelKey] + "`"
+                "Could not find channel ID for *" +
+                    event.summary +
+                    "* additional channel `" +
+                    parameters.additionalChannels[channelKey] +
+                    "`",
             );
             parameters.additionalChannels.splice(channelKey, 1);
         }
     }
 
     // Get rid of the mainChannel if it is within additional channels
-    parameters.additionalChannels = parameters.additionalChannels.filter(value => value != parameters.mainChannel);
+    parameters.additionalChannels = parameters.additionalChannels.filter((value) => value != parameters.mainChannel);
 
     if (parameters.agendaItems === undefined || parameters.agendaItems === "") {
         parameters.agendaItems = [];

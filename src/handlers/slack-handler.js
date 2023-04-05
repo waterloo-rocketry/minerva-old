@@ -1,4 +1,4 @@
-const {WebClient} = require("@slack/web-api");
+const { WebClient } = require("@slack/web-api");
 const environment = require("./environment-handler");
 
 const web = new WebClient(environment.slackToken);
@@ -75,10 +75,10 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
 
         memberPromises = await Promise.all(memberPromises);
 
-        for (members of memberPromises) {
+        for (let members of memberPromises) {
             members = members.members;
 
-            const singleChannelMembersInChannel = members.filter(member => singleChannelGuests.includes(member));
+            const singleChannelMembersInChannel = members.filter((member) => singleChannelGuests.includes(member));
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
                 messagePromises.push(this.directMessageUser(message, member, true));
@@ -125,24 +125,27 @@ module.exports.isAdmin = async function (user_id) {
 module.exports.getChannelMembers = function (channel) {
     return web.conversations.members({
         channel: channel,
-        limit: 500
+        limit: 500,
     });
 };
 
 // Return list of all single channel guests in the entire server
 module.exports.getAllSingleChannelGuests = async function () {
     let all_users = [];
-    let users = await web.users.list({ limit: 900}); // have to set a limit below 1000 for pagination to work
+    let users = await web.users.list({ limit: 900 }); // have to set a limit below 1000 for pagination to work
     all_users = all_users.concat(users.members);
-    
+
     // use pagination to make calls to get all 1000+ users
-    while(users.response_metadata.next_cursor != "") {
-        users = await web.users.list({cursor: users.response_metadata.next_cursor, limit: 900});
+    while (users.response_metadata.next_cursor != "") {
+        users = await web.users.list({
+            cursor: users.response_metadata.next_cursor,
+            limit: 900,
+        });
         all_users = all_users.concat(users.members);
     }
-    
+
     var singleChannel = [];
-    all_users.forEach(user => {
+    all_users.forEach((user) => {
         // is_admin is used in development since is_ultra_restricted does not work without a paid plan
         // if (user.is_admin) {
         if (user.is_ultra_restricted) {
@@ -158,7 +161,7 @@ module.exports.generateChannelNameIdMapping = async function () {
         return channelNameIdMapping;
     } else {
         var channels = (await this.getChannels("public_channel", true)).channels;
-        channels.forEach(channel => {
+        channels.forEach((channel) => {
             channelNameIdMapping.set(channel.name, channel.id);
         });
         return channelNameIdMapping;
@@ -171,7 +174,7 @@ module.exports.generateChannelIdNameMapping = async function () {
         return channelIdNameMapping;
     } else {
         var channels = (await this.getChannels("public_channel", true)).channels;
-        channels.forEach(channel => {
+        channels.forEach((channel) => {
             channelIdNameMapping.set(channel.id, channel.name);
         });
         return channelIdNameMapping;
@@ -190,7 +193,18 @@ module.exports.getChannels = function (types, excludeArchived) {
 // A hardcoded list of default channel ID's.
 // This will differ from the development & production slack
 // software, recovery, propulsion, payload, general, electrical, airframe, liquid_engine, business, mechanical
-module.exports.defaultChannels = ["C01535M46SC", "C8VL7QCG0", "CCWGTJH7F", "C4H4NJG77", "C07MWEYPR", "C07MX0QDS", "C90E34QDD", "CV7S1E49Y", "C07MXA613", "C07MX5JDB"]; // production workspace
+module.exports.defaultChannels = [
+    "C01535M46SC",
+    "C8VL7QCG0",
+    "CCWGTJH7F",
+    "C4H4NJG77",
+    "C07MWEYPR",
+    "C07MX0QDS",
+    "C90E34QDD",
+    "CV7S1E49Y",
+    "C07MXA613",
+    "C07MX5JDB",
+]; // production workspace
 //module.exports.defaultChannels = ["C0155MGT7NW", "C015BSR32E8", "C014J93U4JZ", "C0155TL4KKM", "C0155MHAHB4", "C014QV0F9AB", "C014YVDDLTG"]; // development workspace
 
 // https://api.slack.com/methods/emoji.list

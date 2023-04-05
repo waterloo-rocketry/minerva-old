@@ -14,7 +14,14 @@ module.exports.send = async function (originChannelId) {
 
     const emojiPair = parameters.eventType === "meeting" ? await events.generateEmojiPair() : undefined;
 
-    const message = await events.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
+    const message = await events.generateMessage(
+        event,
+        parameters,
+        timeDifference,
+        isEventSoon,
+        startTimeDate,
+        emojiPair,
+    );
 
     await slack_handler.postMessageToChannel(message, parameters.mainChannel, false);
 };

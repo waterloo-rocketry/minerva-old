@@ -18,27 +18,44 @@ module.exports.checkForEvents = async function () {
             const timeDifference = startTimeDate.getTime() - Date.now();
 
             const isEventSoon = await this.isEventSoon(timeDifference);
-            const parameters = await calendar_handler.getParametersFromDescription(event, slack_handler.defaultChannels);
+            const parameters = await calendar_handler.getParametersFromDescription(
+                event,
+                slack_handler.defaultChannels,
+            );
 
             //prettier-ignore
             const emojiPair = (!isEventSoon && parameters.eventType === "meeting") ? await this.generateEmojiPair() : undefined;
 
-            const message = await this.generateMessage(event, parameters, timeDifference, isEventSoon, startTimeDate, emojiPair);
+            const message = await this.generateMessage(
+                event,
+                parameters,
+                timeDifference,
+                isEventSoon,
+                startTimeDate,
+                emojiPair,
+            );
 
             let channelMessagePromises = [];
             let directMessagePromises = [];
 
             channelMessagePromises.push(
-                slack_handler.postMessageToChannel((parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message, parameters.mainChannel, false)
+                slack_handler.postMessageToChannel(
+                    (parameters.alertType === "alert-main-channel" ? "<!channel>\n" : "") + message,
+                    parameters.mainChannel,
+                    false,
+                ),
             );
 
             if (parameters.alertType === "alert-single-channel") {
                 directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
-                    message + "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
-                    parameters.additionalChannels
+                    message +
+                        "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+                    parameters.additionalChannels,
                 );
             } else {
-                channelMessagePromises.push(slack_handler.postMessageToChannels(message, parameters.additionalChannels, false));
+                channelMessagePromises.push(
+                    slack_handler.postMessageToChannels(message, parameters.additionalChannels, false),
+                );
             }
 
             channelMessagePromises = await Promise.all(channelMessagePromises);
@@ -53,14 +70,25 @@ module.exports.checkForEvents = async function () {
             // the result is wrapped in a promise, thus, it is actually useful.
             directMessagePromises = await directMessagePromises;
 
-            await slack_handler.postMessageToChannel(this.generateResultMessage(event, parameters, isEventSoon, directMessagePromises.length), "minerva-log", false);
+            await slack_handler.postMessageToChannel(
+                this.generateResultMessage(event, parameters, isEventSoon, directMessagePromises.length),
+                "minerva-log",
+                false,
+            );
         } catch (error) {
             console.log(event.summary + " failed because " + error);
         }
     }
 };
 
-module.exports.generateMessage = async function (event, parameters, timeDifference, isEventSoon, startTimeDate, emojis) {
+module.exports.generateMessage = async function (
+    event,
+    parameters,
+    timeDifference,
+    isEventSoon,
+    startTimeDate,
+    emojis,
+) {
     let message = "Reminder: *" + event.summary + "* is occurring ";
 
     if (isEventSoon) {
@@ -76,7 +104,7 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
             message += "\nPlease see the agenda items:\n    • " + parameters.agendaItems.join("\n    • ");
         }
     } else if (parameters.eventType === "test") {
-        message += "\nToday's test is located at: " + (parameters.location === "" ? "Texas" : parameters.location)
+        message += "\nToday's test is located at: " + (parameters.location === "" ? "Texas" : parameters.location);
     }
 
     if (parameters.notes != "") {
@@ -90,12 +118,14 @@ module.exports.generateMessage = async function (event, parameters, timeDifferen
         }
         if (parameters.link !== "") {
             message += "\n      :globe_with_meridians: Online @ " + parameters.link;
-            if (parameters.link === "https://meet.waterloorocketry.com/bay_area" || parameters.link === "https://meet.waterloorocketry.com/bay_area") {
+            if (
+                parameters.link === "https://meet.waterloorocketry.com/bay_area" ||
+                parameters.link === "https://meet.waterloorocketry.com/bay_area"
+            ) {
                 message += "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
             }
         }
-        
-    } 
+    }
 
     if (!isEventSoon || parameters.eventType === "test") {
         message += "\nReact with :" + emojis[0] + ": if you're coming, or :" + emojis[1] + ": if you're not!";
@@ -120,7 +150,11 @@ module.exports.generateResultMessage = function (event, parameters, isEventSoon,
     message += " reminder sent for `" + event.summary + "`. ";
 
     if (parameters.alertType === "alert-single-channel") {
-        message += totalDirectMessagesSent + " single-channel-guests messaged across " + parameters.additionalChannels.length + " channels.";
+        message +=
+            totalDirectMessagesSent +
+            " single-channel-guests messaged across " +
+            parameters.additionalChannels.length +
+            " channels.";
     } else {
         message += parameters.additionalChannels.length + 1 + " channel";
         if (parameters.additionalChannels != 0) {
@@ -165,6 +199,6 @@ module.exports.seedMessageReactions = async function (channel, emojis, timestamp
     if (response.ok) {
         setTimeout(async () => {
             await slack_handler.addReactionToMessage(channel, emojis[1], timestamp);
-        }, 1000)
+        }, 1000);
     }
 };

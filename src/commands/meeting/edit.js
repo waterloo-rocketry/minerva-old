@@ -20,7 +20,10 @@ module.exports.send = async function (originChannelId, trigger) {
     } catch (error) {
         if (view != undefined) {
             const errorBlock = require("../../blocks/error.json");
-            errorBlock.blocks[0].text.text = "An error has occured:\n\n*" + error + "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
+            errorBlock.blocks[0].text.text =
+                "An error has occured:\n\n*" +
+                error +
+                "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
 
             await slack_handler.updateView(view.view.id, errorBlock);
         }
@@ -44,9 +47,11 @@ module.exports.receive = async function (meetingBlock, metadata) {
 
     parameters.mainChannel = channelIdNameMapping.get(parameters.mainChannel);
 
-    for (channelKey in parameters.additionalChannels) {
+    for (let channelKey of parameters.additionalChannels) {
         if (channelIdNameMapping.has(parameters.additionalChannels[channelKey])) {
-            parameters.additionalChannels[channelKey] = channelIdNameMapping.get(parameters.additionalChannels[channelKey]);
+            parameters.additionalChannels[channelKey] = channelIdNameMapping.get(
+                parameters.additionalChannels[channelKey],
+            );
         } else {
             // this should never be reached since these values come from Slack API
             console.log(parameters.additionalChannels[channelKey] + " was not found in the channelIdMapping");
@@ -79,14 +84,19 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
     meetingBlock.private_metadata = JSON.stringify(metadata);
 
     meetingBlock.blocks[0].text.text =
-        "Editing meeting: *" + event.summary + "* occuring on *" + moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") + "*";
+        "Editing meeting: *" +
+        event.summary +
+        "* occuring on *" +
+        moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") +
+        "*";
 
     meetingBlock.blocks[2].element.initial_value = parameters.location;
     meetingBlock.blocks[4].element.initial_value = parameters.link;
     meetingBlock.blocks[6].accessory.initial_channel = parameters.mainChannel;
     meetingBlock.blocks[8].accessory.initial_channels = parameters.additionalChannels;
     // If agendaItems is an empty array, no need for a dash
-    meetingBlock.blocks[10].element.initial_value = parameters.agendaItems.length != 0 ? "- " + parameters.agendaItems.join("\n- ") : "";
+    meetingBlock.blocks[10].element.initial_value =
+        parameters.agendaItems.length != 0 ? "- " + parameters.agendaItems.join("\n- ") : "";
     meetingBlock.blocks[12].element.initial_value = parameters.notes;
     meetingBlock.blocks[14].accessory.placeholder.text = parameters.alertType;
     meetingBlock.blocks[16].text.text =
@@ -119,7 +129,10 @@ module.exports.extractMeetingParameters = async function (view, metadata) {
     // - Agenda 1
     // - Agenda 2
     // etc, have to convert back to a JSON list
-    if (view.state.values.agenda_items.agenda_items.value !== null && view.state.values.agenda_items.agenda_items.value !== undefined) {
+    if (
+        view.state.values.agenda_items.agenda_items.value !== null &&
+        view.state.values.agenda_items.agenda_items.value !== undefined
+    ) {
         parameters.agendaItems = view.state.values.agenda_items.agenda_items.value.replace(/- /g, "").split("\n");
     } else {
         parameters.agendaItems = [];

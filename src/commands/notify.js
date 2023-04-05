@@ -17,7 +17,10 @@ module.exports.send = async function (userId, trigger, initialChannel) {
     } catch (error) {
         if (view != undefined) {
             const errorBlock = require("../blocks/error.json");
-            errorBlock.blocks[0].text.text = "An error has occured:\n\n*" + error + "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
+            errorBlock.blocks[0].text.text =
+                "An error has occured:\n\n*" +
+                error +
+                "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
 
             // Don't 'await' this since we only care to push the update. If they have closed the view or something, the message in chat will still show the error.
             slack_handler.updateView(view.view.id, errorBlock);
@@ -37,7 +40,7 @@ module.exports.receive = async function (view, metadata) {
             message +
                 "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert.\n\n" +
                 "If you're unsure what this message is about, feel free to message the original poster for more information._",
-            parameters.channels
+            parameters.channels,
         );
         return responses.length + " single-channel-guests messaged.";
     } else {
@@ -80,10 +83,12 @@ module.exports.extractNotifyParameters = async function (view) {
     const initialChannel = parameters.link.split("/")[4];
 
     // get rid of the inital channel if it happens to be in the channels
-    parameters.channels = parameters.channels.filter(value => value != initialChannel);
+    parameters.channels = parameters.channels.filter((value) => value != initialChannel);
 
     if (parameters.channels.length === 0) {
-        return Promise.reject("You must select at least one additional channel, not including the message's original channel");
+        return Promise.reject(
+            "You must select at least one additional channel, not including the message's original channel",
+        );
     }
 
     return parameters;

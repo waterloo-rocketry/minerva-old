@@ -1,6 +1,6 @@
 const environment = require("./handlers/environment-handler");
-const AWS = require('aws-sdk')
-const lambda = new AWS.Lambda()
+const AWS = require("aws-sdk");
+const lambda = new AWS.Lambda();
 const deployEnv = environment.environment;
 const querystring = require("querystring");
 
@@ -10,7 +10,7 @@ exports.slack_commands_sync = async (event, context) => {
         return;
     }
 
-    const body = querystring.parse(event.body)
+    const body = querystring.parse(event.body);
 
     console.log(`Sending to minerva-${deployEnv}-slackCommandsAsync...`);
 
@@ -18,20 +18,20 @@ exports.slack_commands_sync = async (event, context) => {
         FunctionName: `minerva-${deployEnv}-slackCommandsAsync`,
         InvocationType: "Event",
         Payload: JSON.stringify(body),
-    }
+    };
 
     await new Promise((resolve, reject) => {
         lambda.invoke(params, (err, data) => {
             if (err) {
-                console.log(err, err.stack)
-                reject()
+                console.log(err, err.stack);
+                reject();
             } else {
                 setTimeout(() => {
                     resolve();
                 }, 400);
             }
-        })
-    })
+        });
+    });
 
     return {
         statusCode: 202,
@@ -71,9 +71,11 @@ exports.slack_commands_async = async (event, context) => {
             await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
 
             await slack.postEphemeralMessage(
-                "Command failed: " + error + "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
+                "Command failed: " +
+                    error +
+                    "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
                 body.channel_name,
-                body.user_id
+                body.user_id,
             );
         }
     }
@@ -81,28 +83,28 @@ exports.slack_commands_async = async (event, context) => {
 
 // Runs once a minute
 // prettier-ignore
-exports.scheduled = async (event, context) => {
-    const slack = require("./handlers/slack-handler");
+exports.scheduled = async ( event, context ) => {
+    const slack = require( "./handlers/slack-handler" );
 
     // Check for event reminders every 5 minutes
-    if (new Date().getMinutes() % 5 === 0) {
+    if ( new Date().getMinutes() % 5 === 0 ) {
         try {
-            await require("./scheduled/events").checkForEvents();
-        } catch(error) {
+            await require( "./scheduled/events" ).checkForEvents();
+        } catch ( error ) {
             try {
-                await require("./handlers/error-handler").filter(error);
-            } catch (error) {
-                console.log(error);
-                slack.postMessageToChannel("Error with upcoming meeting:\n`" + error + "`", "minerva-log", false);
+                await require( "./handlers/error-handler" ).filter( error );
+            } catch ( error ) {
+                console.log( error );
+                slack.postMessageToChannel( "Error with upcoming meeting:\n`" + error + "`", "minerva-log", false );
             }
         }
     }
     // Check for events to initialize at midnight every night.
-    if (new Date().getHours() === 0 && new Date().getMinutes() === 0) {
+    if ( new Date().getHours() === 0 && new Date().getMinutes() === 0 ) {
         try {
-            await require("./interactivity/initialize").send();
-        } catch(error) {
-            console.log(error);
+            await require( "./interactivity/initialize" ).send();
+        } catch ( error ) {
+            console.log( error );
         }
     }
     return "scheduled";
@@ -114,7 +116,7 @@ exports.interactivity_sync = async (event, context) => {
         return;
     }
 
-    const body = querystring.parse(event.body)
+    const body = querystring.parse(event.body);
 
     console.log(`Sending to minerva-${deployEnv}-interactivityAsync...`);
 
@@ -122,20 +124,20 @@ exports.interactivity_sync = async (event, context) => {
         FunctionName: `minerva-${deployEnv}-interactivityAsync`,
         InvocationType: "Event",
         Payload: JSON.stringify(body),
-    }
+    };
 
     await new Promise((resolve, reject) => {
         lambda.invoke(params, (err, data) => {
             if (err) {
-                console.log(err, err.stack)
-                reject()
+                console.log(err, err.stack);
+                reject();
             } else {
                 setTimeout(() => {
                     resolve();
                 }, 600);
             }
-        })
-    })
+        });
+    });
 
     return {
         statusCode: 202,
@@ -181,9 +183,11 @@ exports.interactivity_async = async (event, context) => {
             await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
 
             await slack.postEphemeralMessage(
-                "Command failed: " + error + "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
+                "Command failed: " +
+                    error +
+                    "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
                 metadata.channel,
-                payload.user.id
+                payload.user.id,
             );
         }
     }
