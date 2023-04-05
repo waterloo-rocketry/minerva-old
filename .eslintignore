@@ -1,0 +1,4 @@
+# do not lint node_modules/
+node_modules
+# do not lint build/ or dist/ folder
+cdk.out
