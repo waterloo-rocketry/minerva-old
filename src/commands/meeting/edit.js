@@ -47,7 +47,7 @@ module.exports.receive = async function (meetingBlock, metadata) {
 
     parameters.mainChannel = channelIdNameMapping.get(parameters.mainChannel);
 
-    for (let channelKey of parameters.additionalChannels) {
+    for (let channelKey in parameters.additionalChannels) {
         if (channelIdNameMapping.has(parameters.additionalChannels[channelKey])) {
             parameters.additionalChannels[channelKey] = channelIdNameMapping.get(
                 parameters.additionalChannels[channelKey],

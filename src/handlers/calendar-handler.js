@@ -131,7 +131,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         );
     }
 
-    for (let channelKey of parameters.additionalChannels) {
+    for (let channelKey in parameters.additionalChannels) {
         if (channelIdMapping.has(parameters.additionalChannels[channelKey])) {
             parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
         } else {
