@@ -17,10 +17,11 @@ module.exports.send = async function (userId, trigger, initialChannel) {
     } catch (error) {
         if (view != undefined) {
             const errorBlock = require("../blocks/error.json");
-            errorBlock.blocks[0].text.text =
-                "An error has occured:\n\n*" +
-                error +
-                "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
+            errorBlock.blocks[0].text.text = `An error has occured:
+
+*${error}*
+
+See https://github.com/waterloo-rocketry/minerva for help with commands.`;
 
             // Don't 'await' this since we only care to push the update. If they have closed the view or something, the message in chat will still show the error.
             slack_handler.updateView(view.view.id, errorBlock);
@@ -37,9 +38,9 @@ module.exports.receive = async function (view, metadata) {
     if (parameters.alertType === "alert-single-channel") {
         // when we alert single channel guests we simply want to PM them the message
         const responses = await slack_handler.directMessageSingleChannelGuestsInChannels(
-            message +
-                "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert.\n\n" +
-                "If you're unsure what this message is about, feel free to message the original poster for more information._",
+            `${message}
+            
+_You have been sent this message because you are a single channel guest who might have otherwise missed this alert. If you're unsure what this message is about, feel free to message the original poster for more information._`,
             parameters.channels,
         );
         return responses.length + " single-channel-guests messaged.";

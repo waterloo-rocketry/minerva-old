@@ -20,10 +20,11 @@ module.exports.send = async function (originChannelId, trigger) {
     } catch (error) {
         if (view != undefined) {
             const errorBlock = require("../../blocks/error.json");
-            errorBlock.blocks[0].text.text =
-                "An error has occured:\n\n*" +
-                error +
-                "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
+            errorBlock.blocks[0].text.text = `An error has occured:
+
+*${error}*
+
+See https://github.com/waterloo-rocketry/minerva for help with commands.`;
 
             await slack_handler.updateView(view.view.id, errorBlock);
         }
@@ -54,7 +55,7 @@ module.exports.receive = async function (meetingBlock, metadata) {
             );
         } else {
             // this should never be reached since these values come from Slack API
-            console.log(parameters.additionalChannels[channelKey] + " was not found in the channelIdMapping");
+            console.log(`${parameters.additionalChannels[channelKey]} was not found in the channelIdMapping`);
             parameters.additionalChannels.splice(channelKey, 1);
         }
     }
@@ -82,13 +83,8 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
 
     // This must be stored in a string and not an object or the slack API throws an invalid arguments error
     meetingBlock.private_metadata = JSON.stringify(metadata);
-
-    meetingBlock.blocks[0].text.text =
-        "Editing meeting: *" +
-        event.summary +
-        "* occuring on *" +
-        moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A") +
-        "*";
+    meetingBlock.blocks[0].text.text = `Editing meeting: *${event.summary}* occuring on \
+*${moment(event.start.dateTime).tz("America/Toronto").format("MMMM Do, YYYY [at] h:mm A")}*`;
 
     meetingBlock.blocks[2].element.initial_value = parameters.location;
     meetingBlock.blocks[4].element.initial_value = parameters.link;
@@ -99,10 +95,8 @@ module.exports.parseMeetingBlock = async function (event, parameters) {
         parameters.agendaItems.length != 0 ? "- " + parameters.agendaItems.join("\n- ") : "";
     meetingBlock.blocks[12].element.initial_value = parameters.notes;
     meetingBlock.blocks[14].accessory.placeholder.text = parameters.alertType;
-    meetingBlock.blocks[16].text.text =
-        "Update just this meeting or all future " +
-        event.summary +
-        "?\n*Note: this feature has not been implemented yet. Right now, only the next meeting will be updated.*";
+    meetingBlock.blocks[16].text.text = `Update just this meeting or all future ${event.summary}?
+*Note: this feature has not been implemented yet. Right now, only the next meeting will be updated.*`;
 
     return meetingBlock;
 };

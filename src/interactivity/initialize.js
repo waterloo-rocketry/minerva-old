@@ -41,10 +41,11 @@ module.exports.receive = async function (eventId, trigger) {
     } catch (error) {
         if (view != undefined) {
             const errorBlock = require("../blocks/error.json");
-            errorBlock.blocks[0].text.text =
-                "An error has occured:\n\n*" +
-                error +
-                "*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.";
+            errorBlock.blocks[0].text.text = `An error has occured:
+
+*${error}*
+
+See https://github.com/waterloo-rocketry/minerva for help with commands.`;
 
             await slack_handler.updateView(view.view.id, errorBlock);
         }

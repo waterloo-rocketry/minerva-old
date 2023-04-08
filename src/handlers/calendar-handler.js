@@ -70,7 +70,7 @@ module.exports.getNextEventByTypeAndChannel = async function (type, channelId) {
 
 module.exports.getParametersFromDescription = async function (event, defaultChannels) {
     if (event.description === null || event.description === undefined || event.description === "") {
-        return Promise.reject("Upcoming *" + event.summary + "* contains an undefined description");
+        return Promise.reject(`Upcoming *${event.summary}* contains an undefined description`);
     }
 
     event.description = event.description.replace(/<.*?>/g, "");
@@ -80,7 +80,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     try {
         parameters = JSON.parse(event.description);
     } catch (error) {
-        return Promise.reject("Upcoming *" + event.summary + "* contains malformed JSON: " + error);
+        return Promise.reject(`Upcoming *${event.summary}* contains malformed JSON: ${error}`);
     }
 
     switch (parameters.eventType) {
@@ -93,7 +93,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         case "none":
             return Promise.reject("no-send");
         default:
-            return Promise.reject("Upcoming *" + event.summary + "* contains an unknown or missing `eventType`");
+            return Promise.reject(`Upcoming *${event.summary}* contains an unknown or missing \`eventType\``);
     }
 
     switch (parameters.alertType) {
@@ -106,7 +106,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         case "copy":
             break;
         default:
-            return Promise.reject("Upcoming *" + event.summary + "* contains an unknown or missing `alertType`");
+            return Promise.reject(`Upcoming *${event.summary}* contains an unknown or missing \`alertType\``);
     }
 
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
@@ -116,7 +116,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
         parameters.mainChannel === "" ||
         !channelIdMapping.has(parameters.mainChannel)
     ) {
-        return Promise.reject("Upcoming *" + event.summary + "* contains a malformed or missing `mainChannel` element");
+        return Promise.reject(`Upcoming *${event.summary}* contains a malformed or missing \`mainChannel\` element`);
     }
 
     parameters.mainChannel = channelIdMapping.get(parameters.mainChannel);
@@ -127,7 +127,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
 
     if (!Array.isArray(parameters.additionalChannels)) {
         return Promise.reject(
-            "Upcoming *" + event.summary + "* contains a malformed or missing `additional_channel` element",
+            `Upcoming *${event.summary}* contains a malformed or missing \`additional_channel\` element`,
         );
     }
 
@@ -136,11 +136,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
             parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
         } else {
             slack_handler.postMessageToChannel(
-                "Could not find channel ID for *" +
-                    event.summary +
-                    "* additional channel `" +
-                    parameters.additionalChannels[channelKey] +
-                    "`",
+                `Could not find channel ID for *${event.summary}* additional channel \`${parameters.additionalChannels[channelKey]}\``,
             );
             parameters.additionalChannels.splice(channelKey, 1);
         }
