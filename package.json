@@ -5,8 +5,8 @@
     "private": true,
     "dependencies": {
         "@slack/web-api": "^6.8.1",
-        "aws-cdk-lib": "^2.79.1",
-        "aws-sdk": "^2.1377.0",
+        "aws-cdk-lib": "^2.82.0",
+        "aws-sdk": "^2.1392.0",
         "axios": ">=1.4.0",
         "chai": "^4.3.7",
         "chai-as-promised": "^7.1.1",
@@ -19,7 +19,7 @@
         "node-notifier": ">=10.0.1"
     },
     "devDependencies": {
-        "eslint": "^8.40.0",
+        "eslint": "^8.42.0",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-import": "^2.27.5",
