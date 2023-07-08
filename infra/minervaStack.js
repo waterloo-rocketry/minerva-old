@@ -5,7 +5,6 @@ const logs = require( 'aws-cdk-lib/aws-logs' );
 const lambda = require( 'aws-cdk-lib/aws-lambda' );
 const awsEvents = require( 'aws-cdk-lib/aws-events' );
 const awsEventsTargets = require( 'aws-cdk-lib/aws-events-targets' );
-const kms = require( 'aws-cdk-lib/aws-kms' );
 const { NodejsFunction } = require('aws-cdk-lib/aws-lambda-nodejs');
 
 const path = require('path');
@@ -20,7 +19,7 @@ class MinervaStack extends cdk.Stack {
     constructor ( scope, id, props ) {
         super( scope, id, props );
 
-        const { deployEnv, kmsKeyArn } = props
+        const { deployEnv } = props
 
         // Default configuration for Lambda functions
         const lambdaFnProps = {
@@ -37,7 +36,6 @@ class MinervaStack extends cdk.Stack {
                 googleaccount_secret: process.env.googleaccount_secret,
                 googleaccount_token: process.env.googleaccount_token,
             },
-            environmentEncryption: kms.Key.fromKeyArn( this, 'KMSKey', kmsKeyArn ),
             bundling: {
                 target: 'es2020',
                 minify: false,
