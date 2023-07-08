@@ -48,8 +48,7 @@ module.exports.checkForEvents = async function () {
 
             if (parameters.alertType === "alert-single-channel") {
                 directMessagePromises = slack_handler.directMessageSingleChannelGuestsInChannels(
-                    message +
-                        "\n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._",
+                    `${message} \n\n_You have been sent this message because you are a single channel guest who might have otherwise missed this alert._`,
                     parameters.additionalChannels,
                 );
             } else {
@@ -76,7 +75,7 @@ module.exports.checkForEvents = async function () {
                 false,
             );
         } catch (error) {
-            console.log(event.summary + " failed because " + error);
+            console.log(`${event.summary} failed because ${error}`);
         }
     }
 };
@@ -89,7 +88,7 @@ module.exports.generateMessage = async function (
     startTimeDate,
     emojis,
 ) {
-    let message = "Reminder: *" + event.summary + "* is occurring ";
+    let message = `Reminder: *${event.summary}* is occurring `;
 
     if (isEventSoon) {
         message += "in *" + Math.ceil(timeDifference / 1000 / 60) + " minutes*";

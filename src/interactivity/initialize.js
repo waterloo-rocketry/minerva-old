@@ -41,11 +41,7 @@ module.exports.receive = async function (eventId, trigger) {
     } catch (error) {
         if (view != undefined) {
             const errorBlock = require("../blocks/error.json");
-            errorBlock.blocks[0].text.text = `An error has occured:
-
-*${error}*
-
-See https://github.com/waterloo-rocketry/minerva for help with commands.`;
+            errorBlock.blocks[0].text.text = `An error has occurred:\n\n*${error}*\n\nSee https://github.com/waterloo-rocketry/minerva for help with commands.`;
 
             await slack_handler.updateView(view.view.id, errorBlock);
         }
@@ -55,8 +51,7 @@ See https://github.com/waterloo-rocketry/minerva for help with commands.`;
 
 module.exports.inquire = async function (event) {
     const initializeBlock = JSON.parse(JSON.stringify(require("../blocks/initialize.json")));
-    initializeBlock[0].text.text =
-        event.summary + " contains an undefined description.\n\nWould you like to initialize it?";
+    initializeBlock[0].text.text = `${event.summary} contains an undefined description.\n\nWould you like to initialize it?`;
     initializeBlock[1].elements[0].value = event.id;
 
     await slack_handler.postInteractiveMessage(initializeBlock, "minerva-log");

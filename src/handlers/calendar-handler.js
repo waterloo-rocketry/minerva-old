@@ -111,11 +111,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
 
     var channelIdMapping = await slack_handler.generateChannelNameIdMapping();
 
-    if (
-        parameters.mainChannel === undefined ||
-        parameters.mainChannel === "" ||
-        !channelIdMapping.has(parameters.mainChannel)
-    ) {
+    if (parameters.mainChannel === undefined || parameters.mainChannel === "" || !channelIdMapping.has(parameters.mainChannel)) {
         return Promise.reject(`Upcoming *${event.summary}* contains a malformed or missing \`mainChannel\` element`);
     }
 
@@ -126,9 +122,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (!Array.isArray(parameters.additionalChannels)) {
-        return Promise.reject(
-            `Upcoming *${event.summary}* contains a malformed or missing \`additional_channel\` element`,
-        );
+        return Promise.reject(`Upcoming *${event.summary}* contains a malformed or missing \`additional_channel\` element`);
     }
 
     for (let channelKey in parameters.additionalChannels) {
@@ -136,7 +130,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
             parameters.additionalChannels[channelKey] = channelIdMapping.get(parameters.additionalChannels[channelKey]);
         } else {
             slack_handler.postMessageToChannel(
-                `Could not find channel ID for *${event.summary}* additional channel \`${parameters.additionalChannels[channelKey]}\``,
+                `Could not find channel ID for *${event.summary}* additional channel \`${parameters.additionalChannels[channelKey]}\``
             );
             parameters.additionalChannels.splice(channelKey, 1);
         }
@@ -150,7 +144,7 @@ module.exports.getParametersFromDescription = async function (event, defaultChan
     }
 
     if (parameters.agendaItems !== "" && !Array.isArray(parameters.agendaItems)) {
-        return Promise.reject("Upcoming *" + event.summary + "* contains a malformed `agenda` element");
+        return Promise.reject(`Upcoming *${event.summary}* contains a malformed \`agenda\` element`);
     }
 
     if (parameters.link === undefined || parameters.link === "") {

@@ -68,12 +68,10 @@ exports.slack_commands_async = async (event, context) => {
         } catch (error) {
             console.log(error);
 
-            await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
+            await slack.postMessageToChannel(`\`\`\`${error}\`\`\``, "minerva-log", false);
 
             await slack.postEphemeralMessage(
-                "Command failed: " +
-                    error +
-                    "\nSee https://github.com/waterloo-rocketry/minerva for help with commands.",
+                `Command failed: ${error}\nSee https://github.com/waterloo-rocketry/minerva for help with commands.`,
                 body.channel_name,
                 body.user_id,
             );
@@ -92,10 +90,10 @@ exports.scheduled = async ( event, context ) => {
             await require( "./scheduled/events" ).checkForEvents();
         } catch ( error ) {
             try {
-                await require( "./handlers/error-handler" ).filter( error );
-            } catch ( error ) {
-                console.log( error );
-                slack.postMessageToChannel( "Error with upcoming meeting:\n`" + error + "`", "minerva-log", false );
+                await require("./handlers/error-handler").filter(error);
+            } catch (error) {
+                console.log(error);
+                slack.postMessageToChannel(`Error with upcoming meeting:\n\`${error}\``, "minerva-log", false);
             }
         }
     }
@@ -180,7 +178,7 @@ exports.interactivity_async = async (event, context) => {
         } catch (error) {
             console.log(error);
 
-            await slack.postMessageToChannel("```" + error + "```", "minerva-log", false);
+            await slack.postMessageToChannel(`\`\`\`${error}\`\`\``, "minerva-log", false);
 
             await slack.postEphemeralMessage(
                 "Command failed: " +

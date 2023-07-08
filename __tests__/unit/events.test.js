@@ -52,18 +52,17 @@ describe("scheduled/event.js tests", function () {
 
         it("check close message", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
+            const expectedMessage = `<!channel>
+Reminder: *Test Event* is occurring in *5 minutes*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -87,18 +86,17 @@ describe("scheduled/event.js tests", function () {
         });
         it("check far message", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)"
-                + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
+            const expectedMessage = `Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)
+React with :watermelon: if you're coming, or :melon: if you're not!`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -123,15 +121,14 @@ describe("scheduled/event.js tests", function () {
         });
         it("check no agenda items", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
-                + "\nThere are currently no agenda items listed for this meeting."
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)"
-                + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
+            const expectedMessage = `Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*
+There are currently no agenda items listed for this meeting.
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)
+React with :watermelon: if you're coming, or :melon: if you're not!`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -156,17 +153,16 @@ describe("scheduled/event.js tests", function () {
         });
         it("check copy message", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "Reminder: *Test Event* is occurring in *5 minutes*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
+            const expectedMessage = `Reminder: *Test Event* is occurring in *5 minutes*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -190,18 +186,17 @@ describe("scheduled/event.js tests", function () {
         });
         it("check meeting message", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
+            const expectedMessage = `<!channel>
+Reminder: *Test Event* is occurring in *5 minutes*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -225,17 +220,16 @@ describe("scheduled/event.js tests", function () {
         });
         it("check meeting message no location", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
+            const expectedMessage = `<!channel>
+Reminder: *Test Event* is occurring in *5 minutes*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -259,17 +253,16 @@ describe("scheduled/event.js tests", function () {
         });
         it("check meeting message with custom link", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/not_bay_area";
+            const expectedMessage = `<!channel>
+Reminder: *Test Event* is occurring in *5 minutes*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/not_bay_area`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -293,12 +286,11 @@ describe("scheduled/event.js tests", function () {
         });
         it("check test message", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                + "\nToday's test is located at: The Bay"
-                + "\nNotes: N/A"
-                + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
+            const expectedMessage = `<!channel>
+Reminder: *Test Event* is occurring in *5 minutes*
+Today's test is located at: The Bay
+Notes: N/A
+React with :watermelon: if you're coming, or :melon: if you're not!`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -323,10 +315,9 @@ describe("scheduled/event.js tests", function () {
         });
         it("check other message", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*"
-                + "\nNotes: N/A"
-                + "\nReact with :watermelon: if you're coming, or :melon: if you're not!";
+            const expectedMessage = `Reminder: *Test Event* is occurring on *June 23rd, 2020 at 4:23 AM*
+Notes: N/A
+React with :watermelon: if you're coming, or :melon: if you're not!`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(
@@ -351,18 +342,17 @@ describe("scheduled/event.js tests", function () {
         });
         it("check no emojis required but passed", async function () {
             // prettier-ignore
-            const expectedMessage =
-                "<!channel>"
-                + "\nReminder: *Test Event* is occurring in *5 minutes*"
-                + "\nPlease see the agenda items:"
-                + "\n    • item"
-                + "\n    • item1"
-                + "\n    • item2"
-                + "\nNotes: N/A"
-                + "\nWays to attend:"
-                + "\n      :office: In person @ The Bay"
-                + "\n      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area"
-                + "\n      :calling: By phone +1-512-647-1431 (2633 1815 39#)";
+            const expectedMessage = `<!channel>
+Reminder: *Test Event* is occurring in *5 minutes*
+Please see the agenda items:
+    • item
+    • item1
+    • item2
+Notes: N/A
+Ways to attend:
+      :office: In person @ The Bay
+      :globe_with_meridians: Online @ https://meet.waterloorocketry.com/bay_area
+      :calling: By phone +1-512-647-1431 (2633 1815 39#)`;
 
             assert.deepStrictEqual(
                 await event.generateMessage(

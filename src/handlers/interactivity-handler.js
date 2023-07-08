@@ -1,8 +1,9 @@
 const slack_handler = require("./slack-handler");
 
 module.exports.process = async function (payload, metadata) {
-    var details = `${new Date().toISOString()} ${payload.user.name} interacted with \`${metadata.type}\` \
-    ${metadata.subject != "" ? `for \`${metadata.subject}\`` : ""}`;
+    var details = `${new Date().toISOString()} ${payload.user.name} interacted with \`${metadata.type}\`${metadata.subject !== "" ? " for `" + metadata.subject + "`" : ""}`;
+
+
     slack_handler.postMessageToChannel(details, "minerva-log", false);
     console.log(details);
 
