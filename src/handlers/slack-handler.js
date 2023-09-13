@@ -135,11 +135,17 @@ module.exports.getAllSingleChannelGuests = async function () {
     let users = await web.users.list({ limit: 900}); // have to set a limit below 1000 for pagination to work
     all_users = all_users.concat(users.members);
     
+    console.log("users1");
+    console.log(users);
+
     // use pagination to make calls to get all 1000+ users
     while(users.response_metadata.next_cursor != "") {
         users = await web.users.list({cursor: users.response_metadata.next_cursor, limit: 900});
         all_users = all_users.concat(users.members);
     }
+
+    console.log("users2");
+    console.log(all_users);
     
     var singleChannel = [];
     all_users.forEach(user => {
