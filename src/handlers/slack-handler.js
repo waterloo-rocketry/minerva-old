@@ -82,6 +82,7 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
                 messagePromises.push(this.directMessageUser(message, member, true));
+                await new Promise(resolve => setTimeout(resolve, 10));
             }
         }
 
