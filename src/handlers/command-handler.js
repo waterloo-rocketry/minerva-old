@@ -18,10 +18,6 @@ module.exports.process = async function (request) {
 
     console.log(details);
 
-    var result = await slack_handler.getAllSingleChannelGuests();
-
-    console.log(result);
-
     if (request.text.startsWith("help")) {
         return Promise.resolve("For help, see: https://github.com/waterloo-rocketry/minerva");
     }
