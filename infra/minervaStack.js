@@ -23,9 +23,9 @@ class MinervaStack extends cdk.Stack {
 
         // Default configuration for Lambda functions
         const lambdaFnProps = {
-            runtime: lambda.Runtime.NODEJS_16_X,
+            runtime: lambda.Runtime.NODEJS_18_X,
             timeout: cdk.Duration.seconds( 100 ),
-            memorySize: 128,
+            memorySize: 256,
             entry: path.join(__dirname, '../src/index.js'),
             logRetention: logs.RetentionDays.ONE_MONTH,
             environment: {
