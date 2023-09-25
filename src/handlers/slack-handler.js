@@ -82,6 +82,7 @@ module.exports.directMessageSingleChannelGuestsInChannels = async function (mess
             // if there is any overlap, iterate through and message them
             for (const member of singleChannelMembersInChannel) {
                 messagePromises.push(this.directMessageUser(message, member, true));
+                await new Promise(resolve => setTimeout(resolve, 10));
             }
         }
 
@@ -134,9 +135,6 @@ module.exports.getAllSingleChannelGuests = async function () {
     let all_users = [];
     let users = await web.users.list({ limit: 900}); // have to set a limit below 1000 for pagination to work
     all_users = all_users.concat(users.members);
-    
-    console.log("users1");
-    console.log(users);
 
     // use pagination to make calls to get all 1000+ users
     while(users.response_metadata.next_cursor != "") {
@@ -144,9 +142,6 @@ module.exports.getAllSingleChannelGuests = async function () {
         all_users = all_users.concat(users.members);
     }
 
-    console.log("users2");
-    console.log(all_users);
-    
     var singleChannel = [];
     all_users.forEach(user => {
         // is_admin is used in development since is_ultra_restricted does not work without a paid plan
