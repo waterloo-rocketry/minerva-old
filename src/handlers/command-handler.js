@@ -4,7 +4,12 @@ module.exports.process = async function (request) {
     var details = `${new Date().toISOString()}: <#${request.channel_id}|${request.channel_name}> ${request.user_name} executed ${request.command} ${request.text}`;
 
     slack_handler.postMessageToChannel(details, "minerva-log", false);
+
     console.log(details);
+
+    var result = await slack_handler.getAllSingleChannelGuests();
+
+    console.log(result);
 
     if (request.text.startsWith("help")) {
         return Promise.resolve("For help, see: https://github.com/waterloo-rocketry/minerva");
