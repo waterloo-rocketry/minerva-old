@@ -1,7 +1,8 @@
 # Minerva
 
-**Since we have a new minerva system, this repo will no longer be used!**
-Please redirect to [minerva-rewrite](https://github.com/waterloo-rocketry/minerva-rewrite) for feature development.
+> Since we have a new minerva system, this repo will no longer be used!
+> 
+> Please redirect to [minerva-rewrite](https://github.com/waterloo-rocketry/minerva-rewrite) for feature development.
 
 ## What is Minerva?
 
